@@ -17,6 +17,12 @@ public sealed class PromptRequest
 
     /// <summary>The answer they are expected to produce.</summary>
     public string Answer => Direction == TranslationDirection.BackToFront ? Card.Front : Card.Back;
+
+    /// <summary>
+    /// Other correct answers to the same question — fronts of cards that share a translation.
+    /// Only filled in when asking for the front side; the other way round every card has its own.
+    /// </summary>
+    public IReadOnlyList<string> AlsoAccepted { get; init; } = [];
 }
 
 public enum PromptBlockReason
@@ -90,7 +96,9 @@ public sealed class PromptService
 
         var settings = _settingsService.Current;
 
-        var card = _picker.Pick(_repository.GetCards(CardQuery.Promptable), now, new PickOptions
+        var candidates = _repository.GetCards(CardQuery.Promptable);
+
+        var card = _picker.Pick(candidates, now, new PickOptions
         {
             MaxNewPerDay = settings.MaxNewCardsPerDay,
             NewIntroducedToday = _repository.CountNewCardsSince(StartOfDay(now)),
@@ -103,11 +111,16 @@ public sealed class PromptService
             return null;
         }
 
+        var direction = _picker.ResolveDirection(settings.Direction);
+
         return new PromptRequest
         {
             Card = card,
-            Direction = _picker.ResolveDirection(settings.Direction),
+            Direction = direction,
             ShownAt = now,
+            AlsoAccepted = direction == TranslationDirection.BackToFront
+                ? Synonyms.FrontsSharingMeaning(card, candidates)
+                : [],
         };
     }
 

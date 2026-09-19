@@ -98,8 +98,27 @@ public class CsvCardIoTests
 
         var cards = db.Repository.GetCards(CardQuery.Promptable);
 
-        Assert.True(cards.Count > 50, $"expected a usable starter deck, got {cards.Count} cards");
+        Assert.True(cards.Count >= 400, $"expected a starter deck of several hundred cards, got {cards.Count}");
         Assert.All(cards, c => Assert.False(string.IsNullOrWhiteSpace(c.Back)));
+    }
+
+    [Fact]
+    public void Every_starter_card_is_complete_and_unique()
+    {
+        var result = CsvCardIo.Parse(SeedData.ReadStarterDeck(), deckId: 1, out var cards);
+
+        Assert.Equal(0, result.Skipped);
+        Assert.All(cards, c =>
+        {
+            Assert.False(string.IsNullOrWhiteSpace(c.Example), $"'{c.Front}' has no example");
+            Assert.False(string.IsNullOrWhiteSpace(c.Tags), $"'{c.Front}' has no tag");
+            Assert.DoesNotContain(",", c.Tags!);
+        });
+
+        var duplicates = cards.GroupBy(c => c.Front, StringComparer.OrdinalIgnoreCase)
+            .Where(g => g.Count() > 1)
+            .Select(g => g.Key);
+        Assert.Empty(duplicates);
     }
 
     [Fact]

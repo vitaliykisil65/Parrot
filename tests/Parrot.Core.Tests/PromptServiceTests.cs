@@ -175,4 +175,40 @@ public class PromptServiceTests : IDisposable
 
         Assert.Equal(AnswerStrictness.Strict, _service.CreateChecker().Strictness);
     }
+
+    [Fact]
+    public void Asking_for_the_front_side_accepts_fronts_of_cards_with_the_same_translation()
+    {
+        AddDueCard("accurate", "точний");
+
+        var synonymId = _db.Repository.AddCard(new Card { DeckId = _deckId, Front = "precise", Back = "точний" });
+        var synonym = _db.Repository.GetCard(synonymId)!;
+        synonym.Schedule.LastShownAt = DateTimeOffset.Now.AddDays(-1);
+        synonym.Schedule.Repetitions = 1;
+        synonym.Schedule.DueAt = DateTimeOffset.Now.AddDays(1);
+        _db.Repository.SaveSchedule(synonym.Schedule);
+
+        Configure(s =>
+        {
+            s.QuietHoursEnabled = false;
+            s.Direction = TranslationDirection.BackToFront;
+        });
+
+        var prompt = _service.TryCreatePrompt(DateTimeOffset.Now, out _)!;
+
+        Assert.Equal("accurate", prompt.Card.Front);
+        Assert.Equal(["precise"], prompt.AlsoAccepted);
+    }
+
+    [Fact]
+    public void Asking_for_the_translation_needs_no_synonyms()
+    {
+        AddDueCard("accurate", "точний");
+        _db.Repository.AddCard(new Card { DeckId = _deckId, Front = "precise", Back = "точний" });
+        Configure(s => s.QuietHoursEnabled = false);
+
+        var prompt = _service.TryCreatePrompt(DateTimeOffset.Now, out _)!;
+
+        Assert.Empty(prompt.AlsoAccepted);
+    }
 }

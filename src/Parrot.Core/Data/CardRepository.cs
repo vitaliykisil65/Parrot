@@ -157,29 +157,41 @@ public sealed class CardRepository(Database database)
 
     public long AddCard(Card card)
     {
+        AddCards([card]);
+        return card.Id;
+    }
+
+    /// <summary>
+    /// Inserts many cards in one transaction — one disk flush instead of one per card, which is
+    /// the difference between an instant import and a visible stall.
+    /// </summary>
+    public void AddCards(IEnumerable<Card> cards)
+    {
         using var connection = database.OpenConnection();
         using var transaction = connection.BeginTransaction();
 
-        using (var command = connection.CreateCommand())
+        foreach (var card in cards)
         {
-            command.Transaction = transaction;
-            command.CommandText = """
-                INSERT INTO Card (DeckId, Front, Back, Hint, Example, Tags, Notes, IsSuspended, CreatedAt, UpdatedAt, DeletedAt)
-                VALUES ($deck, $front, $back, $hint, $example, $tags, $notes, $suspended, $created, $updated, NULL);
-                SELECT last_insert_rowid();
-                """;
-            BindCardFields(command, card);
-            command.Parameters.AddWithValue("$created", SqlTime.To(card.CreatedAt));
-            command.Parameters.AddWithValue("$updated", SqlTime.To(card.UpdatedAt));
+            using (var command = connection.CreateCommand())
+            {
+                command.Transaction = transaction;
+                command.CommandText = """
+                    INSERT INTO Card (DeckId, Front, Back, Hint, Example, Tags, Notes, IsSuspended, CreatedAt, UpdatedAt, DeletedAt)
+                    VALUES ($deck, $front, $back, $hint, $example, $tags, $notes, $suspended, $created, $updated, NULL);
+                    SELECT last_insert_rowid();
+                    """;
+                BindCardFields(command, card);
+                command.Parameters.AddWithValue("$created", SqlTime.To(card.CreatedAt));
+                command.Parameters.AddWithValue("$updated", SqlTime.To(card.UpdatedAt));
 
-            card.Id = (long)command.ExecuteScalar()!;
+                card.Id = (long)command.ExecuteScalar()!;
+            }
+
+            card.Schedule.CardId = card.Id;
+            InsertSchedule(connection, transaction, card.Schedule);
         }
 
-        card.Schedule.CardId = card.Id;
-        InsertSchedule(connection, transaction, card.Schedule);
-
         transaction.Commit();
-        return card.Id;
     }
 
     public void UpdateCard(Card card)

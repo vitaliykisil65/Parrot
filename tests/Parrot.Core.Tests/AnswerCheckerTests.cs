@@ -114,4 +114,33 @@ public class AnswerCheckerTests
         // "to the point" must not lose "the" — only a single leading article is dropped.
         Assert.Equal("the point", AnswerNormalizer.Normalize("to the point"));
     }
+
+    [Fact]
+    public void A_synonym_from_another_card_is_accepted_after_the_cards_own_answers()
+    {
+        var card = Card("accurate", "точний");
+
+        var synonym = _lenient.Check(card, "precise", TranslationDirection.BackToFront, ["precise"]);
+        Assert.Equal((ReviewOutcome.Correct, "precise"), (synonym.Outcome, synonym.MatchedAnswer));
+
+        var own = _lenient.Check(card, "accurate", TranslationDirection.BackToFront, ["precise"]);
+        Assert.Equal("accurate", own.MatchedAnswer);
+
+        Assert.Equal(ReviewOutcome.Wrong, _lenient.Check(card, "precise", TranslationDirection.BackToFront).Outcome);
+    }
+
+    [Fact]
+    public void Synonyms_are_cards_sharing_any_translation_variant()
+    {
+        var card = new Card { Id = 1, Front = "robust", Back = "надійний; стійкий" };
+        Card[] pool =
+        [
+            card,
+            new() { Id = 2, Front = "reliable", Back = "Надійний" },
+            new() { Id = 3, Front = "steady", Back = "стабільний; рівномірний" },
+            new() { Id = 4, Front = "resilient", Back = "стійкий; витривалий" },
+        ];
+
+        Assert.Equal(["reliable", "resilient"], Synonyms.FrontsSharingMeaning(card, pool));
+    }
 }

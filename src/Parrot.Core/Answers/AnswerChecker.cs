@@ -12,17 +12,19 @@ public sealed class AnswerChecker(AnswerStrictness strictness = AnswerStrictness
     public AnswerStrictness Strictness { get; } = strictness;
 
     /// <summary>
-    /// Compares a typed answer against every accepted variant of the card.
-    /// An exact match always wins over a typo match, so the user is not told
-    /// "almost right" when one of the variants was spot on.
+    /// Compares a typed answer against every accepted variant of the card, then against
+    /// <paramref name="alsoAccepted"/> (synonyms from other cards). An exact match always wins
+    /// over a typo match, so the user is not told "almost right" when one of the variants was
+    /// spot on.
     /// </summary>
-    public AnswerResult Check(Card card, string? userAnswer, TranslationDirection direction)
+    public AnswerResult Check(Card card, string? userAnswer, TranslationDirection direction,
+        IEnumerable<string>? alsoAccepted = null)
     {
         var expected = direction == TranslationDirection.BackToFront
             ? Split(card.Front)
             : card.AcceptedAnswers;
 
-        return Check(expected, userAnswer);
+        return Check(expected.Concat(alsoAccepted ?? []), userAnswer);
     }
 
     public AnswerResult Check(IEnumerable<string> acceptedAnswers, string? userAnswer)

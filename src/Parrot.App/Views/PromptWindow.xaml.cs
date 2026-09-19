@@ -198,7 +198,7 @@ public sealed partial class PromptWindow : Window
     private void Check()
     {
         _userAnswer = AnswerBox.Text;
-        var result = _checker.Check(_request.Card, _userAnswer, _request.Direction);
+        var result = _checker.Check(_request.Card, _userAnswer, _request.Direction, _request.AlsoAccepted);
         ShowResult(result.Outcome, result.MatchedAnswer);
     }
 
@@ -230,6 +230,10 @@ public sealed partial class PromptWindow : Window
         ResultAnswer.Text = outcome == ReviewOutcome.Correct
             ? matched ?? _request.Answer
             : _request.Answer;
+
+        // A synonym from another card is accepted, but this card still wants its own word learned.
+        if (matched is not null && _request.AlsoAccepted.Contains(matched))
+            ResultAnswer.Text = $"{matched} — теж так; ця картка: {_request.Answer}";
 
         if (!string.IsNullOrWhiteSpace(_request.Card.Example))
         {

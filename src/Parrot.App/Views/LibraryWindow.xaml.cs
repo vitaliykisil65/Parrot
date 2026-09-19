@@ -315,8 +315,7 @@ public sealed partial class LibraryWindow : Window
         {
             var result = CsvCardIo.Parse(File.ReadAllText(dialog.FileName, Encoding.UTF8), target.Id, out var cards);
 
-            foreach (var card in cards)
-                _repository.AddCard(card);
+            _repository.AddCards(cards);
 
             Reload();
 
