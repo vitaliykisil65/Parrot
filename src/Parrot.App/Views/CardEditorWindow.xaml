@@ -1,0 +1,47 @@
+<Window x:Class="Parrot.App.Views.CardEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Картка"
+        Width="520" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Background="{DynamicResource Brush.Surface}">
+
+    <StackPanel Margin="18">
+
+        <Label Content="Колода" />
+        <ComboBox x:Name="DeckBox" DisplayMemberPath="Name" />
+
+        <Label Content="Слово або фраза" Margin="0,12,0,0" />
+        <TextBox x:Name="FrontBox" />
+
+        <Label Content="Переклад" Margin="0,12,0,0" />
+        <TextBox x:Name="BackBox" />
+        <TextBlock Style="{StaticResource Text.Muted}" Margin="0,4,0,0" TextWrapping="Wrap"
+                   Text="Кілька правильних варіантів розділяйте крапкою з комою: зрозуміти; розібратися" />
+
+        <Label Content="Підказка (необов'язково)" Margin="0,12,0,0" />
+        <TextBox x:Name="HintBox" />
+
+        <Label Content="Приклад вживання (необов'язково)" Margin="0,12,0,0" />
+        <TextBox x:Name="ExampleBox" />
+
+        <Label Content="Теги (через кому)" Margin="0,12,0,0" />
+        <TextBox x:Name="TagsBox" />
+
+        <Label Content="Нотатки" Margin="0,12,0,0" />
+        <TextBox x:Name="NotesBox" AcceptsReturn="True" TextWrapping="Wrap" Height="60"
+                 VerticalContentAlignment="Top" />
+
+        <TextBlock x:Name="ErrorText" Style="{StaticResource Text.Muted}"
+                   Foreground="{DynamicResource Brush.Danger}"
+                   Margin="0,10,0,0" Visibility="Collapsed" TextWrapping="Wrap" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,0">
+            <Button Content="Скасувати" IsCancel="True" Click="OnCancel" />
+            <Button Content="Зберегти" Style="{StaticResource Button.Primary}"
+                    Margin="8,0,0,0" IsDefault="True" Click="OnSave" />
+        </StackPanel>
+    </StackPanel>
+</Window>

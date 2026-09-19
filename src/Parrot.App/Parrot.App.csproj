@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <!-- NotifyIcon and Screen.WorkingArea come from Windows Forms; both are needed and
+         neither has a dependency-free WPF equivalent. -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- Required by the LibraryImport source generator. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AssemblyName>Parrot</AssemblyName>
+    <RootNamespace>Parrot.App</RootNamespace>
+    <ApplicationIcon>..\..\assets\parrot.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Product>Parrot</Product>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Windows Forms brings System.Windows.Forms and System.Drawing in as implicit usings,
+         which makes TextBox, CheckBox, Brush and Application ambiguous against their WPF
+         namesakes. The few Forms types this app needs are reached through aliases instead. -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Parrot.Core\Parrot.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="..\..\assets\parrot.ico" Link="parrot.ico" />
+  </ItemGroup>
+
+</Project>

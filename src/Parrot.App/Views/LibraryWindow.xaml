@@ -1,0 +1,110 @@
+<Window x:Class="Parrot.App.Views.LibraryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Parrot — бібліотека"
+        Width="1040" Height="640"
+        MinWidth="760" MinHeight="420"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource Brush.Surface}">
+
+    <DockPanel>
+
+        <!-- Toolbar -->
+        <Border DockPanel.Dock="Top" Padding="14,12"
+                Background="{DynamicResource Brush.SurfaceAlt}"
+                BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Image Source="{Binding Logo, RelativeSource={RelativeSource AncestorType=Window}}"
+                           Width="26" Height="26" />
+                    <TextBlock Text="Parrot" Style="{StaticResource Text.Heading}"
+                               Margin="8,0,16,0" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBox x:Name="SearchBox" Width="240"
+                             TextChanged="OnSearchChanged"
+                             ToolTip="Пошук за словом, перекладом або тегом" />
+                    <ComboBox x:Name="DeckFilter" Width="200" Margin="8,0,0,0"
+                              DisplayMemberPath="Name"
+                              SelectionChanged="OnDeckFilterChanged" />
+                    <CheckBox x:Name="ShowDeleted" Content="Показати видалені"
+                              Margin="12,0,0,0" VerticalAlignment="Center"
+                              Click="OnRefreshRequested" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Content="Налаштування" Click="OnSettings" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Actions -->
+        <Border DockPanel.Dock="Top" Padding="14,8"
+                BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Додати" Style="{StaticResource Button.Primary}" Click="OnAdd" />
+                <Button x:Name="EditButton" Content="Редагувати" Margin="8,0,0,0" Click="OnEdit" />
+                <Button x:Name="SuspendButton" Content="Призупинити" Margin="8,0,0,0" Click="OnToggleSuspend" />
+                <Button x:Name="ResetButton" Content="Скинути прогрес" Margin="8,0,0,0" Click="OnResetProgress" />
+                <Button x:Name="DeleteButton" Content="Видалити" Style="{StaticResource Button.Danger}"
+                        Margin="8,0,0,0" Click="OnDelete" />
+
+                <Rectangle Width="1" Margin="14,2" Fill="{DynamicResource Brush.Border}" />
+
+                <Button Content="Імпорт CSV" Click="OnImport" />
+                <Button Content="Експорт CSV" Margin="8,0,0,0" Click="OnExport" />
+
+                <Rectangle Width="1" Margin="14,2" Fill="{DynamicResource Brush.Border}" />
+
+                <Button Content="Нова колода" Click="OnAddDeck" />
+            </StackPanel>
+        </Border>
+
+        <!-- Status -->
+        <Border DockPanel.Dock="Bottom" Padding="14,8"
+                Background="{DynamicResource Brush.SurfaceAlt}"
+                BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,1,0,0">
+            <Grid>
+                <TextBlock x:Name="StatusText" Style="{StaticResource Text.Muted}" VerticalAlignment="Center" />
+                <Button x:Name="UndoButton" Content="Повернути видалену" Visibility="Collapsed"
+                        Style="{StaticResource Button.Subtle}"
+                        HorizontalAlignment="Right" Click="OnUndoDelete" />
+            </Grid>
+        </Border>
+
+        <DataGrid x:Name="CardsGrid"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  HeadersVisibility="Column"
+                  GridLinesVisibility="Horizontal"
+                  SelectionMode="Extended"
+                  CanUserResizeRows="False"
+                  RowHeight="34"
+                  BorderThickness="0"
+                  Background="{DynamicResource Brush.Surface}"
+                  RowBackground="{DynamicResource Brush.Surface}"
+                  AlternatingRowBackground="{DynamicResource Brush.SurfaceAlt}"
+                  Foreground="{DynamicResource Brush.Text}"
+                  HorizontalGridLinesBrush="{DynamicResource Brush.Border}"
+                  MouseDoubleClick="OnGridDoubleClick"
+                  SelectionChanged="OnSelectionChanged">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Слово / фраза" Binding="{Binding Front}" Width="2*" />
+                <DataGridTextColumn Header="Переклад" Binding="{Binding Back}" Width="2*" />
+                <DataGridTextColumn Header="Теги" Binding="{Binding Tags}" Width="100" />
+                <DataGridTextColumn Header="Колода" Binding="{Binding Deck}" Width="150" />
+                <DataGridTextColumn Header="Складність" Binding="{Binding Difficulty}" Width="100" />
+                <DataGridTextColumn Header="Точність" Binding="{Binding Accuracy}" Width="90" />
+                <DataGridTextColumn Header="Наступний показ" Binding="{Binding Due}" Width="140" />
+                <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="110" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</Window>
