@@ -62,7 +62,11 @@ public sealed partial class PromptWindow : Window
 
         // Applied before the window is shown so it never takes focus, not even for a frame.
         if (!_settings.FocusInputOnShow)
-            NativeMethods.MakeNonActivating(new WindowInteropHelper(this).Handle);
+        {
+            var handle = new WindowInteropHelper(this).Handle;
+            NativeMethods.MakeNonActivating(handle);
+            HwndSource.FromHwnd(handle)?.AddHook(OnWindowMessage);
+        }
     }
 
     protected override void OnContentRendered(EventArgs e)
@@ -78,6 +82,31 @@ public sealed partial class PromptWindow : Window
             Activate();
             AnswerBox.Focus();
         }
+    }
+
+    /// <summary>
+    /// A non-activating window never receives keyboard focus, not even when clicked — typed
+    /// letters would keep going to whatever app was active before. The first click is the user
+    /// saying "I'm answering now": answering WM_MOUSEACTIVATE with MA_ACTIVATE lets Windows
+    /// activate the window as part of that click, which (unlike calling Activate() afterwards)
+    /// is never refused by the foreground-lock rules.
+    /// </summary>
+    private IntPtr OnWindowMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    {
+        if (msg != NativeMethods.WmMouseActivate)
+            return IntPtr.Zero;
+
+        NativeMethods.AllowActivation(hwnd);
+        handled = true;
+        return NativeMethods.MaActivate;
+    }
+
+    protected override void OnActivated(EventArgs e)
+    {
+        base.OnActivated(e);
+
+        if (_outcome is null && !AnswerBox.IsKeyboardFocused)
+            AnswerBox.Focus();
     }
 
     protected override void OnClosed(EventArgs e)

@@ -19,6 +19,8 @@ internal static partial class NativeMethods
     public const int GwlExStyle = -20;
     public const int WsExNoActivate = 0x08000000;
     public const int WsExToolWindow = 0x00000080;
+    public const int WmMouseActivate = 0x0021;
+    public static readonly IntPtr MaActivate = 1;
 
     [StructLayout(LayoutKind.Sequential)]
     public struct LastInputInfo
@@ -84,5 +86,12 @@ internal static partial class NativeMethods
     {
         var style = GetWindowLong(handle, GwlExStyle);
         SetWindowLong(handle, GwlExStyle, style | WsExNoActivate | WsExToolWindow);
+    }
+
+    /// <summary>Undoes the no-activate part of <see cref="MakeNonActivating"/>; stays out of Alt+Tab.</summary>
+    public static void AllowActivation(IntPtr handle)
+    {
+        var style = GetWindowLong(handle, GwlExStyle);
+        SetWindowLong(handle, GwlExStyle, style & ~WsExNoActivate);
     }
 }
