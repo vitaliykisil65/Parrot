@@ -188,6 +188,8 @@ public sealed partial class SettingsWindow : Window
 
     private void OnCancel(object sender, RoutedEventArgs e) => Close();
 
+    private void OnPreviewSound(object sender, RoutedEventArgs e) => SoundService.PlayChime();
+
     // ── Input helpers ────────────────────────────────────────────────────────
 
     private bool TryReadInt(TextBox box, string field, int min, int max, out int value)

@@ -32,6 +32,7 @@ public sealed class TrayIconService : IDisposable
             Font = new System.Drawing.Font(Forms.Control.DefaultFont, System.Drawing.FontStyle.Bold),
         });
         menu.Items.Add(new Forms.ToolStripMenuItem("Показати картку зараз", null, (_, _) => PromptNowRequested?.Invoke(this, EventArgs.Empty)));
+        menu.Items.Add(new Forms.ToolStripMenuItem("Статистика", null, (_, _) => StatisticsRequested?.Invoke(this, EventArgs.Empty)));
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add(_pauseItem);
         menu.Items.Add(_resumeItem);
@@ -53,6 +54,7 @@ public sealed class TrayIconService : IDisposable
 
     public event EventHandler? LibraryRequested;
     public event EventHandler? SettingsRequested;
+    public event EventHandler? StatisticsRequested;
     public event EventHandler? PromptNowRequested;
     public event EventHandler? ResumeRequested;
     public event EventHandler? ExitRequested;

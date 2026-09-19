@@ -48,6 +48,10 @@ public sealed class CardSchedule
     /// <summary>A card is considered learned once its interval passes a week.</summary>
     public bool IsLearned => IntervalMinutes >= TimeSpan.FromDays(7).TotalMinutes;
 
+    /// <summary>Ease mapped onto 0 (as easy as it gets) … 100 (as hard as it gets).</summary>
+    public int DifficultyPercent =>
+        (int)Math.Round(Math.Clamp((MaxEase - EaseFactor) / (MaxEase - MinEase), 0, 1) * 100);
+
     public int TotalAnswers => CorrectCount + WrongCount;
 
     public double Accuracy => TotalAnswers == 0 ? 0 : (double)CorrectCount / TotalAnswers;

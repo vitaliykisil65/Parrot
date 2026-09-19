@@ -17,6 +17,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Product>Parrot</Product>
     <Version>0.1.0</Version>
+    <!-- The Windows Forms analyzer wants DPI awareness set through its own API, but the
+         manifest entry is what WPF reads; the tray icon is the only Forms surface here. -->
+    <NoWarn>$(NoWarn);WFO0003</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

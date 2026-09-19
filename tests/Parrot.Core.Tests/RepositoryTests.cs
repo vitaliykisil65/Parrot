@@ -201,6 +201,34 @@ public class RepositoryTests : IDisposable
     }
 
     [Fact]
+    public void Review_history_round_trips_and_filters_by_date()
+    {
+        var card = AddCard();
+        var now = DateTimeOffset.Now;
+
+        _repo.LogReview(new ReviewLog { CardId = card.Id, ShownAt = now.AddDays(-3), Outcome = ReviewOutcome.Wrong });
+        _repo.LogReview(new ReviewLog
+        {
+            CardId = card.Id,
+            ShownAt = now.AddSeconds(-5),
+            AnsweredAt = now,
+            Outcome = ReviewOutcome.Typo,
+            UserAnswer = "кінцевий термн",
+            Direction = TranslationDirection.BackToFront,
+            ResponseMs = 5000,
+        });
+
+        var all = _repo.GetReviews();
+        Assert.Equal([ReviewOutcome.Wrong, ReviewOutcome.Typo], all.Select(r => r.Outcome));
+
+        var recent = Assert.Single(_repo.GetReviews(since: now.AddDays(-1)));
+        Assert.Equal("кінцевий термн", recent.UserAnswer);
+        Assert.Equal(TranslationDirection.BackToFront, recent.Direction);
+        Assert.Equal(5000, recent.ResponseMs);
+        Assert.NotNull(recent.AnsweredAt);
+    }
+
+    [Fact]
     public void Deck_card_count_ignores_deleted_cards()
     {
         var card = AddCard();

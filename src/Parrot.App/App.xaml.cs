@@ -25,6 +25,7 @@ public partial class App : Application
     private PromptWindow? _activePrompt;
     private LibraryWindow? _library;
     private SettingsWindow? _settingsWindow;
+    private StatisticsWindow? _statistics;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -82,6 +83,7 @@ public partial class App : Application
         _tray = new TrayIconService();
         _tray.LibraryRequested += (_, _) => ShowLibrary();
         _tray.SettingsRequested += (_, _) => ShowSettings();
+        _tray.StatisticsRequested += (_, _) => ShowStatistics();
         _tray.PromptNowRequested += (_, _) => PromptNow();
         _tray.PauseRequested += (_, duration) => Pause(duration);
         _tray.ResumeRequested += (_, _) => Resume();
@@ -119,9 +121,13 @@ public partial class App : Application
             _scheduler.IsPromptOnScreen = false;
             _tray?.ShowNextPromptTime(_scheduler.NextPromptAt);
             _library?.RefreshIfVisible();
+            _statistics?.RefreshIfVisible();
         };
 
         window.Show();
+
+        if (_settings.Current.SoundEnabled)
+            SoundService.PlayChime();
     }
 
     private void PromptNow()
@@ -163,6 +169,7 @@ public partial class App : Application
             _library = new LibraryWindow(_repository);
             _library.Closed += (_, _) => _library = null;
             _library.SettingsRequested += (_, _) => ShowSettings();
+            _library.StatisticsRequested += (_, _) => ShowStatistics();
             _library.Show();
         }
 
@@ -182,6 +189,21 @@ public partial class App : Application
         }
 
         Restore(_settingsWindow);
+    }
+
+    private void ShowStatistics()
+    {
+        if (_repository is null)
+            return;
+
+        if (_statistics is null)
+        {
+            _statistics = new StatisticsWindow(_repository);
+            _statistics.Closed += (_, _) => _statistics = null;
+            _statistics.Show();
+        }
+
+        Restore(_statistics);
     }
 
     private static void Restore(Window window)

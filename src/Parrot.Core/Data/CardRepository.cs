@@ -310,6 +310,40 @@ public sealed class CardRepository(Database database)
         return Convert.ToInt32(command.ExecuteScalar());
     }
 
+    /// <summary>Review history, oldest first. Cards deleted for good take their history with them.</summary>
+    public List<ReviewLog> GetReviews(DateTimeOffset? since = null)
+    {
+        using var connection = database.OpenConnection();
+        using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT Id, CardId, ShownAt, AnsweredAt, Outcome, UserAnswer, Direction, ResponseMs
+            FROM ReviewLog
+            WHERE $since IS NULL OR ShownAt >= $since
+            ORDER BY ShownAt;
+            """;
+        command.Parameters.AddWithValue("$since", (object?)SqlTime.ToNullable(since) ?? DBNull.Value);
+
+        using var reader = command.ExecuteReader();
+        var reviews = new List<ReviewLog>();
+
+        while (reader.Read())
+        {
+            reviews.Add(new ReviewLog
+            {
+                Id = reader.GetInt64(0),
+                CardId = reader.GetInt64(1),
+                ShownAt = SqlTime.From(reader.GetString(2)),
+                AnsweredAt = reader.IsDBNull(3) ? null : SqlTime.From(reader.GetString(3)),
+                Outcome = (ReviewOutcome)reader.GetInt32(4),
+                UserAnswer = reader.IsDBNull(5) ? null : reader.GetString(5),
+                Direction = (TranslationDirection)reader.GetInt32(6),
+                ResponseMs = reader.GetInt32(7),
+            });
+        }
+
+        return reviews;
+    }
+
     // ── Mapping helpers ──────────────────────────────────────────────────────
 
     private void SetDeletedAt(long cardId, DateTimeOffset? value)

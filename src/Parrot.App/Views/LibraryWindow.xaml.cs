@@ -22,18 +22,7 @@ public sealed class LibraryRow(Card card, string deckName)
     public string Tags => Card.Tags ?? "";
     public string Deck { get; } = deckName;
 
-    public string Difficulty
-    {
-        get
-        {
-            if (Card.Schedule.IsNew)
-                return "—";
-
-            var span = CardSchedule.MaxEase - CardSchedule.MinEase;
-            var percent = (int)Math.Round((CardSchedule.MaxEase - Card.Schedule.EaseFactor) / span * 100);
-            return $"{percent}%";
-        }
-    }
+    public string Difficulty => Card.Schedule.IsNew ? "—" : $"{Card.Schedule.DifficultyPercent}%";
 
     public string Accuracy => Card.Schedule.TotalAnswers == 0
         ? "—"
@@ -94,6 +83,7 @@ public sealed partial class LibraryWindow : Window
     }
 
     public event EventHandler? SettingsRequested;
+    public event EventHandler? StatisticsRequested;
 
     public ImageSource Logo => LogoFactory.Image;
 
@@ -185,6 +175,8 @@ public sealed partial class LibraryWindow : Window
     private void OnSelectionChanged(object sender, SelectionChangedEventArgs e) => UpdateActionState();
 
     private void OnSettings(object sender, RoutedEventArgs e) => SettingsRequested?.Invoke(this, EventArgs.Empty);
+
+    private void OnStatistics(object sender, RoutedEventArgs e) => StatisticsRequested?.Invoke(this, EventArgs.Empty);
 
     private void OnGridDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
