@@ -338,7 +338,7 @@ public sealed partial class MainWindow : Window
                 RadiusY = 3,
                 Margin = new Thickness(2, 0, 2, 0),
                 Fill = (Brush)FindResource(answered ? "Brush.Primary" : "Brush.StreakEmpty"),
-                ToolTip = day.Day.ToString("dddd, d MMMM", L.Culture),
+                ToolTip = day.Day.ToString("dddd, " + L.DayMonthFormat(), L.Culture),
             });
         }
     }
@@ -350,7 +350,7 @@ public sealed partial class MainWindow : Window
         if (_host.PausedUntil is { } until && until > now)
         {
             NextLabel.Text = L.T("Schedule.Paused");
-            NextText.Text = L.F("Schedule.Until", until.ToString(until.Date == now.Date ? "HH:mm" : "dd.MM HH:mm"));
+            NextText.Text = L.F("Schedule.Until", until.Date == now.Date ? L.Time(until) : $"{until.ToString(L.DayMonthFormat(shortMonth: true), L.Culture)}, {L.Time(until)}");
             PauseButton.SetValue(Ui.IconProperty, FindResource("Icon.Play"));
             PauseButton.ToolTip = L.T("Schedule.Resume");
             return;
@@ -362,7 +362,7 @@ public sealed partial class MainWindow : Window
         if (!_settings.Current.IsWithinActiveWindow(now))
         {
             NextLabel.Text = L.T("Settings.QuietHours");
-            NextText.Text = L.F("Schedule.Until", _settings.Current.QuietTo.ToString(@"hh\:mm"));
+            NextText.Text = L.F("Schedule.Until", L.Time(_settings.Current.QuietTo));
             return;
         }
 
@@ -373,7 +373,7 @@ public sealed partial class MainWindow : Window
             {
                 < 1 => L.T("Schedule.InAMinute"),
                 < 60 and var minutes => L.F("Schedule.InMinutes", Math.Ceiling(minutes)),
-                _ => L.F("Schedule.At", next.ToString("HH:mm")),
+                _ => L.F("Schedule.At", L.Time(next)),
             };
     }
 

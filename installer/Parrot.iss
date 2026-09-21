@@ -45,8 +45,9 @@ CloseApplications=yes
 RestartApplications=no
 
 [Languages]
-Name: "uk"; MessagesFile: "compiler:Languages\Ukrainian.isl"
+; The first entry is the fallback when Windows uses neither language.
 Name: "en"; MessagesFile: "compiler:Default.isl"
+Name: "uk"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 
 [CustomMessages]
 uk.AutoStart=Запускати Parrot разом із Windows

@@ -20,12 +20,12 @@
     <Company>Vitalii Kysil</Company>
     <Authors>Vitalii Kysil</Authors>
     <Copyright>© 2026 Vitalii Kysil</Copyright>
-    <Description>Parrot — вивчення слів у фоні</Description>
+    <Description>Parrot — learn vocabulary in the background</Description>
     <!-- owner/repo on GitHub whose releases carry Parrot-Setup-*.exe. Empty turns update
          checks off; PARROT_UPDATE_URL overrides it for testing. -->
     <UpdateRepository>vitaliykisil65/Parrot</UpdateRepository>
-    <!-- Strings.resx is Ukrainian; translations ship as satellite assemblies next to it. -->
-    <NeutralLanguage>uk</NeutralLanguage>
+    <!-- Strings.resx is English; translations ship as satellite assemblies next to it. -->
+    <NeutralLanguage>en</NeutralLanguage>
     <!-- The Windows Forms analyzer wants DPI awareness set through its own API, but the
          manifest entry is what WPF reads; the tray icon is the only Forms surface here. -->
     <NoWarn>$(NoWarn);WFO0003</NoWarn>

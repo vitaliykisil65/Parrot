@@ -3,7 +3,8 @@ using Parrot.Core.Models;
 
 namespace Parrot.Core.Data;
 
-public sealed record ImportResult(int Imported, int Skipped, IReadOnlyList<string> Errors);
+/// <param name="SkippedRows">1-based numbers of the rows that lacked a front or back side.</param>
+public sealed record ImportResult(int Imported, int Skipped, IReadOnlyList<int> SkippedRows);
 
 /// <summary>
 /// Reads and writes decks as CSV, so cards can be prepared in a spreadsheet and the
@@ -34,12 +35,12 @@ public static class CsvCardIo
     public static ImportResult Parse(string csv, long deckId, out List<Card> cards)
     {
         cards = [];
-        var errors = new List<string>();
+        var skippedRows = new List<int>();
         var skipped = 0;
 
         var rows = ParseRows(csv);
         if (rows.Count == 0)
-            return new ImportResult(0, 0, errors);
+            return new ImportResult(0, 0, skippedRows);
 
         var start = LooksLikeHeader(rows[0]) ? 1 : 0;
 
@@ -52,7 +53,7 @@ public static class CsvCardIo
             if (row.Count < 2 || string.IsNullOrWhiteSpace(row[0]) || string.IsNullOrWhiteSpace(row[1]))
             {
                 skipped++;
-                errors.Add($"Рядок {i + 1}: потрібні щонайменше дві колонки (слово і переклад).");
+                skippedRows.Add(i + 1);
                 continue;
             }
 
@@ -67,7 +68,7 @@ public static class CsvCardIo
             });
         }
 
-        return new ImportResult(cards.Count, skipped, errors);
+        return new ImportResult(cards.Count, skipped, skippedRows);
     }
 
     private static string? Field(List<string> row, int index) =>
@@ -124,7 +125,7 @@ public static class CsvCardIo
 
                 // Tab counts as a separator too — that is what you get pasting out of Excel.
                 // Semicolon deliberately does not: it separates alternative answers inside
-                // the Back field ("бігти; тікати").
+                // the Back field ("run; flee").
                 case ',' or '\t':
                     row.Add(field.ToString());
                     field.Clear();

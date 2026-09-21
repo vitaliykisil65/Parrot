@@ -73,8 +73,11 @@ public sealed class AppSettings
     public bool SoundEnabled { get; set; } = true;
     public AppTheme Theme { get; set; } = AppTheme.System;
 
-    /// <summary>UI language code ("uk", "en", …); unknown codes fall back to Ukrainian.</summary>
-    public string UiLanguage { get; set; } = "uk";
+    /// <summary>
+    /// UI language code ("en", "uk", …). Empty — the default — follows the Windows display
+    /// language; unknown codes fall back to English.
+    /// </summary>
+    public string UiLanguage { get; set; } = "";
 
     // ── Updates ──────────────────────────────────────────────────────────────
 

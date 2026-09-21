@@ -8,12 +8,12 @@ public sealed record UiLanguage(string Code, string NativeName, string Culture);
 
 /// <summary>
 /// UI text lookup. Every string the user reads comes from Localization/Strings.resx (the
-/// Ukrainian source) or a Strings.&lt;code&gt;.resx translation next to it; adding a language is
+/// English source) or a Strings.&lt;code&gt;.resx translation next to it; adding a language is
 /// adding one file and one line in <see cref="Known"/>.
 /// </summary>
 public static class L
 {
-    public const string DefaultLanguage = "uk";
+    public const string DefaultLanguage = "en";
 
     private static readonly ResourceManager Strings =
         new("Parrot.App.Localization.Strings", typeof(L).Assembly);
@@ -21,12 +21,12 @@ public static class L
     /// <summary>Languages the app knows about; only those with translations are offered.</summary>
     private static readonly UiLanguage[] Known =
     [
-        new("uk", "Українська", "uk-UA"),
         new("en", "English", "en-US"),
+        new("uk", "Українська", "uk-UA"),
     ];
 
     /// <summary>The culture for text and for dates and numbers.</summary>
-    public static CultureInfo Culture { get; private set; } = CultureInfo.GetCultureInfo("uk-UA");
+    public static CultureInfo Culture { get; private set; } = CultureInfo.GetCultureInfo("en-US");
 
     public static string Language { get; private set; } = DefaultLanguage;
 
@@ -35,10 +35,13 @@ public static class L
         .Where(l => l.Code == DefaultLanguage || HasTranslation(l.Code))
         .ToList();
 
-    /// <summary>Switches the UI language. Windows opened afterwards use it.</summary>
+    /// <summary>
+    /// Switches the UI language. Windows opened afterwards use it. An empty or unknown code
+    /// follows the Windows display language, and English when that has no translation.
+    /// </summary>
     public static void Apply(string? language)
     {
-        var choice = Available.FirstOrDefault(l => l.Code == language) ?? Available[0];
+        var choice = Find(language) ?? Find(CultureInfo.InstalledUICulture.TwoLetterISOLanguageName) ?? Available[0];
 
         Language = choice.Code;
         Culture = CultureInfo.GetCultureInfo(choice.Culture);
@@ -49,21 +52,41 @@ public static class L
         CultureInfo.CurrentCulture = Culture;
     }
 
+    private static UiLanguage? Find(string? code) =>
+        Available.FirstOrDefault(l => string.Equals(l.Code, code, StringComparison.OrdinalIgnoreCase));
+
     /// <summary>The text for <paramref name="key"/>; a missing key shows up as ⟦key⟧ rather than blank.</summary>
     public static string T(string key) =>
         Strings.GetString(key, Culture) ?? $"⟦{key}⟧";
 
-    /// <summary>A formatted text: <c>F("Toast.Deleted", name)</c> for "«{0}» видалено".</summary>
+    /// <summary>A formatted text: <c>F("Toast.Deleted", name)</c> for "Deck “{0}” deleted".</summary>
     public static string F(string key, params object?[] args) =>
         string.Format(Culture, T(key), args);
 
-    /// <summary>"5 карток" — the number with the right plural form of the noun in <paramref name="key"/>.</summary>
+    /// <summary>A short time in the UI culture: "22:15" in Ukrainian, "10:15 PM" in English.</summary>
+    public static string Time(DateTime time) => time.ToString("t", Culture);
+
+    public static string Time(DateTimeOffset time) => time.ToString("t", Culture);
+
+    public static string Time(TimeSpan timeOfDay) => Time(DateTime.Today.Add(timeOfDay));
+
+    /// <summary>
+    /// The culture's day-and-month pattern: "d MMMM" in Ukrainian, "MMMM d" in English;
+    /// <paramref name="shortMonth"/> abbreviates the month.
+    /// </summary>
+    public static string DayMonthFormat(bool shortMonth = false)
+    {
+        var pattern = Culture.DateTimeFormat.MonthDayPattern;
+        return shortMonth ? pattern.Replace("MMMM", "MMM") : pattern;
+    }
+
+    /// <summary>"5 cards" — the number with the right plural form of the noun in <paramref name="key"/>.</summary>
     public static string Plural(int count, string key) =>
         string.Format(Culture, "{0} {1}", count, PluralWord(count, key));
 
     /// <summary>
-    /// Just the noun. Resource values list the forms separated by '|': Ukrainian takes three
-    /// (картка|картки|карток), English two (card|cards).
+    /// Just the noun. Resource values list the forms separated by '|': English takes two
+    /// (card|cards), Ukrainian three (картка|картки|карток).
     /// </summary>
     public static string PluralWord(int count, string key)
     {

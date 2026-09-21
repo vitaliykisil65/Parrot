@@ -89,13 +89,13 @@ public sealed class TrayIconService : IDisposable
         _pauseItem.Visible = !paused;
 
         SetTooltip(paused && until is not null
-            ? L.F("Tray.PausedUntil", until.Value.ToString("HH:mm"))
+            ? L.F("Tray.PausedUntil", L.Time(until.Value))
             : "Parrot");
     }
 
     public void ShowNextPromptTime(DateTimeOffset? next)
     {
-        SetTooltip(next is null ? "Parrot" : L.F("Tray.NextAt", next.Value.ToString("HH:mm")));
+        SetTooltip(next is null ? "Parrot" : L.F("Tray.NextAt", L.Time(next.Value)));
     }
 
     public void Notify(string message, string title = "Parrot")

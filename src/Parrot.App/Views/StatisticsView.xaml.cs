@@ -97,7 +97,7 @@ public sealed partial class StatisticsView : UserControl
         DailyChart.ItemsSource = days
             .Select((day, i) => new DayBar(
                 // A label every week, counted back from today, keeps the axis readable.
-                Label: i == lastIndex ? L.T("Stats.Today") : (lastIndex - i) % step == 0 ? day.Day.ToString(step == 1 ? "ddd" : "d MMM", L.Culture) : "",
+                Label: i == lastIndex ? L.T("Stats.Today") : (lastIndex - i) % step == 0 ? day.Day.ToString(step == 1 ? "ddd" : L.DayMonthFormat(shortMonth: true), L.Culture) : "",
                 ToolTip: DayToolTip(day),
                 CorrectHeight: day.Correct * scale,
                 MissedHeight: day.Missed * scale,
@@ -157,7 +157,7 @@ public sealed partial class StatisticsView : UserControl
 
     private static string DayToolTip(DailyActivity day)
     {
-        var date = day.Day.ToString("dddd, d MMMM", L.Culture);
+        var date = day.Day.ToString("dddd, " + L.DayMonthFormat(), L.Culture);
 
         return day.Total == 0
             ? L.F("Stats.DayEmpty", date)

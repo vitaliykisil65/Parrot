@@ -3,7 +3,7 @@ using Parrot.Core.Models;
 namespace Parrot.Core.Answers;
 
 /// <summary>
-/// When asked "точний", both "accurate" and "precise" are honest answers, even though only
+/// When asked "точний" (Ukrainian for "accurate/precise"), both "accurate" and "precise" are honest answers, even though only
 /// one of them lives on this card. This finds the other cards that share a translation.
 /// </summary>
 public static class Synonyms

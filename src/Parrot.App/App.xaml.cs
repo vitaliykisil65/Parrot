@@ -15,6 +15,16 @@ public partial class App : Application, IPromptHost
 {
     private const string SingleInstanceMutexName = @"Local\Parrot.SingleInstance";
 
+    /// <summary>
+    /// One instance per data folder: a copy pointed elsewhere with PARROT_DATA_DIR (a demo or
+    /// a test) can run next to the everyday one without touching its database.
+    /// </summary>
+    private static string InstanceMutexName() =>
+        Environment.GetEnvironmentVariable(AppPaths.DataDirectoryVariable) is { Length: > 0 }
+            ? $"{SingleInstanceMutexName}.{Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(
+                System.Text.Encoding.UTF8.GetBytes(AppPaths.DataDirectory.ToUpperInvariant())))[..16]}"
+            : SingleInstanceMutexName;
+
     private Mutex? _instanceMutex;
     private Database? _database;
     private CardRepository? _repository;
@@ -31,7 +41,10 @@ public partial class App : Application, IPromptHost
     {
         base.OnStartup(e);
 
-        _instanceMutex = new Mutex(initiallyOwned: true, SingleInstanceMutexName, out var isFirstInstance);
+        // Until the settings are read, messages follow the Windows display language.
+        L.Apply(null);
+
+        _instanceMutex = new Mutex(initiallyOwned: true, InstanceMutexName(), out var isFirstInstance);
         if (!isFirstInstance)
         {
             // A second copy would fight the first one over the database and the tray icon.
@@ -49,7 +62,7 @@ public partial class App : Application, IPromptHost
         }
         catch (Exception ex)
         {
-            Log.Error("Не вдалося запустити застосунок", ex);
+            Log.Error("Failed to start the app", ex);
             MessageBox.Show(L.F("App.StartFailed", ex.Message, Log.CurrentFile), "Parrot",
                 MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown();
@@ -59,7 +72,7 @@ public partial class App : Application, IPromptHost
         // Launched by the Run key, the app should appear only as a tray icon.
         if (e.Args.Contains("--updated", StringComparer.OrdinalIgnoreCase))
         {
-            Log.Info($"Оновлено до {UpdateService.CurrentVersionText}");
+            Log.Info($"Updated to {UpdateService.CurrentVersionText}");
             ShowMain(AppPage.Dictionary);
             _main?.ShowToast(L.F("Update.Done", UpdateService.CurrentVersionText));
         }
@@ -72,14 +85,15 @@ public partial class App : Application, IPromptHost
     private void Compose()
     {
         AppPaths.EnsureCreated();
-        Log.Info("Запуск Parrot");
+        Log.Info($"Starting Parrot {UpdateService.CurrentVersionText}");
 
         _database = new Database();
         _repository = new CardRepository(_database);
-        SeedData.EnsureSeeded(_repository, DevData.StarterDeck.Read());
-
         _settings = new SettingsService();
         L.Apply(_settings.Current.UiLanguage);
+        Log.Info($"UI language: {L.Language}");
+
+        SeedData.EnsureSeeded(_repository, DevData.StarterDeck.Read(), L.T("Deck.DefaultName"));
         ThemeManager.Apply(_settings.Current.Theme);
         _settings.Changed += (_, updated) =>
         {
@@ -96,7 +110,7 @@ public partial class App : Application, IPromptHost
 
         _scheduler = new PromptScheduler(_prompts, _settings);
         _scheduler.PromptReady += (_, request) => ShowPrompt(request);
-        _scheduler.PromptSkipped += (_, skipped) => Log.Info($"Показ пропущено: {skipped.Reason}");
+        _scheduler.PromptSkipped += (_, skipped) => Log.Info($"Prompt skipped: {skipped.Reason}");
 
         _tray = CreateTray();
 
@@ -172,7 +186,7 @@ public partial class App : Application, IPromptHost
             }
             catch (Exception ex)
             {
-                Log.Error("Не вдалося зберегти відповідь", ex);
+                Log.Error("Failed to save the answer", ex);
             }
 
             _activePrompt = null;
@@ -270,7 +284,7 @@ public partial class App : Application, IPromptHost
     /// </summary>
     private void ShutdownForUpdate()
     {
-        Log.Info("Вихід для оновлення");
+        Log.Info("Exiting to install an update");
         _scheduler?.Stop();
         _activePrompt?.Close();
         _main?.Close();
@@ -279,7 +293,7 @@ public partial class App : Application, IPromptHost
 
     private void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
-        Log.Error("Необроблена помилка", e.Exception);
+        Log.Error("Unhandled exception", e.Exception);
 
         MessageBox.Show(L.F("App.Crashed", e.Exception.Message, Log.CurrentFile), "Parrot",
             MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -290,7 +304,7 @@ public partial class App : Application, IPromptHost
 
     protected override void OnExit(ExitEventArgs e)
     {
-        Log.Info("Вихід");
+        Log.Info("Exit");
 
         _scheduler?.Dispose();
         _updates?.Dispose();

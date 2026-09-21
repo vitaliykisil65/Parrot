@@ -37,7 +37,7 @@ public sealed class CardRow
         NextBrush = (Brush)resources.FindResource(dueToday ? "Brush.Text" : "Brush.TextMuted");
     }
 
-    /// <summary>"легка", "середня", "складна", "дуже складна".</summary>
+    /// <summary>"easy", "medium", "hard", "very hard".</summary>
     public static string DifficultyName(int level) => L.T($"Difficulty.Level{level}");
 
     public Card Card { get; }
@@ -82,11 +82,11 @@ public sealed class CardRow
         var today = DateTime.Today;
 
         if (due <= DateTime.Now) return L.T("Due.Now");
-        if (due.Date == today) return L.F("Due.TodayAt", due.ToString("HH:mm"));
-        if (due.Date == today.AddDays(1)) return L.F("Due.TomorrowAt", due.ToString("HH:mm"));
+        if (due.Date == today) return L.F("Due.TodayAt", L.Time(due));
+        if (due.Date == today.AddDays(1)) return L.F("Due.TomorrowAt", L.Time(due));
 
         var days = (due.Date - today).Days;
-        return days < 14 ? L.F("Due.InDays", L.Plural(days, "Plural.Day")) : due.ToString("d MMMM", L.Culture);
+        return days < 14 ? L.F("Due.InDays", L.Plural(days, "Plural.Day")) : due.ToString(L.DayMonthFormat(), L.Culture);
     }
 
     public static string NextShort(Card card)
@@ -97,11 +97,11 @@ public sealed class CardRow
         var today = DateTime.Today;
 
         if (due <= DateTime.Now) return L.T("Due.Now");
-        if (due.Date == today) return due.ToString("HH:mm");
+        if (due.Date == today) return L.Time(due);
         if (due.Date == today.AddDays(1)) return L.T("Due.Tomorrow");
 
         var days = (due.Date - today).Days;
-        return days < 14 ? L.Plural(days, "Plural.Day") : due.ToString("d MMM", L.Culture);
+        return days < 14 ? L.Plural(days, "Plural.Day") : due.ToString(L.DayMonthFormat(shortMonth: true), L.Culture);
     }
 }
 
@@ -642,7 +642,7 @@ public sealed partial class DictionaryView : UserControl
 
             var message = L.F("Import.Done", L.Plural(result.Imported, "Plural.CardAccusative"), target.Name);
             if (result.Skipped > 0)
-                message += " " + L.F("Import.Skipped", result.Skipped, result.Errors.FirstOrDefault());
+                message += " " + L.F("Import.Skipped", result.Skipped, result.SkippedRows[0]);
 
             _shell.ShowToast(message);
         }

@@ -18,7 +18,7 @@ public static class SoundService
         }
         catch (Exception ex)
         {
-            Log.Error("Не вдалося відтворити звук", ex);
+            Log.Error("Failed to play the sound", ex);
         }
     }
 
@@ -32,7 +32,7 @@ public static class SoundService
         }
         catch (Exception ex)
         {
-            Log.Error("Не вдалося підготувати звук", ex);
+            Log.Error("Failed to prepare the sound", ex);
             return null;
         }
     }

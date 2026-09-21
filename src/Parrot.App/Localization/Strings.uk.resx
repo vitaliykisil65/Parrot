@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  UI text, English (the neutral language and the fallback for any missing key).
-  A translation is a copy of this file named Strings.<code>.resx (e.g. Strings.uk.resx)
-  plus one line in L.Known. Keep the keys of every translation in sync with this file.
+  UI text, Ukrainian. Keys mirror Strings.resx (English, the neutral language);
+  any key missing here falls back to English.
 
-  Plural.* values list the noun forms separated by '|': two for English (card | cards),
-  three for Ukrainian (1 картка | 2 картки | 5 карток).
-  {0}, {1} … are placeholders filled in by L.F.
+  Plural.* values list three noun forms separated by '|': 1 картка | 2 картки | 5 карток.
 -->
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
@@ -51,912 +48,912 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Anchor.BottomCenter" xml:space="preserve">
-    <value>Bottom center</value>
+    <value>Знизу по центру</value>
   </data>
   <data name="Anchor.BottomLeft" xml:space="preserve">
-    <value>Bottom left</value>
+    <value>Знизу зліва</value>
   </data>
   <data name="Anchor.BottomRight" xml:space="preserve">
-    <value>Bottom right</value>
+    <value>Знизу справа</value>
   </data>
   <data name="Anchor.Center" xml:space="preserve">
-    <value>Center</value>
+    <value>По центру</value>
   </data>
   <data name="Anchor.MiddleLeft" xml:space="preserve">
-    <value>Middle left</value>
+    <value>Посередині зліва</value>
   </data>
   <data name="Anchor.MiddleRight" xml:space="preserve">
-    <value>Middle right</value>
+    <value>Посередині справа</value>
   </data>
   <data name="Anchor.TopCenter" xml:space="preserve">
-    <value>Top center</value>
+    <value>Зверху по центру</value>
   </data>
   <data name="Anchor.TopLeft" xml:space="preserve">
-    <value>Top left</value>
+    <value>Зверху зліва</value>
   </data>
   <data name="Anchor.TopRight" xml:space="preserve">
-    <value>Top right</value>
+    <value>Зверху справа</value>
   </data>
   <data name="App.AlreadyRunning" xml:space="preserve">
-    <value>Parrot is already running — look for it in the system tray.</value>
+    <value>Parrot уже запущено — шукайте його в системному треї.</value>
   </data>
   <data name="App.Crashed" xml:space="preserve">
-    <value>Something went wrong:
+    <value>Сталася помилка:
 
 {0}
 
-Details: {1}</value>
+Деталі: {1}</value>
   </data>
   <data name="App.NothingDue" xml:space="preserve">
-    <value>Nothing to show right now — no card is due yet.</value>
+    <value>Зараз нема чого показати — усі картки ще не на черзі.</value>
   </data>
   <data name="App.StartFailed" xml:space="preserve">
-    <value>Parrot could not start:
+    <value>Не вдалося запустити Parrot:
 
 {0}
 
-Details: {1}</value>
+Деталі: {1}</value>
   </data>
   <data name="Card.Delete" xml:space="preserve">
-    <value>Delete (Delete)</value>
+    <value>Видалити (Delete)</value>
   </data>
   <data name="Card.DifficultyTip" xml:space="preserve">
-    <value>Difficulty {0}% — {1}</value>
+    <value>Складність {0}% — {1}</value>
   </data>
   <data name="Card.Edit" xml:space="preserve">
-    <value>Edit</value>
+    <value>Редагувати</value>
   </data>
   <data name="Card.Example" xml:space="preserve">
-    <value>Example</value>
+    <value>Приклад</value>
   </data>
   <data name="Card.Hint" xml:space="preserve">
-    <value>Hint</value>
+    <value>Підказка</value>
   </data>
   <data name="Card.New" xml:space="preserve">
-    <value>new</value>
+    <value>нова</value>
   </data>
   <data name="Card.NewNote" xml:space="preserve">
-    <value>New card — not shown yet. Progress appears after the first answer.</value>
+    <value>Нова картка — ще не траплялась. Прогрес з'явиться після першої відповіді.</value>
   </data>
   <data name="Card.Notes" xml:space="preserve">
-    <value>Notes</value>
+    <value>Нотатки</value>
   </data>
   <data name="Card.Reset" xml:space="preserve">
-    <value>Reset progress</value>
+    <value>Скинути прогрес</value>
   </data>
   <data name="Card.Restore" xml:space="preserve">
-    <value>Restore from bin</value>
+    <value>Повернути з кошика</value>
   </data>
   <data name="Card.ResumeTip" xml:space="preserve">
-    <value>Show again</value>
+    <value>Знову показувати</value>
   </data>
   <data name="Card.Stat.Accuracy" xml:space="preserve">
-    <value>accuracy</value>
+    <value>точність</value>
   </data>
   <data name="Card.Stat.Answers" xml:space="preserve">
-    <value>answers</value>
+    <value>відповідей</value>
   </data>
   <data name="Card.Stat.Next" xml:space="preserve">
-    <value>next</value>
+    <value>наступний</value>
   </data>
   <data name="Card.Status.Deleted" xml:space="preserve">
-    <value>deleted</value>
+    <value>видалена</value>
   </data>
   <data name="Card.Status.InBin" xml:space="preserve">
-    <value>in the bin</value>
+    <value>у кошику</value>
   </data>
   <data name="Card.Status.Suspended" xml:space="preserve">
-    <value>suspended</value>
+    <value>призупинена</value>
   </data>
   <data name="Card.Suspend" xml:space="preserve">
-    <value>Suspend</value>
+    <value>Призупинити</value>
   </data>
   <data name="Card.SuspendTip" xml:space="preserve">
-    <value>Suspend — the card won't be shown</value>
+    <value>Призупинити — картка не з'являтиметься</value>
   </data>
   <data name="Card.Tags" xml:space="preserve">
-    <value>Tags</value>
+    <value>Теги</value>
   </data>
   <data name="Common.Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>Скасувати</value>
   </data>
   <data name="Common.Delete" xml:space="preserve">
-    <value>Delete</value>
+    <value>Видалити</value>
   </data>
   <data name="Common.Hide" xml:space="preserve">
-    <value>Hide</value>
+    <value>Сховати</value>
   </data>
   <data name="Common.Less" xml:space="preserve">
-    <value>Less</value>
+    <value>Менше</value>
   </data>
   <data name="Common.More" xml:space="preserve">
-    <value>More</value>
+    <value>Більше</value>
   </data>
   <data name="Common.Save" xml:space="preserve">
-    <value>Save</value>
+    <value>Зберегти</value>
   </data>
   <data name="Deck.Active" xml:space="preserve">
-    <value>Show cards from this deck</value>
+    <value>Показувати картки з колоди</value>
   </data>
   <data name="Deck.Created" xml:space="preserve">
-    <value>Deck “{0}” created — add its first cards.</value>
+    <value>Колоду «{0}» створено — додайте в неї перші картки.</value>
   </data>
   <data name="Deck.Delete" xml:space="preserve">
-    <value>Delete deck</value>
+    <value>Видалити колоду</value>
   </data>
   <data name="Deck.Deleted" xml:space="preserve">
-    <value>Deck “{0}” deleted.</value>
+    <value>Колоду «{0}» видалено.</value>
   </data>
   <data name="Deck.DeleteText" xml:space="preserve">
-    <value>Its {0} and all their progress will be gone too. This cannot be undone.</value>
+    <value>Разом із нею зникнуть {0} і весь прогрес по них. Це не можна скасувати.</value>
   </data>
   <data name="Deck.DeleteTitle" xml:space="preserve">
-    <value>Delete deck “{0}”?</value>
+    <value>Видалити колоду «{0}»?</value>
   </data>
   <data name="Deck.InactiveTip" xml:space="preserve">
-    <value>Cards from this deck are not being shown</value>
+    <value>Картки з цієї колоди зараз не показуються</value>
   </data>
   <data name="Deck.Rename" xml:space="preserve">
-    <value>Rename</value>
+    <value>Перейменувати</value>
   </data>
   <data name="Dict.Add" xml:space="preserve">
-    <value>Add</value>
+    <value>Додати</value>
   </data>
   <data name="Dict.Column.Difficulty" xml:space="preserve">
-    <value>Difficulty</value>
+    <value>Складність</value>
   </data>
   <data name="Dict.Column.Next" xml:space="preserve">
-    <value>Next review</value>
+    <value>Наступний показ</value>
   </data>
   <data name="Dict.Column.Translation" xml:space="preserve">
-    <value>Translation</value>
+    <value>Переклад</value>
   </data>
   <data name="Dict.Column.Word" xml:space="preserve">
-    <value>Word</value>
+    <value>Слово</value>
   </data>
   <data name="Dict.DueCount" xml:space="preserve">
-    <value>{0} due for review</value>
+    <value>{0} чекають на повторення</value>
   </data>
   <data name="Dict.Empty.Deck" xml:space="preserve">
-    <value>This deck has no cards yet. Click “Add”.</value>
+    <value>У цій колоді ще немає карток. Натисніть «Додати».</value>
   </data>
   <data name="Dict.Empty.Deleted" xml:space="preserve">
-    <value>The bin is empty.</value>
+    <value>Кошик порожній.</value>
   </data>
   <data name="Dict.Empty.Due" xml:space="preserve">
-    <value>Nothing is due for review right now — nice.</value>
+    <value>Зараз нічого не чекає на повторення — чудово.</value>
   </data>
   <data name="Dict.Empty.Hard" xml:space="preserve">
-    <value>No hard cards.</value>
+    <value>Складних карток немає.</value>
   </data>
   <data name="Dict.Empty.New" xml:space="preserve">
-    <value>Every card has been shown already.</value>
+    <value>Усі картки вже траплялися.</value>
   </data>
   <data name="Dict.Empty.Search" xml:space="preserve">
-    <value>Nothing found for “{0}”.</value>
+    <value>Нічого не знайдено за «{0}».</value>
   </data>
   <data name="Dict.Empty.Suspended" xml:space="preserve">
-    <value>No suspended cards.</value>
+    <value>Призупинених карток немає.</value>
   </data>
   <data name="Dict.Empty.Text" xml:space="preserve">
-    <value>The translation, examples and progress will show up here. Select several cards with Shift or Ctrl.</value>
+    <value>Тут з'являться переклад, приклади й прогрес. Можна вибрати кілька карток — з Shift або Ctrl.</value>
   </data>
   <data name="Dict.Empty.Title" xml:space="preserve">
-    <value>Select a card</value>
+    <value>Оберіть картку</value>
   </data>
   <data name="Dict.Export" xml:space="preserve">
-    <value>Export to CSV…</value>
+    <value>Експорт у CSV…</value>
   </data>
   <data name="Dict.Filter.All" xml:space="preserve">
-    <value>All</value>
+    <value>Усі</value>
   </data>
   <data name="Dict.Filter.Deleted" xml:space="preserve">
-    <value>Deleted</value>
+    <value>Видалені</value>
   </data>
   <data name="Dict.Filter.Due" xml:space="preserve">
-    <value>Due</value>
+    <value>На черзі</value>
   </data>
   <data name="Dict.Filter.Hard" xml:space="preserve">
-    <value>Hard</value>
+    <value>Складні</value>
   </data>
   <data name="Dict.Filter.New" xml:space="preserve">
-    <value>New</value>
+    <value>Нові</value>
   </data>
   <data name="Dict.Filter.Suspended" xml:space="preserve">
-    <value>Suspended</value>
+    <value>Призупинені</value>
   </data>
   <data name="Dict.Import" xml:space="preserve">
-    <value>Import from CSV…</value>
+    <value>Імпорт з CSV…</value>
   </data>
   <data name="Dict.More" xml:space="preserve">
-    <value>Import and export</value>
+    <value>Імпорт і експорт</value>
   </data>
   <data name="Dict.NoDecks" xml:space="preserve">
-    <value>Create a deck first — use “New deck” on the left.</value>
+    <value>Спершу створіть колоду — кнопка «Нова колода» ліворуч.</value>
   </data>
   <data name="Dict.NothingDue" xml:space="preserve">
-    <value>nothing due</value>
+    <value>на черзі нічого</value>
   </data>
   <data name="Dict.SearchHint" xml:space="preserve">
-    <value>Word, translation or tag</value>
+    <value>Слово, переклад або тег</value>
   </data>
   <data name="Dict.Shortcut.Delete" xml:space="preserve">
-    <value>delete</value>
+    <value>видалити</value>
   </data>
   <data name="Dict.Shortcut.Edit" xml:space="preserve">
-    <value>edit selected</value>
+    <value>редагувати вибрану</value>
   </data>
   <data name="Dict.Shortcut.New" xml:space="preserve">
-    <value>new card</value>
+    <value>нова картка</value>
   </data>
   <data name="Dict.Shortcut.Search" xml:space="preserve">
-    <value>search</value>
+    <value>пошук</value>
   </data>
   <data name="Difficulty.Level0" xml:space="preserve">
-    <value>easy</value>
+    <value>легка</value>
   </data>
   <data name="Difficulty.Level1" xml:space="preserve">
-    <value>medium</value>
+    <value>середня</value>
   </data>
   <data name="Difficulty.Level2" xml:space="preserve">
-    <value>hard</value>
+    <value>складна</value>
   </data>
   <data name="Difficulty.Level3" xml:space="preserve">
-    <value>very hard</value>
+    <value>дуже складна</value>
   </data>
   <data name="Direction.BackToFront" xml:space="preserve">
-    <value>Translation → word</value>
+    <value>Навпаки</value>
   </data>
   <data name="Direction.Both" xml:space="preserve">
-    <value>Both</value>
+    <value>Обидва</value>
   </data>
   <data name="Direction.FrontToBack" xml:space="preserve">
-    <value>Word → translation</value>
+    <value>Слово → переклад</value>
   </data>
   <data name="Due.InDays" xml:space="preserve">
-    <value>in {0}</value>
+    <value>через {0}</value>
   </data>
   <data name="Due.Now" xml:space="preserve">
-    <value>now</value>
+    <value>зараз</value>
   </data>
   <data name="Due.TodayAt" xml:space="preserve">
-    <value>today, {0}</value>
+    <value>сьогодні, {0}</value>
   </data>
   <data name="Due.Tomorrow" xml:space="preserve">
-    <value>tomorrow</value>
+    <value>завтра</value>
   </data>
   <data name="Due.TomorrowAt" xml:space="preserve">
-    <value>tomorrow, {0}</value>
+    <value>завтра, {0}</value>
   </data>
   <data name="Edit.AddAnother" xml:space="preserve">
-    <value>Add another</value>
+    <value>Ще одну</value>
   </data>
   <data name="Edit.Added" xml:space="preserve">
-    <value>“{0}” added.</value>
+    <value>«{0}» додано.</value>
   </data>
   <data name="Edit.AddedToDeck" xml:space="preserve">
-    <value>Card added to “{0}”.</value>
+    <value>Картку додано в колоду «{0}».</value>
   </data>
   <data name="Edit.BackNote" xml:space="preserve">
-    <value>Several correct answers — separate them with semicolons: big; large</value>
+    <value>Кілька правильних варіантів — через крапку з комою: зрозуміти; розібратися</value>
   </data>
   <data name="Edit.CancelTip" xml:space="preserve">
-    <value>Cancel (Esc)</value>
+    <value>Скасувати (Esc)</value>
   </data>
   <data name="Edit.Deck" xml:space="preserve">
-    <value>Deck</value>
+    <value>Колода</value>
   </data>
   <data name="Edit.Front" xml:space="preserve">
-    <value>Word or phrase</value>
+    <value>Слово або фраза</value>
   </data>
   <data name="Edit.NewTitle" xml:space="preserve">
-    <value>New card</value>
+    <value>Нова картка</value>
   </data>
   <data name="Edit.Optional" xml:space="preserve">
-    <value>Optional</value>
+    <value>Необов'язково</value>
   </data>
   <data name="Edit.PickDeck" xml:space="preserve">
-    <value>Pick a deck.</value>
+    <value>Оберіть колоду.</value>
   </data>
   <data name="Edit.Required" xml:space="preserve">
-    <value>Fill in the word and the translation — a card can't be shown without them.</value>
+    <value>Заповніть слово та переклад — без них картку не показати.</value>
   </data>
   <data name="Edit.TagsHint" xml:space="preserve">
-    <value>comma-separated: adjective, B2</value>
+    <value>через кому: adjective, B2</value>
   </data>
   <data name="Edit.Title" xml:space="preserve">
-    <value>Edit card</value>
+    <value>Редагування</value>
   </data>
   <data name="Export.Done" xml:space="preserve">
-    <value>Saved {0}.</value>
+    <value>Збережено {0}.</value>
   </data>
   <data name="Export.Failed" xml:space="preserve">
-    <value>Could not write the file: {0}</value>
+    <value>Не вдалося записати файл: {0}</value>
   </data>
   <data name="Export.Title" xml:space="preserve">
-    <value>Export cards</value>
+    <value>Експорт карток</value>
   </data>
   <data name="Import.Done" xml:space="preserve">
-    <value>Imported {0} into “{1}”.</value>
+    <value>Імпортовано {0} у «{1}».</value>
   </data>
   <data name="Import.Failed" xml:space="preserve">
-    <value>Could not read the file: {0}</value>
+    <value>Не вдалося прочитати файл: {0}</value>
   </data>
   <data name="Import.Filter" xml:space="preserve">
-    <value>CSV or text (*.csv;*.txt)|*.csv;*.txt|All files (*.*)|*.*</value>
+    <value>CSV або текст (*.csv;*.txt)|*.csv;*.txt|Усі файли (*.*)|*.*</value>
   </data>
   <data name="Import.Skipped" xml:space="preserve">
-    <value>Skipped rows: {0} — each needs a word and a translation (first: row {1}).</value>
+    <value>Пропущено рядків: {0} — у кожному потрібні слово й переклад (перший — рядок {1}).</value>
   </data>
   <data name="Import.Title" xml:space="preserve">
-    <value>Import cards</value>
+    <value>Імпорт карток</value>
   </data>
   <data name="Monitor.Primary" xml:space="preserve">
-    <value>Primary</value>
+    <value>Основний</value>
   </data>
   <data name="Monitor.WithCursor" xml:space="preserve">
-    <value>Where the cursor is</value>
+    <value>Де курсор</value>
   </data>
   <data name="Multi.Note" xml:space="preserve">
-    <value>Actions apply to all selected cards</value>
+    <value>Дії застосуються до всіх вибраних</value>
   </data>
   <data name="Multi.Title" xml:space="preserve">
-    <value>{0} selected</value>
+    <value>Вибрано {0}</value>
   </data>
   <data name="Nav.Dictionary" xml:space="preserve">
-    <value>Dictionary</value>
+    <value>Словник</value>
   </data>
   <data name="Nav.Settings" xml:space="preserve">
-    <value>Settings</value>
+    <value>Налаштування</value>
   </data>
   <data name="Nav.Statistics" xml:space="preserve">
-    <value>Statistics</value>
+    <value>Статистика</value>
   </data>
   <data name="Pause.Hour" xml:space="preserve">
-    <value>For an hour</value>
+    <value>На годину</value>
   </data>
   <data name="Pause.Hours3" xml:space="preserve">
-    <value>For 3 hours</value>
+    <value>На 3 години</value>
   </data>
   <data name="Pause.Minutes15" xml:space="preserve">
-    <value>For 15 minutes</value>
+    <value>На 15 хвилин</value>
   </data>
   <data name="Pause.Tomorrow" xml:space="preserve">
-    <value>Until tomorrow</value>
+    <value>До завтра</value>
   </data>
   <data name="Plural.Answer" xml:space="preserve">
-    <value>answer|answers</value>
+    <value>відповідь|відповіді|відповідей</value>
   </data>
   <data name="Plural.Card" xml:space="preserve">
-    <value>card|cards</value>
+    <value>картка|картки|карток</value>
   </data>
   <data name="Plural.CardAccusative" xml:space="preserve">
-    <value>card|cards</value>
+    <value>картку|картки|карток</value>
   </data>
   <data name="Plural.CardGenitive" xml:space="preserve">
-    <value>card|cards</value>
+    <value>картки|карток|карток</value>
   </data>
   <data name="Plural.Day" xml:space="preserve">
-    <value>day|days</value>
+    <value>день|дні|днів</value>
   </data>
   <data name="Plural.Prompt" xml:space="preserve">
-    <value>prompt|prompts</value>
+    <value>показ|покази|показів</value>
   </data>
   <data name="Prompt.AnswerHint" xml:space="preserve">
-    <value>Your translation</value>
+    <value>Ваш переклад</value>
   </data>
   <data name="Prompt.Check" xml:space="preserve">
-    <value>Check</value>
+    <value>Перевірити</value>
   </data>
   <data name="Prompt.Correct" xml:space="preserve">
-    <value>Correct</value>
+    <value>Правильно</value>
   </data>
   <data name="Prompt.Dismiss" xml:space="preserve">
-    <value>Skip (Esc) — doesn't affect the rating</value>
+    <value>Пропустити (Esc) — на рейтинг не впливає</value>
   </data>
   <data name="Prompt.DontKnow" xml:space="preserve">
-    <value>I don't know</value>
+    <value>Не знаю</value>
   </data>
   <data name="Prompt.LaterNote" xml:space="preserve">
-    <value>Next time — a bit later</value>
+    <value>Наступного разу — пізніше</value>
   </data>
   <data name="Prompt.Next" xml:space="preserve">
-    <value>Next</value>
+    <value>Далі</value>
   </data>
   <data name="Prompt.Remember" xml:space="preserve">
-    <value>Let's remember it</value>
+    <value>Запам'ятовуємо</value>
   </data>
   <data name="Prompt.SoonNote" xml:space="preserve">
-    <value>This card will be back soon</value>
+    <value>Картка скоро повернеться</value>
   </data>
   <data name="Prompt.Synonym" xml:space="preserve">
-    <value>{0} works too; this card is: {1}</value>
+    <value>{0} — теж так; ця картка: {1}</value>
   </data>
   <data name="Prompt.Typo" xml:space="preserve">
-    <value>Almost — counted, but it's spelled:</value>
+    <value>Майже — зараховано, але пишеться так:</value>
   </data>
   <data name="Prompt.Wrong" xml:space="preserve">
-    <value>We'll go over it again</value>
+    <value>Ще повторимо</value>
   </data>
   <data name="Prompt.YourAnswer" xml:space="preserve">
-    <value>Your answer:</value>
+    <value>Ваша відповідь:</value>
   </data>
   <data name="Reset.Confirm" xml:space="preserve">
-    <value>Reset</value>
+    <value>Скинути</value>
   </data>
   <data name="Reset.Text" xml:space="preserve">
-    <value>Difficulty, intervals and answer history for {0} will be lost — they will start from scratch.</value>
+    <value>Складність, інтервали й історію відповідей для {0} буде втрачено — вони почнуть з нуля.</value>
   </data>
   <data name="Reset.Title" xml:space="preserve">
-    <value>Reset progress?</value>
+    <value>Скинути прогрес?</value>
   </data>
   <data name="Schedule.At" xml:space="preserve">
-    <value>at {0}</value>
+    <value>о {0}</value>
   </data>
   <data name="Schedule.InAMinute" xml:space="preserve">
-    <value>in a minute</value>
+    <value>за хвилину</value>
   </data>
   <data name="Schedule.InMinutes" xml:space="preserve">
-    <value>in {0} min</value>
+    <value>через {0} хв</value>
   </data>
   <data name="Schedule.Pause" xml:space="preserve">
-    <value>Pause prompts</value>
+    <value>Призупинити показ</value>
   </data>
   <data name="Schedule.Paused" xml:space="preserve">
-    <value>Prompts paused</value>
+    <value>Показ на паузі</value>
   </data>
   <data name="Schedule.Resume" xml:space="preserve">
-    <value>Resume prompts</value>
+    <value>Відновити показ</value>
   </data>
   <data name="Schedule.Until" xml:space="preserve">
-    <value>until {0}</value>
+    <value>до {0}</value>
   </data>
   <data name="Settings.AlwaysShow" xml:space="preserve">
-    <value>Don't wait until cards are due</value>
+    <value>Не чекати черги</value>
   </data>
   <data name="Settings.AlwaysShowNote" xml:space="preserve">
-    <value>Show the nearest card even if it's early</value>
+    <value>Показувати найближчу картку, навіть якщо ще рано</value>
   </data>
   <data name="Settings.AutoStart" xml:space="preserve">
-    <value>Start with Windows</value>
+    <value>Запускати разом із Windows</value>
   </data>
   <data name="Settings.AutoStartNote" xml:space="preserve">
-    <value>Straight to the tray, no window</value>
+    <value>Одразу в трей, без вікна</value>
   </data>
   <data name="Settings.Cooldown" xml:space="preserve">
-    <value>A skipped card comes back</value>
+    <value>Пропущена картка повернеться</value>
   </data>
   <data name="Settings.CooldownNote" xml:space="preserve">
-    <value>No sooner than in</value>
+    <value>Не раніше ніж через</value>
   </data>
   <data name="Settings.DataPath" xml:space="preserve">
-    <value>Data is stored in {0}</value>
+    <value>Дані зберігаються в {0}</value>
   </data>
   <data name="Settings.Days" xml:space="preserve">
-    <value>Days</value>
+    <value>Дні</value>
   </data>
   <data name="Settings.Defaults" xml:space="preserve">
-    <value>Defaults</value>
+    <value>Типові значення</value>
   </data>
   <data name="Settings.Direction" xml:space="preserve">
-    <value>What to ask</value>
+    <value>Що питати</value>
   </data>
   <data name="Settings.Display" xml:space="preserve">
-    <value>Time to answer</value>
+    <value>Час на відповідь</value>
   </data>
   <data name="Settings.DisplayNote" xml:space="preserve">
-    <value>Then the card quietly goes away — the rating is not affected</value>
+    <value>Потім картка тихо зникне — рейтинг не постраждає</value>
   </data>
   <data name="Settings.Error.AutoStart" xml:space="preserve">
-    <value>Could not change autostart — Windows rejected the registry write.</value>
+    <value>Не вдалося змінити автозапуск — Windows відхилила запис у реєстр.</value>
   </data>
   <data name="Settings.Error.Days" xml:space="preserve">
-    <value>Pick at least one day, or Parrot will stay silent forever. For a break, use pause.</value>
+    <value>Потрібен хоча б один день — інакше Parrot мовчатиме завжди. Для перерви є пауза.</value>
   </data>
   <data name="Settings.Error.Time" xml:space="preserve">
-    <value>Enter the time as HH:MM, e.g. 22:00.</value>
+    <value>Час вводьте у форматі ГГ:ХХ, наприклад 22:00.</value>
   </data>
   <data name="Settings.Focus" xml:space="preserve">
-    <value>Put the cursor in the answer box right away</value>
+    <value>Одразу ставити курсор у поле</value>
   </data>
   <data name="Settings.FocusNote" xml:space="preserve">
-    <value>Off — the card doesn't grab focus or interrupt your typing</value>
+    <value>Вимкнено — картка не перехоплює фокус і не заважає друкувати</value>
   </data>
   <data name="Settings.Frequency" xml:space="preserve">
-    <value>How often</value>
+    <value>Частота показу</value>
   </data>
   <data name="Settings.Fullscreen" xml:space="preserve">
-    <value>Stay quiet in full-screen apps</value>
+    <value>Мовчати в повноекранних програмах</value>
   </data>
   <data name="Settings.FullscreenNote" xml:space="preserve">
-    <value>Presentations, videos, games</value>
+    <value>Презентації, відео, ігри</value>
   </data>
   <data name="Settings.Idle" xml:space="preserve">
-    <value>When I'm away</value>
+    <value>Коли мене немає</value>
   </data>
   <data name="Settings.IdleNote" xml:space="preserve">
-    <value>Don't show after this many minutes without keyboard or mouse input</value>
+    <value>Не показувати після стількох хвилин без клавіатури й миші</value>
   </data>
   <data name="Settings.Interval" xml:space="preserve">
-    <value>Interval</value>
+    <value>Інтервал</value>
   </data>
   <data name="Settings.IntervalNote" xml:space="preserve">
-    <value>Average time between cards</value>
+    <value>Середній час між картками</value>
   </data>
   <data name="Settings.Jitter" xml:space="preserve">
-    <value>Randomness</value>
+    <value>Розкид</value>
   </data>
   <data name="Settings.JitterNote" xml:space="preserve">
-    <value>So cards don't arrive like clockwork</value>
+    <value>Щоб картки не приходили як по годиннику</value>
   </data>
   <data name="Settings.Language" xml:space="preserve">
-    <value>Interface language</value>
+    <value>Мова інтерфейсу</value>
   </data>
   <data name="Settings.LanguageNote" xml:space="preserve">
-    <value>Switches instantly</value>
+    <value>Перемикається одразу</value>
   </data>
   <data name="Settings.LanguageSoon" xml:space="preserve">
-    <value>More languages are coming</value>
+    <value>Інші мови з'являться згодом</value>
   </data>
   <data name="Settings.Learning" xml:space="preserve">
-    <value>Learning</value>
+    <value>Навчання</value>
   </data>
   <data name="Settings.Listen" xml:space="preserve">
-    <value>Listen</value>
+    <value>Прослухати</value>
   </data>
   <data name="Settings.MarginX" xml:space="preserve">
-    <value>Margin from the side of the screen</value>
+    <value>Відступ від бокового краю екрана</value>
   </data>
   <data name="Settings.MarginY" xml:space="preserve">
-    <value>Margin from the top or bottom</value>
+    <value>Відступ від верхнього чи нижнього краю</value>
   </data>
   <data name="Settings.MaxPrompts" xml:space="preserve">
-    <value>Prompts per day</value>
+    <value>Показів на день</value>
   </data>
   <data name="Settings.MaxPromptsNote" xml:space="preserve">
-    <value>Overall limit</value>
+    <value>Загальний ліміт</value>
   </data>
   <data name="Settings.MonitorAndMargins" xml:space="preserve">
-    <value>Monitor and margins</value>
+    <value>Монітор і відступи</value>
   </data>
   <data name="Settings.NewCards" xml:space="preserve">
-    <value>New cards per day</value>
+    <value>Нових карток на день</value>
   </data>
   <data name="Settings.NoLimit" xml:space="preserve">
-    <value>no limit</value>
+    <value>без ліміту</value>
   </data>
   <data name="Settings.NoRush" xml:space="preserve">
-    <value>no rush</value>
+    <value>не квапити</value>
   </data>
   <data name="Settings.Off" xml:space="preserve">
-    <value>off</value>
+    <value>вимкнено</value>
   </data>
   <data name="Settings.Position" xml:space="preserve">
-    <value>Where the card appears</value>
+    <value>Де з'являється картка</value>
   </data>
   <data name="Settings.Quiet" xml:space="preserve">
-    <value>Quiet time</value>
+    <value>Тиша</value>
   </data>
   <data name="Settings.QuietHours" xml:space="preserve">
-    <value>Quiet hours</value>
+    <value>Тихі години</value>
   </data>
   <data name="Settings.QuietHoursNote" xml:space="preserve">
-    <value>No cards during this time</value>
+    <value>Жодних карток у цей час</value>
   </data>
   <data name="Settings.Reset.Confirm" xml:space="preserve">
-    <value>Restore</value>
+    <value>Повернути</value>
   </data>
   <data name="Settings.Reset.Done" xml:space="preserve">
-    <value>Settings restored to defaults.</value>
+    <value>Налаштування повернуто до типових.</value>
   </data>
   <data name="Settings.Reset.Text" xml:space="preserve">
-    <value>Frequency, quiet hours, card position and theme go back to how they were after installation. Cards and progress stay as they are.</value>
+    <value>Частота, тихі години, позиція картки й тема стануть як після встановлення. Картки й прогрес не зміняться.</value>
   </data>
   <data name="Settings.Reset.Title" xml:space="preserve">
-    <value>Restore default settings?</value>
+    <value>Повернути типові налаштування?</value>
   </data>
   <data name="Settings.Sound" xml:space="preserve">
-    <value>Sound when a card appears</value>
+    <value>Звук при появі картки</value>
   </data>
   <data name="Settings.Strictness" xml:space="preserve">
-    <value>Answer checking</value>
+    <value>Перевірка</value>
   </data>
   <data name="Settings.StrictnessNote" xml:space="preserve">
-    <value>Lenient accepts minor typos</value>
+    <value>Поблажлива зараховує дрібні одруківки</value>
   </data>
   <data name="Settings.Subtitle" xml:space="preserve">
-    <value>Changes apply immediately</value>
+    <value>Зміни застосовуються одразу</value>
   </data>
   <data name="Settings.System" xml:space="preserve">
-    <value>System</value>
+    <value>Система</value>
   </data>
   <data name="Settings.Theme" xml:space="preserve">
-    <value>Theme</value>
+    <value>Тема</value>
   </data>
   <data name="Sidebar.AllDecks" xml:space="preserve">
-    <value>All decks</value>
+    <value>Усі колоди</value>
   </data>
   <data name="Sidebar.DeckNameHint" xml:space="preserve">
-    <value>Deck name</value>
+    <value>Назва колоди</value>
   </data>
   <data name="Sidebar.Decks" xml:space="preserve">
-    <value>Decks</value>
+    <value>Колоди</value>
   </data>
   <data name="Sidebar.NewDeck" xml:space="preserve">
-    <value>New deck</value>
+    <value>Нова колода</value>
   </data>
   <data name="Sidebar.NextCard" xml:space="preserve">
-    <value>Next card</value>
+    <value>Наступна картка</value>
   </data>
   <data name="Sidebar.ShowNow" xml:space="preserve">
-    <value>Show now</value>
+    <value>Показати зараз</value>
   </data>
   <data name="Stats.Accuracy30" xml:space="preserve">
-    <value>Accuracy · 30 days</value>
+    <value>Точність · 30 днів</value>
   </data>
   <data name="Stats.Accuracy7" xml:space="preserve">
-    <value>Accuracy · 7 days</value>
+    <value>Точність · 7 днів</value>
   </data>
   <data name="Stats.Activity" xml:space="preserve">
-    <value>Activity</value>
+    <value>Активність</value>
   </data>
   <data name="Stats.Bucket0" xml:space="preserve">
-    <value>Easy</value>
+    <value>Легкі</value>
   </data>
   <data name="Stats.Bucket1" xml:space="preserve">
-    <value>Medium</value>
+    <value>Середні</value>
   </data>
   <data name="Stats.Bucket2" xml:space="preserve">
-    <value>Hard</value>
+    <value>Складні</value>
   </data>
   <data name="Stats.Bucket3" xml:space="preserve">
-    <value>Very hard</value>
+    <value>Дуже складні</value>
   </data>
   <data name="Stats.BucketTip" xml:space="preserve">
-    <value>Difficulty {0}–{1}%</value>
+    <value>Складність {0}–{1}%</value>
   </data>
   <data name="Stats.DayEmpty" xml:space="preserve">
     <value>{0}
-no cards</value>
+без карток</value>
   </data>
   <data name="Stats.DayTip" xml:space="preserve">
     <value>{0}
-correct: {1}
-missed: {2}
-skipped: {3}</value>
+правильно: {1}
+помилок: {2}
+пропущено: {3}</value>
   </data>
   <data name="Stats.Difficulty" xml:space="preserve">
-    <value>Card difficulty</value>
+    <value>Складність карток</value>
   </data>
   <data name="Stats.DifficultyEmpty" xml:space="preserve">
-    <value>The scale fills up once cards start showing up.</value>
+    <value>Шкала заповниться, щойно картки почнуть траплятися.</value>
   </data>
   <data name="Stats.DifficultyNote" xml:space="preserve">
-    <value>Difficulty goes up with every mistake and down with correct answers.</value>
+    <value>Складність росте з кожною помилкою і падає з правильними відповідями.</value>
   </data>
   <data name="Stats.DifficultyTip" xml:space="preserve">
-    <value>Difficulty {0}%</value>
+    <value>Складність {0}%</value>
   </data>
   <data name="Stats.Empty" xml:space="preserve">
-    <value>No answers yet — the numbers appear once Parrot shows its first cards. No need to wait: “Show now” on the left.</value>
+    <value>Відповідей ще немає — цифри з'являться, щойно Parrot покаже перші картки. Можна не чекати: «Показати зараз» ліворуч.</value>
   </data>
   <data name="Stats.Hardest" xml:space="preserve">
-    <value>Hardest cards</value>
+    <value>Найважчі картки</value>
   </data>
   <data name="Stats.HardestEmpty" xml:space="preserve">
-    <value>No mistakes so far — the cards you struggle with most will show up here.</value>
+    <value>Поки жодної помилки — тут з'являться картки, які даються найважче.</value>
   </data>
   <data name="Stats.Learned" xml:space="preserve">
-    <value>Learned</value>
+    <value>Вивчено</value>
   </data>
   <data name="Stats.LearnedOf" xml:space="preserve">
-    <value>of {0}</value>
+    <value>з {0}</value>
   </data>
   <data name="Stats.Legend.Correct" xml:space="preserve">
-    <value>correct</value>
+    <value>правильно</value>
   </data>
   <data name="Stats.Legend.Missed" xml:space="preserve">
-    <value>missed</value>
+    <value>помилка</value>
   </data>
   <data name="Stats.Legend.Skipped" xml:space="preserve">
-    <value>skipped</value>
+    <value>пропущено</value>
   </data>
   <data name="Stats.NewCards" xml:space="preserve">
-    <value>New, not shown yet</value>
+    <value>Нові, ще не траплялись</value>
   </data>
   <data name="Stats.NewCardsTip" xml:space="preserve">
-    <value>Cards Parrot hasn't shown yet</value>
+    <value>Картки, які Parrot ще не показував</value>
   </data>
   <data name="Stats.NoAnswers" xml:space="preserve">
-    <value>no answers yet</value>
+    <value>ще немає відповідей</value>
   </data>
   <data name="Stats.Range30" xml:space="preserve">
-    <value>30 days</value>
+    <value>30 днів</value>
   </data>
   <data name="Stats.Range7" xml:space="preserve">
-    <value>7 days</value>
+    <value>7 днів</value>
   </data>
   <data name="Stats.Streak" xml:space="preserve">
-    <value>Day streak</value>
+    <value>Серія днів</value>
   </data>
   <data name="Stats.Subtitle" xml:space="preserve">
-    <value>{0} in 30 days</value>
+    <value>{0} за 30 днів</value>
   </data>
   <data name="Stats.Today" xml:space="preserve">
-    <value>today</value>
+    <value>сьогодні</value>
   </data>
   <data name="Stats.TodayEmpty" xml:space="preserve">
-    <value>No cards today yet.</value>
+    <value>Сьогодні ще не було карток.</value>
   </data>
   <data name="Stats.TodaySummary" xml:space="preserve">
-    <value>Today: {0} · correct {1} · missed {2} · skipped {3}</value>
+    <value>Сьогодні: {0} · правильно {1} · помилок {2} · пропущено {3}</value>
   </data>
   <data name="Streak.Hint" xml:space="preserve">
-    <value>answer every day</value>
+    <value>відповідайте щодня</value>
   </data>
   <data name="Streak.IsRecord" xml:space="preserve">
-    <value>that's your record</value>
+    <value>це ваш рекорд</value>
   </data>
   <data name="Streak.None" xml:space="preserve">
-    <value>No streak yet</value>
+    <value>Серії ще немає</value>
   </data>
   <data name="Streak.Record" xml:space="preserve">
-    <value>record — {0}</value>
+    <value>рекорд — {0}</value>
   </data>
   <data name="Streak.Running" xml:space="preserve">
-    <value>{0} in a row</value>
+    <value>{0} поспіль</value>
   </data>
   <data name="Strictness.Lenient" xml:space="preserve">
-    <value>Lenient</value>
+    <value>Поблажлива</value>
   </data>
   <data name="Strictness.Strict" xml:space="preserve">
-    <value>Strict</value>
+    <value>Сувора</value>
   </data>
   <data name="Theme.Dark" xml:space="preserve">
-    <value>Dark</value>
+    <value>Темна</value>
   </data>
   <data name="Theme.Light" xml:space="preserve">
-    <value>Light</value>
+    <value>Світла</value>
   </data>
   <data name="Theme.System" xml:space="preserve">
-    <value>Same as Windows</value>
+    <value>Як у Windows</value>
   </data>
   <data name="Toast.Deleted" xml:space="preserve">
-    <value>Deleted {0}.</value>
+    <value>Видалено {0}.</value>
   </data>
   <data name="Toast.DeletedOne" xml:space="preserve">
-    <value>Card deleted.</value>
+    <value>Картку видалено.</value>
   </data>
   <data name="Toast.Restored" xml:space="preserve">
-    <value>Restored {0}.</value>
+    <value>Повернуто {0}.</value>
   </data>
   <data name="Toast.RestoredOne" xml:space="preserve">
-    <value>Card restored.</value>
+    <value>Картку повернуто.</value>
   </data>
   <data name="Toast.Resumed" xml:space="preserve">
-    <value>{0} are back in play.</value>
+    <value>{0} знову в грі.</value>
   </data>
   <data name="Toast.ResumedOne" xml:space="preserve">
-    <value>The card is back in play.</value>
+    <value>Картка знову в грі.</value>
   </data>
   <data name="Toast.Suspended" xml:space="preserve">
-    <value>{0} won't be shown until you resume them.</value>
+    <value>{0} більше не з'являтимуться — доки не відновите.</value>
   </data>
   <data name="Toast.SuspendedOne" xml:space="preserve">
-    <value>The card won't be shown until you resume it.</value>
+    <value>Картка більше не з'являтиметься — доки не відновите.</value>
   </data>
   <data name="Toast.Undo" xml:space="preserve">
-    <value>Undo</value>
+    <value>Повернути</value>
   </data>
   <data name="Tray.Exit" xml:space="preserve">
-    <value>Exit</value>
+    <value>Вихід</value>
   </data>
   <data name="Tray.NextAt" xml:space="preserve">
-    <value>Parrot — next card at {0}</value>
+    <value>Parrot — наступна картка о {0}</value>
   </data>
   <data name="Tray.Open" xml:space="preserve">
-    <value>Open Parrot</value>
+    <value>Відкрити Parrot</value>
   </data>
   <data name="Tray.Pause" xml:space="preserve">
-    <value>Pause</value>
+    <value>Пауза</value>
   </data>
   <data name="Tray.PausedUntil" xml:space="preserve">
-    <value>Parrot — paused until {0}</value>
+    <value>Parrot — пауза до {0}</value>
   </data>
   <data name="Tray.ShowNow" xml:space="preserve">
-    <value>Show a card now</value>
+    <value>Показати картку зараз</value>
   </data>
   <data name="Unit.Minutes" xml:space="preserve">
-    <value>min</value>
+    <value>хв</value>
   </data>
   <data name="Unit.Seconds" xml:space="preserve">
-    <value>s</value>
+    <value>с</value>
   </data>
   <data name="Window.Close" xml:space="preserve">
-    <value>Close — Parrot stays in the tray</value>
+    <value>Закрити — Parrot лишиться в треї</value>
   </data>
   <data name="Window.Maximize" xml:space="preserve">
-    <value>Maximize</value>
+    <value>Розгорнути</value>
   </data>
   <data name="Window.Minimize" xml:space="preserve">
-    <value>Minimize</value>
+    <value>Згорнути</value>
   </data>
   <data name="Window.Restore" xml:space="preserve">
-    <value>Restore</value>
+    <value>Відновити</value>
   </data>
   <data name="Update.Available" xml:space="preserve">
-    <value>New version {0}</value>
+    <value>Нова версія {0}</value>
   </data>
   <data name="Update.WhatsNew" xml:space="preserve">
-    <value>What's new</value>
+    <value>Що нового</value>
   </data>
   <data name="Update.Install" xml:space="preserve">
-    <value>Update</value>
+    <value>Оновити</value>
   </data>
   <data name="Update.Download" xml:space="preserve">
-    <value>Download</value>
+    <value>Завантажити</value>
   </data>
   <data name="Update.Later" xml:space="preserve">
-    <value>Later</value>
+    <value>Пізніше</value>
   </data>
   <data name="Update.Downloading" xml:space="preserve">
-    <value>Downloading…</value>
+    <value>Завантаження…</value>
   </data>
   <data name="Update.Progress" xml:space="preserve">
-    <value>{0}% · {1} of {2} MB</value>
+    <value>{0} % · {1} з {2} МБ</value>
   </data>
   <data name="Update.Installing" xml:space="preserve">
-    <value>Installing…</value>
+    <value>Встановлення…</value>
   </data>
   <data name="Update.Restarting" xml:space="preserve">
-    <value>Parrot will restart in a moment</value>
+    <value>Parrot перезапуститься за мить</value>
   </data>
   <data name="Update.Failed" xml:space="preserve">
-    <value>Update failed</value>
+    <value>Не вдалося оновити</value>
   </data>
   <data name="Update.Retry" xml:space="preserve">
-    <value>Try again</value>
+    <value>Спробувати ще</value>
   </data>
   <data name="Update.ErrorNetwork" xml:space="preserve">
-    <value>Can't reach the update server</value>
+    <value>Немає зʼєднання з сервером оновлень</value>
   </data>
   <data name="Update.ErrorFile" xml:space="preserve">
-    <value>The downloaded file is corrupted</value>
+    <value>Завантажений файл пошкоджений</value>
   </data>
   <data name="Update.ErrorStart" xml:space="preserve">
-    <value>Could not start the installer</value>
+    <value>Не вдалося запустити інсталятор</value>
   </data>
   <data name="Update.Done" xml:space="preserve">
-    <value>Parrot updated to version {0}</value>
+    <value>Parrot оновлено до версії {0}</value>
   </data>
   <data name="Update.TrayItem" xml:space="preserve">
-    <value>Update to {0}</value>
+    <value>Оновити до {0}</value>
   </data>
   <data name="Settings.Version" xml:space="preserve">
-    <value>Version {0}</value>
+    <value>Версія {0}</value>
   </data>
   <data name="Settings.CheckUpdates" xml:space="preserve">
-    <value>Check for updates</value>
+    <value>Перевірити оновлення</value>
   </data>
   <data name="Settings.UpdateChecking" xml:space="preserve">
-    <value>Checking…</value>
+    <value>Перевіряю…</value>
   </data>
   <data name="Settings.UpToDate" xml:space="preserve">
-    <value>You're up to date</value>
+    <value>У вас остання версія</value>
   </data>
   <data name="Settings.UpdateAvailable" xml:space="preserve">
-    <value>Version {0} is available</value>
+    <value>Доступна версія {0}</value>
   </data>
   <data name="Settings.UpdateUnavailable" xml:space="preserve">
-    <value>Updates aren't available for this build</value>
+    <value>Оновлення недоступні для цієї збірки</value>
   </data>
   <data name="Settings.AutoUpdate" xml:space="preserve">
-    <value>Check for updates automatically</value>
+    <value>Автоматично перевіряти оновлення</value>
   </data>
   <data name="Settings.AutoUpdateNote" xml:space="preserve">
-    <value>A new version shows up as a card in the sidebar</value>
+    <value>Нова версія зʼявиться карткою в бічній панелі</value>
   </data>
   <data name="Deck.DefaultName" xml:space="preserve">
-    <value>English</value>
+    <value>Англійська</value>
   </data>
 </root>

@@ -116,13 +116,13 @@ public sealed class PromptScheduler : IDisposable
         var settings = _settings.Current;
 
         if (settings.PauseOnFullscreen && NativeMethods.IsFullScreenOrPresenting())
-            return Skip("Активна повноекранна програма або презентація.");
+            return Skip("A full-screen app or presentation is active.");
 
         // No point quizzing an empty chair: an unanswered prompt would be recorded as an
         // ignore and the card would be pushed back for nothing.
         if (settings.IdleThresholdMinutes > 0 &&
             NativeMethods.GetIdleTime() > TimeSpan.FromMinutes(settings.IdleThresholdMinutes))
-            return Skip($"Немає активності понад {settings.IdleThresholdMinutes} хв.");
+            return Skip($"No user activity for over {settings.IdleThresholdMinutes} min.");
 
         var prompt = _prompts.TryCreatePrompt(DateTimeOffset.Now, out var reason);
 
@@ -149,11 +149,11 @@ public sealed class PromptScheduler : IDisposable
 
     private static string Describe(PromptBlockReason reason) => reason switch
     {
-        PromptBlockReason.QuietHours => "Зараз тихі години.",
-        PromptBlockReason.DailyLimitReached => "Денний ліміт показів вичерпано.",
-        PromptBlockReason.Paused => "Показ на паузі.",
-        PromptBlockReason.NothingDue => "Жодна картка ще не на черзі.",
-        _ => "Немає що показати.",
+        PromptBlockReason.QuietHours => "Quiet hours.",
+        PromptBlockReason.DailyLimitReached => "Daily prompt limit reached.",
+        PromptBlockReason.Paused => "Prompts are paused.",
+        PromptBlockReason.NothingDue => "No card is due yet.",
+        _ => "Nothing to show.",
     };
 
     public void Dispose()

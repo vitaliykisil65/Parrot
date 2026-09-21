@@ -60,7 +60,7 @@ public class CsvCardIoTests
 
         Assert.Equal(1, result.Imported);
         Assert.Equal(1, result.Skipped);
-        Assert.Single(result.Errors);
+        Assert.Equal([3], result.SkippedRows);
         Assert.Single(cards);
     }
 

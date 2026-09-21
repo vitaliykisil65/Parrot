@@ -56,10 +56,10 @@ public static class StatisticsCalculator
 
     private static readonly (string Label, int Min, int Max)[] Buckets =
     [
-        ("Легкі", 0, 25),
-        ("Середні", 25, 50),
-        ("Складні", 50, 75),
-        ("Дуже складні", 75, 101),
+        ("Easy", 0, 25),
+        ("Medium", 25, 50),
+        ("Hard", 50, 75),
+        ("Very hard", 75, 101),
     ];
 
     /// <param name="cards">Library cards, without the deleted ones.</param>

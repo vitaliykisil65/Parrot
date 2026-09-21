@@ -4,7 +4,7 @@ using System.Windows.Controls.Primitives;
 
 namespace Parrot.App.Controls;
 
-/// <summary>"− 20 хв +" — a bounded integer picker. The template lives in Themes/Shared.xaml.</summary>
+/// <summary>"− 20 min +" — a bounded integer picker. The template lives in Themes/Shared.xaml.</summary>
 [TemplatePart(Name = "PART_Down", Type = typeof(ButtonBase))]
 [TemplatePart(Name = "PART_Up", Type = typeof(ButtonBase))]
 public sealed class NumberStepper : Control
@@ -25,7 +25,7 @@ public sealed class NumberStepper : Control
     public static readonly DependencyProperty SuffixProperty = DependencyProperty.Register(
         nameof(Suffix), typeof(string), typeof(NumberStepper), new PropertyMetadata("", (d, _) => ((NumberStepper)d).UpdateText()));
 
-    /// <summary>Shown instead of the number when the value is zero ("без ліміту").</summary>
+    /// <summary>Shown instead of the number when the value is zero ("no limit").</summary>
     public static readonly DependencyProperty ZeroTextProperty = DependencyProperty.Register(
         nameof(ZeroText), typeof(string), typeof(NumberStepper), new PropertyMetadata(null, (d, _) => ((NumberStepper)d).UpdateText()));
 

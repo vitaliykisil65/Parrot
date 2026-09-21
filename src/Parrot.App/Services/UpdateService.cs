@@ -120,7 +120,7 @@ public sealed class UpdateService : IDisposable
             }
 
             if (Release?.Version != release.Version)
-                Log.Info($"Доступна нова версія {release.Version.ToString(3)}");
+                Log.Info($"New version available: {release.Version.ToString(3)}");
 
             Release = release;
             if (Stage != UpdateStage.Failed)
@@ -130,7 +130,7 @@ public sealed class UpdateService : IDisposable
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or System.Text.Json.JsonException)
         {
             // Offline, rate-limited or a bad response: try again at the next tick, quietly.
-            Log.Info($"Не вдалося перевірити оновлення: {ex.Message}");
+            Log.Info($"Update check failed: {ex.Message}");
             return UpdateCheckResult.Failed;
         }
     }
@@ -164,7 +164,7 @@ public sealed class UpdateService : IDisposable
         }
         catch (Exception ex) when (ex is HttpRequestException or IOException or InvalidDataException or TaskCanceledException or UnauthorizedAccessException)
         {
-            Log.Error("Не вдалося завантажити оновлення", ex);
+            Log.Error("Failed to download the update", ex);
             Fail(ex is HttpRequestException or TaskCanceledException ? Localization.L.T("Update.ErrorNetwork") : Localization.L.T("Update.ErrorFile"));
             return;
         }
@@ -178,7 +178,7 @@ public sealed class UpdateService : IDisposable
 
         try
         {
-            Log.Info($"Запуск інсталятора {release.Version.ToString(3)}");
+            Log.Info($"Starting the installer for {release.Version.ToString(3)}");
             Process.Start(new ProcessStartInfo(file, "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS")
             {
                 UseShellExecute = true,
@@ -186,7 +186,7 @@ public sealed class UpdateService : IDisposable
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or IOException)
         {
-            Log.Error("Не вдалося запустити інсталятор", ex);
+            Log.Error("Failed to start the installer", ex);
             Fail(Localization.L.T("Update.ErrorStart"));
             return;
         }
@@ -224,7 +224,7 @@ public sealed class UpdateService : IDisposable
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {
-            Log.Error("Не вдалося відкрити сторінку релізу", ex);
+            Log.Error("Failed to open the release page", ex);
         }
     }
 
@@ -291,7 +291,7 @@ public sealed class UpdateService : IDisposable
     {
         var length = new FileInfo(file).Length;
         if (release.InstallerSize > 0 && length != release.InstallerSize)
-            Reject(file, $"розмір {length} замість {release.InstallerSize}");
+            Reject(file, $"size {length} instead of {release.InstallerSize}");
 
         if (release.Sha256 is null)
             return;
@@ -301,13 +301,13 @@ public sealed class UpdateService : IDisposable
         stream.Close();
 
         if (!string.Equals(hash, release.Sha256, StringComparison.OrdinalIgnoreCase))
-            Reject(file, $"SHA-256 {hash} замість {release.Sha256}");
+            Reject(file, $"SHA-256 {hash} instead of {release.Sha256}");
     }
 
     private static void Reject(string file, string reason)
     {
         File.Delete(file);
-        throw new InvalidDataException($"Інсталятор не пройшов перевірку: {reason}");
+        throw new InvalidDataException($"The installer failed verification: {reason}");
     }
 
     private void Fail(string message)

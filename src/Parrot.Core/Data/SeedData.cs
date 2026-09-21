@@ -7,17 +7,18 @@ namespace Parrot.Core.Data;
 /// </summary>
 public static class SeedData
 {
-    public const string DefaultDeckName = "Англійська";
+    public const string DefaultDeckName = "English";
 
     /// <param name="starterCsv">Cards to fill the new deck with (CsvCardIo format), or null for an empty deck.</param>
-    public static void EnsureSeeded(CardRepository repository, string? starterCsv = null)
+    /// <param name="deckName">The deck's name in the UI language.</param>
+    public static void EnsureSeeded(CardRepository repository, string? starterCsv = null, string deckName = DefaultDeckName)
     {
         if (repository.GetDecks().Count > 0)
             return;
 
         var deckId = repository.AddDeck(new Models.Deck
         {
-            Name = DefaultDeckName,
+            Name = deckName,
             FrontLang = "en",
             BackLang = "uk",
         });
