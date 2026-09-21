@@ -22,8 +22,9 @@ public sealed partial class PromptWindow : Window
     private readonly AnswerChecker _checker;
     private readonly AppSettings _settings;
 
-    private readonly Storyboard _countdown = new();
+    private readonly DispatcherTimer _countdownTimer = new();
     private readonly DispatcherTimer _lingerTimer = new();
+    private AnimationClock? _countdownClock;
 
     private ReviewOutcome? _outcome;
     private string? _userAnswer;
@@ -47,6 +48,7 @@ public sealed partial class PromptWindow : Window
             HintText.Visibility = Visibility.Visible;
         }
 
+        _countdownTimer.Tick += OnCountdownElapsed;
         _lingerTimer.Tick += (_, _) => { _lingerTimer.Stop(); Close(); };
     }
 
@@ -133,7 +135,7 @@ public sealed partial class PromptWindow : Window
 
     protected override void OnClosed(EventArgs e)
     {
-        _countdown.Stop(this);
+        StopCountdown();
         _lingerTimer.Stop();
 
         // Closing without an answer is not a failure — the user was simply busy.
@@ -171,18 +173,28 @@ public sealed partial class PromptWindow : Window
             return;
         }
 
-        var animation = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(_settings.DisplaySeconds));
-        Storyboard.SetTarget(animation, CountdownScale);
-        Storyboard.SetTargetProperty(animation, new PropertyPath(ScaleTransform.ScaleXProperty));
+        var duration = TimeSpan.FromSeconds(_settings.DisplaySeconds);
 
-        _countdown.Children.Add(animation);
-        _countdown.Completed += OnCountdownElapsed;
-        _countdown.Begin(this, isControllable: true);
+        // The bar is only a picture of the clock. The timeout itself runs on a plain timer, so
+        // the window still goes away even if the animation never gets to tick.
+        _countdownClock = new DoubleAnimation(1, 0, duration).CreateClock();
+        CountdownScale.ApplyAnimationClock(ScaleTransform.ScaleXProperty, _countdownClock);
+
+        _countdownTimer.Interval = duration;
+        _countdownTimer.Start();
+    }
+
+    private void StopCountdown()
+    {
+        _countdownTimer.Stop();
+        _countdownClock?.Controller?.Stop();
     }
 
     private void OnCountdownElapsed(object? sender, EventArgs e)
     {
-        if (_outcome is not null)
+        _countdownTimer.Stop();
+
+        if (_outcome is not null || _countdownPaused)
             return;
 
         _outcome = ReviewOutcome.Timeout;
@@ -199,7 +211,8 @@ public sealed partial class PromptWindow : Window
             return;
 
         _countdownPaused = true;
-        _countdown.Pause(this);
+        _countdownTimer.Stop();
+        _countdownClock?.Controller?.Pause();
 
         var fade = new DoubleAnimation(0, TimeSpan.FromMilliseconds(200));
         CountdownTrack.BeginAnimation(OpacityProperty, fade);
@@ -260,7 +273,7 @@ public sealed partial class PromptWindow : Window
 
         _outcome = outcome;
 
-        _countdown.Stop(this);
+        StopCountdown();
         CountdownTrack.Visibility = Visibility.Collapsed;
 
         AnswerBox.IsReadOnly = true;
