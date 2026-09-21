@@ -17,9 +17,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Product>Parrot</Product>
     <Version>0.1.0</Version>
-    <Company>Vitaliy Kisil</Company>
-    <Authors>Vitaliy Kisil</Authors>
-    <Copyright>© 2026 Vitaliy Kisil</Copyright>
+    <Company>Vitalii Kysil</Company>
+    <Authors>Vitalii Kysil</Authors>
+    <Copyright>© 2026 Vitalii Kysil</Copyright>
     <Description>Parrot — вивчення слів у фоні</Description>
     <!-- owner/repo on GitHub whose releases carry Parrot-Setup-*.exe. Empty turns update
          checks off; PARROT_UPDATE_URL overrides it for testing. -->

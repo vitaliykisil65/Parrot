@@ -11,7 +11,7 @@
 
 #define AppName "Parrot"
 #define AppExe "Parrot.exe"
-#define AppPublisher "Vitaliy Kisil"
+#define AppPublisher "Vitalii Kysil"
 
 [Setup]
 ; Never change AppId: upgrades and the uninstaller find the installed copy by it, and
