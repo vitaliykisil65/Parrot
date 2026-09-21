@@ -19,6 +19,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The dev starter deck lives in the app (embedded in Debug builds only); the tests read the file itself. -->
+    <None Include="..\..\src\Parrot.App\DevData\StarterDeck.csv" Link="StarterDeck.csv" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Parrot.Core\Parrot.Core.csproj" />
   </ItemGroup>
 

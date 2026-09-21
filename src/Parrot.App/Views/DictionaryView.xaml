@@ -1,0 +1,372 @@
+<UserControl x:Class="Parrot.App.Views.DictionaryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:Parrot.App.Localization"
+             xmlns:c="clr-namespace:Parrot.App.Controls">
+
+    <UserControl.Resources>
+        <Style x:Key="DetailLabel" TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+            <Setter Property="Margin" Value="0,16,0,4" />
+        </Style>
+
+        <Style x:Key="MiniStat" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Line}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="10,9" />
+        </Style>
+
+        <Style x:Key="FilterChip" TargetType="RadioButton" BasedOn="{StaticResource Chip}">
+            <Setter Property="GroupName" Value="Filter" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="28,22,24,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <DockPanel Grid.Row="0">
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBox x:Name="SearchBox" Style="{StaticResource TextBox.Search}" Width="280"
+                         c:Ui.Hint="{l:T Dict.SearchHint}" TextChanged="OnSearchChanged" />
+                <Button Style="{StaticResource Button.Primary}" Margin="10,0,0,0" Padding="12,0,16,0"
+                        Content="{l:T Dict.Add}" c:Ui.Icon="{StaticResource Icon.Plus}" ToolTip="Ctrl+N"
+                        Click="OnAdd" />
+                <Button x:Name="MoreButton" Style="{StaticResource Button.Icon}" Margin="8,0,0,0"
+                        c:Ui.Icon="{StaticResource Icon.More}" c:Ui.IconSize="18" ToolTip="{l:T Dict.More}"
+                        Click="OnMore">
+                    <Button.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="{l:T Dict.Import}" c:Ui.Icon="{StaticResource Icon.Import}" Click="OnImport" />
+                            <MenuItem Header="{l:T Dict.Export}" c:Ui.Icon="{StaticResource Icon.Export}" Click="OnExport" />
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
+            </StackPanel>
+
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="{l:T Nav.Dictionary}" Style="{StaticResource Text.Title}" />
+                <TextBlock x:Name="SubtitleText" Style="{StaticResource Text.Muted}" Margin="0,2,0,0" />
+            </StackPanel>
+        </DockPanel>
+
+        <!-- Filters -->
+        <WrapPanel Grid.Row="1" Margin="0,18,0,0">
+            <RadioButton x:Name="FilterAll" Style="{StaticResource FilterChip}" Content="{l:T Dict.Filter.All}" IsChecked="True" Checked="OnFilterChanged" />
+            <RadioButton x:Name="FilterDue" Style="{StaticResource FilterChip}" Content="{l:T Dict.Filter.Due}"
+                         c:Ui.Dot="{DynamicResource Brush.Info}" Checked="OnFilterChanged" />
+            <RadioButton x:Name="FilterHard" Style="{StaticResource FilterChip}" Content="{l:T Dict.Filter.Hard}"
+                         c:Ui.Dot="{DynamicResource Brush.Difficulty3}" Checked="OnFilterChanged" />
+            <RadioButton x:Name="FilterNew" Style="{StaticResource FilterChip}" Content="{l:T Dict.Filter.New}" Checked="OnFilterChanged" />
+            <RadioButton x:Name="FilterSuspended" Style="{StaticResource FilterChip}" Content="{l:T Dict.Filter.Suspended}" Checked="OnFilterChanged" />
+            <RadioButton x:Name="FilterDeleted" Style="{StaticResource FilterChip}" Content="{l:T Dict.Filter.Deleted}" Checked="OnFilterChanged" />
+        </WrapPanel>
+
+        <!-- Table and detail panel -->
+        <Grid Grid.Row="2" Margin="0,14,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="320" />
+            </Grid.ColumnDefinitions>
+
+            <DockPanel Grid.Column="0">
+                <Border DockPanel.Dock="Top" Height="34" Padding="12,0,22,0"
+                        BorderBrush="{DynamicResource Brush.Line}" BorderThickness="0,0,0,1">
+                    <Grid TextElement.FontSize="12" TextElement.FontWeight="Medium"
+                          TextElement.Foreground="{DynamicResource Brush.TextMuted}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.05*" />
+                            <ColumnDefinition Width="1.25*" />
+                            <ColumnDefinition Width="104" />
+                            <ColumnDefinition Width="136" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{l:T Dict.Column.Word}" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="1" Text="{l:T Dict.Column.Translation}" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="2" Text="{l:T Dict.Column.Difficulty}" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="3" Text="{l:T Dict.Column.Next}" VerticalAlignment="Center" />
+                    </Grid>
+                </Border>
+
+                <Grid>
+                    <ListBox x:Name="CardsList" Style="{StaticResource Table}"
+                             ItemContainerStyle="{StaticResource TableRow}"
+                             SelectionMode="Extended"
+                             SelectionChanged="OnSelectionChanged"
+                             MouseDoubleClick="OnListDoubleClick"
+                             KeyDown="OnListKeyDown">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Opacity="{Binding RowOpacity}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1.05*" />
+                                        <ColumnDefinition Width="1.25*" />
+                                        <ColumnDefinition Width="104" />
+                                        <ColumnDefinition Width="136" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <DockPanel Grid.Column="0" Margin="0,0,12,0">
+                                        <Ellipse DockPanel.Dock="Left" Width="6" Height="6" Margin="0,0,10,0"
+                                                 Fill="{Binding DeckBrush}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Front}" FontWeight="SemiBold"
+                                                   TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                    </DockPanel>
+
+                                    <TextBlock Grid.Column="1" Text="{Binding Back}" Margin="0,0,12,0"
+                                               Foreground="{DynamicResource Brush.TextSecondary}"
+                                               TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+
+                                    <Grid Grid.Column="2" Width="64" Height="6" HorizontalAlignment="Left"
+                                          Visibility="{Binding BarVisibility}" ToolTip="{Binding DifficultyTip}">
+                                        <Border CornerRadius="3" Background="{DynamicResource Brush.Track}" />
+                                        <Border CornerRadius="3" HorizontalAlignment="Left"
+                                                Width="{Binding DifficultyWidth}" Background="{Binding DifficultyBrush}" />
+                                    </Grid>
+                                    <TextBlock Grid.Column="2" Text="{l:T Card.New}" FontSize="13" VerticalAlignment="Center"
+                                               Foreground="{DynamicResource Brush.TextMuted}"
+                                               Visibility="{Binding NewVisibility}" />
+
+                                    <TextBlock Grid.Column="3" Text="{Binding Next}" FontSize="13"
+                                               Foreground="{Binding NextBrush}" VerticalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <StackPanel x:Name="EmptyList" Visibility="Collapsed" HorizontalAlignment="Center"
+                                VerticalAlignment="Center" Margin="0,0,0,40">
+                        <c:Icon Data="{StaticResource Icon.Search}" Size="28" HorizontalAlignment="Center"
+                                Foreground="{DynamicResource Brush.TextMuted}" />
+                        <TextBlock x:Name="EmptyListText" Style="{StaticResource Text.Muted}" Margin="0,10,0,0"
+                                   TextAlignment="Center" TextWrapping="Wrap" MaxWidth="320" />
+                    </StackPanel>
+                </Grid>
+            </DockPanel>
+
+            <!-- ═══ Detail panel ═══════════════════════════════════════════════ -->
+            <Border Grid.Column="2" Background="{DynamicResource Brush.SurfaceAlt}"
+                    BorderBrush="{DynamicResource Brush.Line}" BorderThickness="1"
+                    CornerRadius="{StaticResource Corner.Card}">
+                <Grid>
+
+                    <!-- Nothing selected -->
+                    <StackPanel x:Name="EmptyPanel" VerticalAlignment="Center" Margin="24,0">
+                        <Border Width="48" Height="48" CornerRadius="14" HorizontalAlignment="Center"
+                                Background="{DynamicResource Brush.Active}">
+                            <c:Icon Data="{StaticResource Icon.Book}" Size="22" HorizontalAlignment="Center"
+                                    VerticalAlignment="Center" Foreground="{DynamicResource Brush.ActiveIcon}" />
+                        </Border>
+                        <TextBlock Text="{l:T Dict.Empty.Title}" Style="{StaticResource Text.Section}"
+                                   HorizontalAlignment="Center" Margin="0,14,0,4" />
+                        <TextBlock Style="{StaticResource Text.Muted}" TextAlignment="Center" TextWrapping="Wrap"
+                                   Text="{l:T Dict.Empty.Text}" />
+                        <Grid Margin="8,20,8,0" TextElement.FontSize="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="28" />
+                                <RowDefinition Height="28" />
+                                <RowDefinition Height="28" />
+                                <RowDefinition Height="28" />
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" Style="{StaticResource Kbd}" HorizontalAlignment="Left"><TextBlock Text="Ctrl N" /></Border>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center"
+                                       Style="{StaticResource Text.Muted}" FontSize="12" Text="{l:T Dict.Shortcut.New}" />
+                            <Border Grid.Row="1" Style="{StaticResource Kbd}" HorizontalAlignment="Left"><TextBlock Text="Ctrl K" /></Border>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center"
+                                       Style="{StaticResource Text.Muted}" FontSize="12" Text="{l:T Dict.Shortcut.Search}" />
+                            <Border Grid.Row="2" Style="{StaticResource Kbd}" HorizontalAlignment="Left"><TextBlock Text="Enter" /></Border>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center"
+                                       Style="{StaticResource Text.Muted}" FontSize="12" Text="{l:T Dict.Shortcut.Edit}" />
+                            <Border Grid.Row="3" Style="{StaticResource Kbd}" HorizontalAlignment="Left"><TextBlock Text="Delete" /></Border>
+                            <TextBlock Grid.Row="3" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center"
+                                       Style="{StaticResource Text.Muted}" FontSize="12" Text="{l:T Dict.Shortcut.Delete}" />
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- One card -->
+                    <DockPanel x:Name="ViewPanel" Visibility="Collapsed" Margin="20">
+                        <DockPanel DockPanel.Dock="Bottom" Margin="0,16,0,0">
+                            <Button x:Name="DeleteButton" DockPanel.Dock="Right" Style="{StaticResource Button.IconDanger}"
+                                    Margin="8,0,0,0" c:Ui.Icon="{StaticResource Icon.Trash}" ToolTip="{l:T Card.Delete}"
+                                    Click="OnDelete" />
+                            <Button x:Name="ResetButton" DockPanel.Dock="Right" Style="{StaticResource Button.Icon}"
+                                    Margin="8,0,0,0" c:Ui.Icon="{StaticResource Icon.Reset}" ToolTip="{l:T Card.Reset}"
+                                    Click="OnReset" />
+                            <Button x:Name="SuspendButton" DockPanel.Dock="Right" Style="{StaticResource Button.Icon}"
+                                    Margin="8,0,0,0" c:Ui.Icon="{StaticResource Icon.Pause}" Click="OnToggleSuspend" />
+                            <Button x:Name="EditButton" Content="{l:T Card.Edit}" FontWeight="SemiBold" Padding="10,0"
+                                    c:Ui.Icon="{StaticResource Icon.Pencil}" Click="OnEdit" />
+                        </DockPanel>
+
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,0,-12,0" Padding="0,0,12,0">
+                            <StackPanel>
+                                <DockPanel>
+                                    <Border x:Name="StatusBadge" DockPanel.Dock="Right" CornerRadius="6" Padding="9,3">
+                                        <TextBlock x:Name="StatusBadgeText" FontSize="12" FontWeight="SemiBold" />
+                                    </Border>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Ellipse x:Name="DetailDeckDot" Width="8" Height="8" VerticalAlignment="Center" />
+                                        <TextBlock x:Name="DetailDeck" Style="{StaticResource Text.Caption}" Margin="8,0,0,0"
+                                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="170" />
+                                    </StackPanel>
+                                </DockPanel>
+
+                                <TextBlock x:Name="DetailFront" Style="{StaticResource Text.Word}" Margin="0,18,0,0" />
+                                <TextBlock x:Name="DetailBack" FontSize="16" TextWrapping="Wrap" Margin="0,6,0,0"
+                                           Foreground="{DynamicResource Brush.TextSecondary}" />
+
+                                <StackPanel x:Name="DetailHintBlock">
+                                    <TextBlock Text="{l:T Card.Hint}" Style="{StaticResource DetailLabel}" />
+                                    <TextBlock x:Name="DetailHint" TextWrapping="Wrap" />
+                                </StackPanel>
+
+                                <StackPanel x:Name="DetailExampleBlock">
+                                    <TextBlock Text="{l:T Card.Example}" Style="{StaticResource DetailLabel}" />
+                                    <TextBlock x:Name="DetailExample" TextWrapping="Wrap" FontStyle="Italic"
+                                               Foreground="{DynamicResource Brush.TextSecondary}" />
+                                </StackPanel>
+
+                                <StackPanel x:Name="DetailTagsBlock">
+                                    <TextBlock Text="{l:T Card.Tags}" Style="{StaticResource DetailLabel}" />
+                                    <ItemsControl x:Name="DetailTags">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border CornerRadius="7" Padding="9,3" Margin="0,0,6,6"
+                                                        Background="{DynamicResource Brush.Segmented}">
+                                                    <TextBlock Text="{Binding}" FontSize="12"
+                                                               Foreground="{DynamicResource Brush.TextSecondary}" />
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+
+                                <StackPanel x:Name="DetailNotesBlock">
+                                    <TextBlock Text="{l:T Card.Notes}" Style="{StaticResource DetailLabel}" />
+                                    <TextBlock x:Name="DetailNotes" TextWrapping="Wrap" FontSize="13"
+                                               Foreground="{DynamicResource Brush.TextSecondary}" />
+                                </StackPanel>
+
+                                <StackPanel x:Name="DetailProgress" Margin="0,20,0,0">
+                                    <UniformGrid Columns="3">
+                                        <Border Style="{StaticResource MiniStat}" Margin="0,0,4,0">
+                                            <StackPanel>
+                                                <TextBlock x:Name="StatAnswers" FontSize="16" FontWeight="SemiBold" />
+                                                <TextBlock Text="{l:T Card.Stat.Answers}" FontSize="11" Foreground="{DynamicResource Brush.TextMuted}" />
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Style="{StaticResource MiniStat}" Margin="4,0">
+                                            <StackPanel>
+                                                <TextBlock x:Name="StatAccuracy" FontSize="16" FontWeight="SemiBold" />
+                                                <TextBlock Text="{l:T Card.Stat.Accuracy}" FontSize="11" Foreground="{DynamicResource Brush.TextMuted}" />
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Style="{StaticResource MiniStat}" Margin="4,0,0,0">
+                                            <StackPanel>
+                                                <TextBlock x:Name="StatNext" FontSize="16" FontWeight="SemiBold"
+                                                           TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="{l:T Card.Stat.Next}" FontSize="11" Foreground="{DynamicResource Brush.TextMuted}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </UniformGrid>
+
+                                    <DockPanel Margin="0,16,0,8">
+                                        <TextBlock x:Name="DifficultyPercentText" DockPanel.Dock="Right" FontSize="12" FontWeight="SemiBold" />
+                                        <TextBlock Text="{l:T Dict.Column.Difficulty}" Style="{StaticResource Text.Caption}" />
+                                    </DockPanel>
+                                    <Grid Height="6">
+                                        <Border CornerRadius="3" Background="{DynamicResource Brush.Track}" />
+                                        <Border x:Name="DifficultyFill" CornerRadius="3" HorizontalAlignment="Left" />
+                                    </Grid>
+                                </StackPanel>
+
+                                <TextBlock x:Name="NewCardNote" Style="{StaticResource Text.Muted}" Margin="0,20,0,0"
+                                           TextWrapping="Wrap"
+                                           Text="{l:T Card.NewNote}" />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </DockPanel>
+
+                    <!-- Editing -->
+                    <DockPanel x:Name="EditPanel" Visibility="Collapsed" Margin="20,16,20,20"
+                               KeyDown="OnEditKeyDown">
+                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                            <Button DockPanel.Dock="Right" Style="{StaticResource Button.IconGhost}"
+                                    c:Ui.Icon="{StaticResource Icon.Close}" ToolTip="{l:T Edit.CancelTip}" Click="OnCancelEdit" />
+                            <TextBlock x:Name="EditTitle" Style="{StaticResource Text.Section}" VerticalAlignment="Center" />
+                        </DockPanel>
+
+                        <StackPanel DockPanel.Dock="Bottom" Margin="0,14,0,0">
+                            <TextBlock x:Name="EditError" Foreground="{DynamicResource Brush.Danger}" FontSize="12"
+                                       TextWrapping="Wrap" Margin="0,0,0,10" Visibility="Collapsed" />
+                            <DockPanel>
+                                <Button DockPanel.Dock="Left" Content="{l:T Common.Cancel}" Click="OnCancelEdit" />
+                                <Button Style="{StaticResource Button.Primary}" Margin="8,0,0,0" Click="OnSaveEdit">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{l:T Common.Save}" />
+                                        <Border Style="{StaticResource Kbd.OnPrimary}"><TextBlock Text="Ctrl ↵" /></Border>
+                                    </StackPanel>
+                                </Button>
+                            </DockPanel>
+                        </StackPanel>
+
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,0,-12,0" Padding="4,4,16,4">
+                            <StackPanel>
+                                <TextBlock Text="{l:T Edit.Front}" Style="{StaticResource FieldLabel}" />
+                                <TextBox x:Name="FrontBox" FontWeight="SemiBold" />
+
+                                <TextBlock Text="{l:T Dict.Column.Translation}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6" />
+                                <TextBox x:Name="BackBox" />
+                                <TextBlock Style="{StaticResource Text.Caption}" FontWeight="Normal" Margin="0,5,0,0"
+                                           TextWrapping="Wrap"
+                                           Text="{l:T Edit.BackNote}" />
+
+                                <TextBlock Text="{l:T Edit.Deck}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6" />
+                                <ComboBox x:Name="DeckBox" DisplayMemberPath="Name" MinHeight="38" />
+
+                                <TextBlock Text="{l:T Card.Hint}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6" />
+                                <TextBox x:Name="HintBox" c:Ui.Hint="{l:T Edit.Optional}" />
+
+                                <TextBlock Text="{l:T Card.Example}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6" />
+                                <TextBox x:Name="ExampleBox" Style="{StaticResource TextBox.Multiline}" FontStyle="Italic"
+                                         c:Ui.Hint="It rained throughout the night." />
+
+                                <TextBlock Text="{l:T Card.Tags}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6" />
+                                <TextBox x:Name="TagsBox" c:Ui.Hint="{l:T Edit.TagsHint}" />
+
+                                <TextBlock Text="{l:T Card.Notes}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6" />
+                                <TextBox x:Name="NotesBox" Style="{StaticResource TextBox.Multiline}" />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </DockPanel>
+
+                    <!-- Several cards -->
+                    <StackPanel x:Name="MultiPanel" Visibility="Collapsed" Margin="20" VerticalAlignment="Center">
+                        <TextBlock x:Name="MultiTitle" Style="{StaticResource Text.Section}" FontSize="17"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Style="{StaticResource Text.Muted}" HorizontalAlignment="Center" Margin="0,4,0,18"
+                                   Text="{l:T Multi.Note}" />
+                        <Button x:Name="MultiSuspendButton" HorizontalAlignment="Stretch"
+                                c:Ui.Icon="{StaticResource Icon.Pause}" Click="OnToggleSuspend" />
+                        <Button HorizontalAlignment="Stretch" Margin="0,8,0,0" Content="{l:T Card.Reset}"
+                                c:Ui.Icon="{StaticResource Icon.Reset}" Click="OnReset" />
+                        <Button x:Name="MultiDeleteButton" Style="{StaticResource Button.Danger}" HorizontalAlignment="Stretch"
+                                Margin="0,8,0,0" c:Ui.Icon="{StaticResource Icon.Trash}" Click="OnDelete" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

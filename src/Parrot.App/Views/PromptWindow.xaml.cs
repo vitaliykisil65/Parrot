@@ -6,6 +6,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using Parrot.App.Branding;
 using Parrot.App.Interop;
+using Parrot.App.Localization;
 using Parrot.Core.Answers;
 using Parrot.Core.Models;
 using Parrot.Core.Scheduling;
@@ -77,6 +78,14 @@ public sealed partial class PromptWindow : Window
         PlayEntrance();
         StartCountdown();
 
+        // The result panel makes the card taller; keep it pinned to its anchor instead of
+        // letting it grow off the bottom of the screen.
+        SizeChanged += (_, args) =>
+        {
+            if (args.HeightChanged)
+                ScreenPositioner.Position(this, _settings);
+        };
+
         if (_settings.FocusInputOnShow)
         {
             Activate();
@@ -99,6 +108,19 @@ public sealed partial class PromptWindow : Window
         NativeMethods.AllowActivation(hwnd);
         handled = true;
         return NativeMethods.MaActivate;
+    }
+
+    protected override void OnPreviewKeyDown(KeyEventArgs e)
+    {
+        // After the result is shown the answer box is gone, so Enter and Esc are handled here.
+        if (_outcome is not null && e.Key is Key.Enter or Key.Escape)
+        {
+            Close();
+            e.Handled = true;
+            return;
+        }
+
+        base.OnPreviewKeyDown(e);
     }
 
     protected override void OnActivated(EventArgs e)
@@ -145,7 +167,7 @@ public sealed partial class PromptWindow : Window
         if (_settings.DisplaySeconds <= 0)
         {
             // "Wait until I answer" mode: no bar, no timeout.
-            CountdownScale.ScaleX = 0;
+            CountdownTrack.Visibility = Visibility.Collapsed;
             return;
         }
 
@@ -180,7 +202,7 @@ public sealed partial class PromptWindow : Window
         _countdown.Pause(this);
 
         var fade = new DoubleAnimation(0, TimeSpan.FromMilliseconds(200));
-        CountdownBar.BeginAnimation(OpacityProperty, fade);
+        CountdownTrack.BeginAnimation(OpacityProperty, fade);
     }
 
     // ── Answering ────────────────────────────────────────────────────────────
@@ -239,20 +261,43 @@ public sealed partial class PromptWindow : Window
         _outcome = outcome;
 
         _countdown.Stop(this);
-        CountdownBar.Opacity = 0;
+        CountdownTrack.Visibility = Visibility.Collapsed;
 
         AnswerBox.IsReadOnly = true;
+        AnswerBox.Visibility = Visibility.Collapsed;
         ActionPanel.Visibility = Visibility.Collapsed;
-        ContinueButton.Visibility = Visibility.Visible;
+        ContinuePanel.Visibility = Visibility.Visible;
         ResultPanel.Visibility = Visibility.Visible;
 
-        (ResultStatus.Text, ResultStatus.Foreground) = outcome switch
+        // Yellow means "got it", blue means "we'll come back to this" — never an alarming red.
+        var success = outcome is ReviewOutcome.Correct or ReviewOutcome.Typo;
+
+        ResultPanel.Background = Swatch(success ? "Brush.Selection" : "Brush.InfoSofter");
+        ResultBadge.Background = Swatch(success ? "Brush.Primary" : "Brush.InfoStrong");
+        ResultIcon.Foreground = success ? Swatch("Brush.PrimaryText") : Brushes.White;
+        ResultIcon.Data = (Geometry)FindResource(success ? "Icon.Check" : "Icon.Reset");
+        ResultStatus.Foreground = Swatch(success ? "Brush.YellowInk" : "Brush.InfoDeep");
+
+        ResultStatus.Text = outcome switch
         {
-            ReviewOutcome.Correct => ("Правильно", Swatch("Brush.Success")),
-            ReviewOutcome.Typo => ("Майже — зараховано, але пишеться так:", Swatch("Brush.Gold")),
-            ReviewOutcome.DontKnow => ("Запам'ятовуємо:", Swatch("Brush.TextMuted")),
-            _ => ("Неправильно", Swatch("Brush.Danger")),
+            ReviewOutcome.Correct => L.T("Prompt.Correct"),
+            ReviewOutcome.Typo => L.T("Prompt.Typo"),
+            ReviewOutcome.DontKnow => L.T("Prompt.Remember"),
+            _ => L.T("Prompt.Wrong"),
         };
+
+        NextNote.Text = L.T(success ? "Prompt.LaterNote" : "Prompt.SoonNote");
+
+        if (outcome == ReviewOutcome.Wrong && !string.IsNullOrWhiteSpace(_userAnswer))
+        {
+            ResultYours.Inlines.Clear();
+            ResultYours.Inlines.Add(L.T("Prompt.YourAnswer") + " ");
+            ResultYours.Inlines.Add(new System.Windows.Documents.Run(_userAnswer.Trim())
+            {
+                TextDecorations = TextDecorations.Strikethrough,
+            });
+            ResultYours.Visibility = Visibility.Visible;
+        }
 
         // On a correct answer the user does not need to be told the answer they just gave;
         // showing the full variant list is still useful, so we show it for typos and misses.
@@ -262,13 +307,16 @@ public sealed partial class PromptWindow : Window
 
         // A synonym from another card is accepted, but this card still wants its own word learned.
         if (matched is not null && _request.AlsoAccepted.Contains(matched))
-            ResultAnswer.Text = $"{matched} — теж так; ця картка: {_request.Answer}";
+            ResultAnswer.Text = L.F("Prompt.Synonym", matched, _request.Answer);
 
         if (!string.IsNullOrWhiteSpace(_request.Card.Example))
         {
             ResultExample.Text = _request.Card.Example;
             ResultExample.Visibility = Visibility.Visible;
         }
+
+        // Keyboard focus moves off the (now hidden) answer box so Enter still means "next".
+        ContinueButton.Focus();
 
         _lingerTimer.Interval = ResultLingerDuration;
         _lingerTimer.Start();

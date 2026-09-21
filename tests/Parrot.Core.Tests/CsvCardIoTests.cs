@@ -90,11 +90,24 @@ public class CsvCardIoTests
         Assert.Equal(original[1].Tags, roundTripped[1].Tags);
     }
 
+    private static string ReadStarterDeck() =>
+        File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "StarterDeck.csv"));
+
+    [Fact]
+    public void A_new_install_gets_one_empty_deck()
+    {
+        using var db = new TempDatabase();
+        SeedData.EnsureSeeded(db.Repository);
+
+        Assert.Single(db.Repository.GetDecks());
+        Assert.Empty(db.Repository.GetCards(CardQuery.Promptable));
+    }
+
     [Fact]
     public void The_starter_deck_parses_cleanly()
     {
         using var db = new TempDatabase();
-        SeedData.EnsureSeeded(db.Repository);
+        SeedData.EnsureSeeded(db.Repository, ReadStarterDeck());
 
         var cards = db.Repository.GetCards(CardQuery.Promptable);
 
@@ -105,7 +118,7 @@ public class CsvCardIoTests
     [Fact]
     public void Every_starter_card_is_complete_and_unique()
     {
-        var result = CsvCardIo.Parse(SeedData.ReadStarterDeck(), deckId: 1, out var cards);
+        var result = CsvCardIo.Parse(ReadStarterDeck(), deckId: 1, out var cards);
 
         Assert.Equal(0, result.Skipped);
         Assert.All(cards, c =>
@@ -126,8 +139,8 @@ public class CsvCardIoTests
     {
         using var db = new TempDatabase();
 
-        SeedData.EnsureSeeded(db.Repository);
-        SeedData.EnsureSeeded(db.Repository);
+        SeedData.EnsureSeeded(db.Repository, ReadStarterDeck());
+        SeedData.EnsureSeeded(db.Repository, ReadStarterDeck());
 
         Assert.Single(db.Repository.GetDecks());
     }

@@ -1,81 +1,74 @@
 namespace Parrot.Core.Branding;
 
-/// <summary>One filled path of the logo, in a 256x256 coordinate space.</summary>
+/// <summary>One filled path of the logo, in a 120x120 coordinate space.</summary>
 public sealed record LogoShape(string PathData, string Fill);
 
 /// <summary>
-/// The blue macaw, kept as plain geometry data so the same drawing serves the WPF windows
-/// and the generated .ico — the logo is defined exactly once.
+/// The blue-and-gold macaw bust, kept as plain geometry data so the same drawing serves the
+/// WPF windows, the tray and the generated .ico — the logo is defined exactly once.
 /// </summary>
 public static class ParrotLogo
 {
-    public const double CanvasSize = 256;
+    public const double CanvasSize = 120;
 
-    public const string BlueDark = "#1340A6";
-    public const string BlueMid = "#2D7DF6";
-    public const string BlueLight = "#5BA4FF";
-    public const string Gold = "#F5B324";
-    public const string FacePale = "#F4F1E8";
-    public const string Charcoal = "#222B36";
-    public const string Ink = "#101820";
+    /// <summary>The app icon sits on a rounded "sky" tile, like a modern launcher icon.</summary>
+    public const double TileCornerRadius = 28;
+    public const string TileFill = "#E3EDFF";
+
+    public const string BlueDeep = "#1747B8";
+    public const string BlueSoft = "#6FA3FF";
+    public const string Blue = "#2F6BF2";
+    public const string BlueShade = "#1F5FE0";
+    public const string Gold = "#FFC23A";
+    public const string FacePale = "#F7F4EC";
+    public const string Ink = "#14202E";
 
     public static IReadOnlyList<LogoShape> Shapes { get; } =
     [
-        // Crest feathers, swept back over the top of the skull.
-        new("M 152,46 C 158,18 180,2 200,10 C 186,28 172,44 166,62 Z", BlueDark),
-        new("M 126,42 C 124,12 144,-2 162,6 C 150,22 142,38 140,58 Z", BlueLight),
-        new("M 102,52 C 94,24 108,6 126,10 C 116,28 110,40 114,62 Z", BlueDark),
+        // Crest feathers, swept back over the skull.
+        new("M71 27c-1-11 5-19 15-21-3 7-3 13 0 19z", BlueDeep),
+        new("M80 30c5-9 14-13 23-11-5 5-7 11-6 17z", BlueSoft),
 
-        // Gold chest, drawn first so the head sits on top of it.
-        new(Circle(176, 218, 74), Gold),
-        new(Circle(176, 226, 56), "#FFD166"),
+        // Gold chest; the tile clips it at the bottom edge.
+        new(Circle(72, 118, 38), Gold),
 
-        // Head.
-        new(Circle(150, 106, 76), BlueMid),
-        new(Crescent(), BlueLight),
+        // Head, with a darker rim on the far side so it reads as round.
+        new(Circle(72, 62, 35), Blue),
+        new("M91 33a35 35 0 0 1 8 52c-6-12-9-28-8-52z", BlueShade),
 
-        // Bare white cheek patch of a blue-and-gold macaw.
-        new(Circle(116, 110, 46), FacePale),
+        // Bare pale face patch of a macaw, and the eye.
+        new(Ellipse(60, 60, 17, 18), FacePale),
+        new(Circle(62, 57, 6.5), Ink),
+        new(Circle(64.3, 54.8, 2.1), "#FFFFFF"),
 
-        new(Circle(112, 102, 16), Ink),
-        new(Circle(118, 96, 5.5), "#FFFFFF"),
-
-        // Upper mandible: the big downward hook that makes a parrot read as a parrot.
-        new("""
-            M 104,62
-            C 70,66 34,88 22,120
-            C 14,142 22,158 40,160
-            C 44,172 50,180 60,184
-            C 68,186 72,180 68,172
-            C 62,162 60,152 62,144
-            C 76,146 92,154 104,166
-            C 92,134 90,94 104,62 Z
-            """, Charcoal),
-
-        // Lower mandible, tucked under the hook.
-        new("""
-            M 62,146
-            C 78,148 94,156 106,166
-            C 102,184 84,194 68,186
-            C 58,180 56,162 62,146 Z
-            """, "#39485A"),
-
-        // Nostril.
-        new(Circle(86, 86, 6), "#39485A"),
+        // Hooked upper mandible and the lower one tucked under it.
+        new("M45 46C21 42 11 62 21 82c3-10 12-15 24-13z", Ink),
+        new("M29 74c2 9 10 13 18 10l-2-14z", "#39485A"),
     ];
 
-    private static string Circle(double cx, double cy, double r) =>
-        $"M {F(cx - r)},{F(cy)} A {F(r)},{F(r)} 0 1 0 {F(cx + r)},{F(cy)} A {F(r)},{F(r)} 0 1 0 {F(cx - r)},{F(cy)} Z";
+    /// <summary>
+    /// Line-art version for a dark taskbar, where the filled logo turns into a dark blob.
+    /// Stroked with <see cref="OutlineStrokeWidth"/>; the colour is chosen by the renderer.
+    /// </summary>
+    public static IReadOnlyList<string> OutlineStrokes { get; } =
+    [
+        "M43.7 56.5A35 35 0 1 1 43.7 91.5",           // skull
+        "M45 58C23 54 13 74 23 94C26 84 34 80 45 81",  // upper mandible
+        "M32 88C34 95 40 98 47 96",                    // lower mandible
+        "M72 39C71 30 77 23 86 20",                    // crest
+        "M83 41C88 34 95 30 103 31",
+    ];
 
-    /// <summary>A leaf shape through four control points, used for the crest.</summary>
-    private static string Feather(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3) =>
-        $"M {F(x0)},{F(y0)} C {F(x1)},{F(y1)} {F(x2)},{F(y2)} {F(x3)},{F(y3)} " +
-        $"C {F(x3 - 14)},{F(y3 - 6)} {F(x0 - 10)},{F(y0 + 14)} {F(x0)},{F(y0)} Z";
+    /// <summary>Filled parts of the outline version (the eye).</summary>
+    public static IReadOnlyList<string> OutlineDots { get; } = [Circle(63, 70, 5.5)];
 
-    /// <summary>A lighter sliver along the top-right of the skull, so the head reads as round.</summary>
-    private static string Crescent() =>
-        "M 150,30 C 192,30 226,64 226,106 C 226,124 220,140 210,153 " +
-        "C 210,110 184,66 142,54 C 144,44 146,36 150,30 Z";
+    /// <summary>Thick enough to stay two device pixels wide at 16 px on a 150% screen.</summary>
+    public const double OutlineStrokeWidth = 10;
+
+    private static string Circle(double cx, double cy, double r) => Ellipse(cx, cy, r, r);
+
+    private static string Ellipse(double cx, double cy, double rx, double ry) =>
+        $"M {F(cx - rx)},{F(cy)} A {F(rx)},{F(ry)} 0 1 0 {F(cx + rx)},{F(cy)} A {F(rx)},{F(ry)} 0 1 0 {F(cx - rx)},{F(cy)} Z";
 
     private static string F(double value) =>
         value.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);

@@ -2,6 +2,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Parrot.App.Branding;
 using Parrot.Core.Branding;
 
 namespace Parrot.IconGen;
@@ -23,83 +24,56 @@ internal static class Program
 
         Directory.CreateDirectory(outputDirectory);
 
-        var drawing = BuildDrawing();
-
-        var frames = IconSizes.ToDictionary(size => size, size => EncodePng(Render(drawing, size)));
+        var tile = LogoDrawings.Colored(withTile: true);
 
         var icoPath = Path.Combine(outputDirectory, "parrot.ico");
-        File.WriteAllBytes(icoPath, BuildIco(frames));
+        File.WriteAllBytes(icoPath, LogoDrawings.BuildIco(tile, IconSizes));
         Console.WriteLine($"wrote {icoPath}");
 
         var previewPath = Path.Combine(outputDirectory, "parrot-256.png");
-        File.WriteAllBytes(previewPath, frames[256]);
+        File.WriteAllBytes(previewPath, LogoDrawings.EncodePng(LogoDrawings.Render(tile, 256)));
         Console.WriteLine($"wrote {previewPath}");
 
         // A contact sheet makes it obvious when the small sizes turn to mush.
         var sheetPath = Path.Combine(outputDirectory, "parrot-sizes.png");
-        File.WriteAllBytes(sheetPath, EncodePng(RenderContactSheet(drawing)));
+        File.WriteAllBytes(sheetPath, LogoDrawings.EncodePng(RenderContactSheet()));
         Console.WriteLine($"wrote {sheetPath}");
 
         return 0;
     }
 
-    private static DrawingGroup BuildDrawing()
+    /// <summary>
+    /// Three rows: the app icon on white, the bare bird on a light taskbar, and the line-art
+    /// tray icon on a dark taskbar.
+    /// </summary>
+    private static RenderTargetBitmap RenderContactSheet()
     {
-        var group = new DrawingGroup();
+        const int width = 720;
+        const int rowHeight = 288;
 
-        foreach (var shape in ParrotLogo.Shapes)
+        var rows = new (Drawing Drawing, Brush Background)[]
         {
-            group.Children.Add(new GeometryDrawing(
-                new SolidColorBrush((Color)ColorConverter.ConvertFromString(shape.Fill)!),
-                pen: null,
-                Geometry.Parse(shape.PathData)));
-        }
-
-        group.Freeze();
-        return group;
-    }
-
-    private static RenderTargetBitmap Render(DrawingGroup drawing, int size)
-    {
-        var visual = new DrawingVisual();
-
-        using (var context = visual.RenderOpen())
-        {
-            var scale = size / ParrotLogo.CanvasSize;
-            context.PushTransform(new ScaleTransform(scale, scale));
-            context.DrawDrawing(drawing);
-            context.Pop();
-        }
-
-        var bitmap = new RenderTargetBitmap(size, size, 96, 96, PixelFormats.Pbgra32);
-        bitmap.Render(visual);
-        bitmap.Freeze();
-        return bitmap;
-    }
-
-    private static RenderTargetBitmap RenderContactSheet(DrawingGroup drawing)
-    {
-        const int width = 512;
-        const int height = 320;
+            (LogoDrawings.Colored(withTile: true), Brushes.White),
+            (LogoDrawings.Colored(withTile: false), new SolidColorBrush(Color.FromRgb(0xEE, 0xEE, 0xEE))),
+            (LogoDrawings.Outline(Colors.White), new SolidColorBrush(Color.FromRgb(0x20, 0x20, 0x20))),
+        };
 
         var visual = new DrawingVisual();
 
         using (var context = visual.RenderOpen())
         {
-            context.DrawRectangle(Brushes.White, null, new Rect(0, 0, width, height / 2.0));
-            context.DrawRectangle(new SolidColorBrush(Color.FromRgb(0x1E, 0x1E, 0x1E)), null,
-                new Rect(0, height / 2.0, width, height / 2.0));
-
-            foreach (var onDark in new[] { false, true })
+            for (var row = 0; row < rows.Length; row++)
             {
-                var x = 16.0;
-                var baseline = onDark ? height / 2.0 + 16 : 16.0;
+                var top = row * rowHeight;
+                context.DrawRectangle(rows[row].Background, null, new Rect(0, top, width, rowHeight));
 
+                var x = 16.0;
                 foreach (var size in IconSizes)
                 {
-                    context.PushTransform(new TranslateTransform(x, baseline));
-                    context.PushTransform(new ScaleTransform(size / ParrotLogo.CanvasSize, size / ParrotLogo.CanvasSize));
-                    context.DrawDrawing(drawing);
+                    var scale = size / ParrotLogo.CanvasSize;
+                    context.PushTransform(new TranslateTransform(x, top + 16));
+                    context.PushTransform(new ScaleTransform(scale, scale));
+                    context.DrawDrawing(rows[row].Drawing);
                     context.Pop();
                     context.Pop();
 
@@ -108,58 +82,10 @@ internal static class Program
             }
         }
 
-        var bitmap = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
+        var bitmap = new RenderTargetBitmap(width, rowHeight * rows.Length, 96, 96, PixelFormats.Pbgra32);
         bitmap.Render(visual);
         bitmap.Freeze();
         return bitmap;
-    }
-
-    private static byte[] EncodePng(BitmapSource bitmap)
-    {
-        var encoder = new PngBitmapEncoder();
-        encoder.Frames.Add(BitmapFrame.Create(bitmap));
-
-        using var stream = new MemoryStream();
-        encoder.Save(stream);
-        return stream.ToArray();
-    }
-
-    /// <summary>
-    /// Packs PNG frames into an .ico. Windows has accepted PNG-compressed icon frames
-    /// since Vista, which keeps the 256px frame small.
-    /// </summary>
-    private static byte[] BuildIco(Dictionary<int, byte[]> frames)
-    {
-        var ordered = frames.OrderBy(f => f.Key).ToList();
-
-        using var stream = new MemoryStream();
-        using var writer = new BinaryWriter(stream);
-
-        writer.Write((ushort)0);                 // reserved
-        writer.Write((ushort)1);                 // type: icon
-        writer.Write((ushort)ordered.Count);
-
-        var offset = 6 + ordered.Count * 16;
-
-        foreach (var (size, png) in ordered)
-        {
-            writer.Write((byte)(size >= 256 ? 0 : size)); // 0 means 256
-            writer.Write((byte)(size >= 256 ? 0 : size));
-            writer.Write((byte)0);               // palette size
-            writer.Write((byte)0);               // reserved
-            writer.Write((ushort)1);             // colour planes
-            writer.Write((ushort)32);            // bits per pixel
-            writer.Write(png.Length);
-            writer.Write(offset);
-
-            offset += png.Length;
-        }
-
-        foreach (var (_, png) in ordered)
-            writer.Write(png);
-
-        writer.Flush();
-        return stream.ToArray();
     }
 
     private static string FindRepoRoot()

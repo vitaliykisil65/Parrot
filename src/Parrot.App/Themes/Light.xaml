@@ -1,19 +1,72 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Color x:Key="Color.Accent">#2D7DF6</Color>
+    <!-- Palette D "yellow leads": yellow = action and success, blue = calm and information.
+         Roughly 68% neutral, 20% yellow, 12% blue on screen. -->
 
-    <SolidColorBrush x:Key="Brush.Surface"     Color="#FFFFFF" />
-    <SolidColorBrush x:Key="Brush.SurfaceAlt"  Color="#F3F5F9" />
-    <SolidColorBrush x:Key="Brush.SurfaceSunk" Color="#E8ECF3" />
-    <SolidColorBrush x:Key="Brush.Border"      Color="#D6DCE6" />
-    <SolidColorBrush x:Key="Brush.Text"        Color="#101820" />
-    <SolidColorBrush x:Key="Brush.TextMuted"   Color="#5B6775" />
-    <SolidColorBrush x:Key="Brush.Accent"      Color="#2D7DF6" />
-    <SolidColorBrush x:Key="Brush.AccentHover" Color="#1D68DC" />
-    <SolidColorBrush x:Key="Brush.AccentText"  Color="#FFFFFF" />
-    <SolidColorBrush x:Key="Brush.Success"     Color="#1E9E63" />
-    <SolidColorBrush x:Key="Brush.Danger"      Color="#D6463C" />
-    <SolidColorBrush x:Key="Brush.Gold"        Color="#C98A10" />
+    <Color x:Key="Color.Shadow">#14202E</Color>
+
+    <!-- Surfaces -->
+    <SolidColorBrush x:Key="Brush.Window"         Color="#F7F5EF" />
+    <SolidColorBrush x:Key="Brush.WindowBorder"   Color="#D9D6CC" />
+    <SolidColorBrush x:Key="Brush.Surface"        Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Brush.SurfaceAlt"     Color="#F8F7F3" />
+    <SolidColorBrush x:Key="Brush.SurfaceSunk"    Color="#FAF9F6" />
+    <SolidColorBrush x:Key="Brush.Segmented"      Color="#F1EFE9" />
+    <SolidColorBrush x:Key="Brush.Hover"          Color="#EAE8E1" />
+    <SolidColorBrush x:Key="Brush.HoverOverlay"   Color="#0F14202E" />
+    <SolidColorBrush x:Key="Brush.PressOverlay"   Color="#1F14202E" />
+    <SolidColorBrush x:Key="Brush.Scrim"          Color="#6614202E" />
+    <SolidColorBrush x:Key="Brush.Toast"          Color="#14202E" />
+    <SolidColorBrush x:Key="Brush.ToastText"      Color="#FFFFFF" />
+
+    <!-- Lines -->
+    <SolidColorBrush x:Key="Brush.Border"         Color="#E1DED4" />
+    <SolidColorBrush x:Key="Brush.Line"           Color="#EFEDE6" />
+    <SolidColorBrush x:Key="Brush.LineFaint"      Color="#F2F0EA" />
+
+    <!-- Text -->
+    <SolidColorBrush x:Key="Brush.Text"           Color="#14202E" />
+    <SolidColorBrush x:Key="Brush.TextSecondary"  Color="#3A4555" />
+    <SolidColorBrush x:Key="Brush.TextMuted"      Color="#5E6878" />
+
+    <!-- Yellow: actions, selection, success -->
+    <SolidColorBrush x:Key="Brush.Primary"        Color="#FFC23A" />
+    <SolidColorBrush x:Key="Brush.PrimaryHover"   Color="#F5B324" />
+    <SolidColorBrush x:Key="Brush.PrimaryText"    Color="#14202E" />
+    <SolidColorBrush x:Key="Brush.Active"         Color="#FFF1CC" />
+    <SolidColorBrush x:Key="Brush.ActiveText"     Color="#14202E" />
+    <SolidColorBrush x:Key="Brush.ActiveIcon"     Color="#C98A10" />
+    <SolidColorBrush x:Key="Brush.Selection"      Color="#FFF8E5" />
+    <SolidColorBrush x:Key="Brush.YellowInk"      Color="#7A5200" />
+
+    <!-- Blue: focus, links, information, "repeat later" -->
+    <SolidColorBrush x:Key="Brush.Info"           Color="#2F6BF2" />
+    <SolidColorBrush x:Key="Brush.InfoStrong"     Color="#1F5FE0" />
+    <SolidColorBrush x:Key="Brush.InfoDeep"       Color="#15307A" />
+    <SolidColorBrush x:Key="Brush.InfoSoft"       Color="#E6EEFF" />
+    <SolidColorBrush x:Key="Brush.InfoSofter"     Color="#EEF3FF" />
+    <SolidColorBrush x:Key="Brush.FocusGlow"      Color="#292F6BF2" />
+
+    <!-- Difficulty scale, easy → very hard -->
+    <SolidColorBrush x:Key="Brush.Difficulty0"    Color="#9CC2FF" />
+    <SolidColorBrush x:Key="Brush.Difficulty1"    Color="#5B8FF5" />
+    <SolidColorBrush x:Key="Brush.Difficulty2"    Color="#2F6BF2" />
+    <SolidColorBrush x:Key="Brush.Difficulty3"    Color="#15307A" />
+
+    <!-- Deck dots, cycled -->
+    <SolidColorBrush x:Key="Brush.Deck0"          Color="#2F6BF2" />
+    <SolidColorBrush x:Key="Brush.Deck1"          Color="#FFC23A" />
+    <SolidColorBrush x:Key="Brush.Deck2"          Color="#9CC2FF" />
+    <SolidColorBrush x:Key="Brush.Deck3"          Color="#15307A" />
+
+    <!-- Misc -->
+    <SolidColorBrush x:Key="Brush.Track"          Color="#EEF0F4" />
+    <SolidColorBrush x:Key="Brush.ToggleOff"      Color="#D5D9E0" />
+    <SolidColorBrush x:Key="Brush.Skipped"        Color="#D5D9E0" />
+    <SolidColorBrush x:Key="Brush.StreakEmpty"    Color="#ECEAE3" />
+    <SolidColorBrush x:Key="Brush.Danger"         Color="#C2413A" />
+    <SolidColorBrush x:Key="Brush.DangerSoft"     Color="#FCEBEA" />
+    <SolidColorBrush x:Key="Brush.CloseHover"     Color="#E5484D" />
 
 </ResourceDictionary>

@@ -482,3 +482,15 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# AI assistant files and working notes: kept locally, never published
+CLAUDE.md
+CLAUDE.local.md
+**/CLAUDE.md
+.claude/
+AGENTS.md
+.cursor/
+.cursorrules
+.github/copilot-instructions.md
+PLAN.md
+docs/design/

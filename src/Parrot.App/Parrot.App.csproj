@@ -17,6 +17,15 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Product>Parrot</Product>
     <Version>0.1.0</Version>
+    <Company>Vitaliy Kisil</Company>
+    <Authors>Vitaliy Kisil</Authors>
+    <Copyright>© 2026 Vitaliy Kisil</Copyright>
+    <Description>Parrot — вивчення слів у фоні</Description>
+    <!-- owner/repo on GitHub whose releases carry Parrot-Setup-*.exe. Empty turns update
+         checks off; PARROT_UPDATE_URL overrides it for testing. -->
+    <UpdateRepository></UpdateRepository>
+    <!-- Strings.resx is Ukrainian; translations ship as satellite assemblies next to it. -->
+    <NeutralLanguage>uk</NeutralLanguage>
     <!-- The Windows Forms analyzer wants DPI awareness set through its own API, but the
          manifest entry is what WPF reads; the tray icon is the only Forms surface here. -->
     <NoWarn>$(NoWarn);WFO0003</NoWarn>
@@ -31,11 +40,26 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AssemblyMetadata Include="UpdateRepository" Value="$(UpdateRepository)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Parrot.Core\Parrot.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="..\..\assets\parrot.ico" Link="parrot.ico" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- The starter word list is for development only: released builds start with an empty
+         dictionary. -p:IncludeStarterDeck=true puts it into any build. -->
+    <IncludeStarterDeck Condition="'$(IncludeStarterDeck)' == ''">$([System.String]::Equals('$(Configuration)', 'Debug'))</IncludeStarterDeck>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="DevData\StarterDeck.csv" />
+    <EmbeddedResource Include="DevData\StarterDeck.csv" LogicalName="Parrot.App.DevData.StarterDeck.csv" Condition="'$(IncludeStarterDeck)' == 'true'" />
   </ItemGroup>
 
 </Project>

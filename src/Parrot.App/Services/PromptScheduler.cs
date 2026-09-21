@@ -25,13 +25,22 @@ public sealed class PromptScheduler : IDisposable
     private readonly SettingsService _settings;
     private readonly Random _random = new();
 
+    /// <summary>The timing the current countdown was drawn from.</summary>
+    private (int Interval, int Jitter) _timing;
+
     public PromptScheduler(PromptService prompts, SettingsService settings)
     {
         _prompts = prompts;
         _settings = settings;
 
         _timer.Tick += OnTick;
-        _settings.Changed += (_, _) => Reschedule();
+        // Settings now apply on every change; only a new interval or spread restarts the clock,
+        // otherwise flipping the theme would postpone the next card.
+        _settings.Changed += (_, updated) =>
+        {
+            if ((updated.IntervalMinutes, updated.JitterPercent) != _timing)
+                Reschedule();
+        };
     }
 
     public event EventHandler<PromptRequest>? PromptReady;
@@ -73,7 +82,10 @@ public sealed class PromptScheduler : IDisposable
     {
         _timer.Stop();
 
-        var delay = _settings.Current.NextDelay(_random);
+        var settings = _settings.Current;
+        _timing = (settings.IntervalMinutes, settings.JitterPercent);
+
+        var delay = settings.NextDelay(_random);
         NextPromptAt = DateTimeOffset.Now + delay;
 
         _timer.Interval = delay;

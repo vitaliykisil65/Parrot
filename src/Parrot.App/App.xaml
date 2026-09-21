@@ -7,6 +7,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <!-- Index 0 is the palette and is swapped at runtime by ThemeManager. -->
                 <ResourceDictionary Source="Themes/Light.xaml" />
+                <ResourceDictionary Source="Themes/Icons.xaml" />
                 <ResourceDictionary Source="Themes/Shared.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

@@ -94,4 +94,35 @@ internal static partial class NativeMethods
         var style = GetWindowLong(handle, GwlExStyle);
         SetWindowLong(handle, GwlExStyle, style & ~WsExNoActivate);
     }
+
+    // ── Custom window frame ──────────────────────────────────────────────────
+
+    private const int DwmwaWindowCornerPreference = 33;
+    private const int DwmwcpRound = 2;
+    private const int SmCxSizeFrame = 32;
+    private const int SmCxPaddedBorder = 92;
+
+    [LibraryImport("dwmapi.dll")]
+    private static partial int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
+
+    [LibraryImport("user32.dll")]
+    private static partial int GetSystemMetricsForDpi(int index, uint dpi);
+
+    /// <summary>
+    /// Asks Windows 11 to round a frameless window's corners like any other app window.
+    /// Earlier Windows versions ignore the attribute, which is fine: they draw square windows.
+    /// </summary>
+    public static void UseRoundedCorners(IntPtr handle)
+    {
+        var preference = DwmwcpRound;
+        _ = DwmSetWindowAttribute(handle, DwmwaWindowCornerPreference, ref preference, sizeof(int));
+    }
+
+    /// <summary>
+    /// How far a maximized frameless window hangs past the screen edge, in physical pixels.
+    /// Windows keeps the invisible resize border even when maximized, so without padding by
+    /// this much the edges of the content end up off screen.
+    /// </summary>
+    public static int MaximizedOverhang(uint dpi) =>
+        GetSystemMetricsForDpi(SmCxSizeFrame, dpi) + GetSystemMetricsForDpi(SmCxPaddedBorder, dpi);
 }

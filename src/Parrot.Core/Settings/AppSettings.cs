@@ -73,6 +73,17 @@ public sealed class AppSettings
     public bool SoundEnabled { get; set; } = true;
     public AppTheme Theme { get; set; } = AppTheme.System;
 
+    /// <summary>UI language code ("uk", "en", …); unknown codes fall back to Ukrainian.</summary>
+    public string UiLanguage { get; set; } = "uk";
+
+    // ── Updates ──────────────────────────────────────────────────────────────
+
+    /// <summary>Look for a new release in the background.</summary>
+    public bool CheckForUpdates { get; set; } = true;
+
+    /// <summary>A version the user closed the update card for; only a later one brings it back.</summary>
+    public string? DismissedUpdateVersion { get; set; }
+
     public AppSettings Clone() => (AppSettings)MemberwiseClone();
 
     /// <summary>True when prompts are allowed at <paramref name="now"/>.</summary>

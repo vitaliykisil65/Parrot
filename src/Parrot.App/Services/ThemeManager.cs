@@ -6,8 +6,22 @@ namespace Parrot.App.Services;
 
 public static class ThemeManager
 {
+    private const string PersonalizeKey = @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
+
+    private static AppTheme _current = AppTheme.System;
+    private static bool _listening;
+
+    /// <summary>Raised after the palette changed, so views holding resolved brushes can redraw.</summary>
+    public static event EventHandler? Applied;
+
+    /// <summary>Raised when the Windows light/dark setting changes (app or taskbar).</summary>
+    public static event EventHandler? SystemThemeChanged;
+
     public static void Apply(AppTheme theme)
     {
+        _current = theme;
+        StartListening();
+
         var dark = theme switch
         {
             AppTheme.Dark => true,
@@ -23,13 +37,40 @@ public static class ThemeManager
         // The palette is always the first merged dictionary, so swapping it in place keeps
         // every DynamicResource lookup pointing at the right brushes.
         Application.Current.Resources.MergedDictionaries[0] = palette;
+        Applied?.Invoke(null, EventArgs.Empty);
     }
 
-    private static bool IsSystemDark()
-    {
-        using var key = Registry.CurrentUser.OpenSubKey(
-            @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+    /// <summary>Apps in dark mode (Settings → Personalization → Colors → app mode).</summary>
+    public static bool IsSystemDark() => ReadFlag("AppsUseLightTheme") == 0;
 
-        return key?.GetValue("AppsUseLightTheme") is int value && value == 0;
+    /// <summary>The taskbar has its own light/dark switch, independent of the app mode.</summary>
+    public static bool IsTaskbarDark() => ReadFlag("SystemUsesLightTheme") != 1;
+
+    private static int? ReadFlag(string name)
+    {
+        using var key = Registry.CurrentUser.OpenSubKey(PersonalizeKey);
+        return key?.GetValue(name) as int?;
+    }
+
+    private static void StartListening()
+    {
+        if (_listening)
+            return;
+
+        _listening = true;
+
+        SystemEvents.UserPreferenceChanged += (_, e) =>
+        {
+            if (e.Category != UserPreferenceCategory.General)
+                return;
+
+            Application.Current.Dispatcher.BeginInvoke(() =>
+            {
+                if (_current == AppTheme.System)
+                    Apply(AppTheme.System);
+
+                SystemThemeChanged?.Invoke(null, EventArgs.Empty);
+            });
+        };
     }
 }

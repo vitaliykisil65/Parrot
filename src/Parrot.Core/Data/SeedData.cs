@@ -1,42 +1,31 @@
-using System.Reflection;
-
 namespace Parrot.Core.Data;
 
 /// <summary>
-/// Gives a brand-new install something to show on the very first prompt. Without this the
-/// app would start silent and look broken.
+/// Creates the deck a brand-new install starts with, so "Add" has somewhere to put cards.
+/// Public builds start it empty; dev builds pass the starter word list to have something
+/// to show on the very first prompt.
 /// </summary>
 public static class SeedData
 {
-    public const string StarterDeckName = "Англійська — старт";
+    public const string DefaultDeckName = "Англійська";
 
-    /// <summary>
-    /// Kept as a plain CSV next to this file (and embedded in the assembly), so the word list
-    /// can be edited or opened in a spreadsheet without touching code.
-    /// </summary>
-    private const string StarterDeckResource = "Parrot.Core.Data.StarterDeck.csv";
-
-    public static void EnsureSeeded(CardRepository repository)
+    /// <param name="starterCsv">Cards to fill the new deck with (CsvCardIo format), or null for an empty deck.</param>
+    public static void EnsureSeeded(CardRepository repository, string? starterCsv = null)
     {
         if (repository.GetDecks().Count > 0)
             return;
 
         var deckId = repository.AddDeck(new Models.Deck
         {
-            Name = StarterDeckName,
+            Name = DefaultDeckName,
             FrontLang = "en",
             BackLang = "uk",
         });
 
-        CsvCardIo.Parse(ReadStarterDeck(), deckId, out var cards);
-        repository.AddCards(cards);
-    }
+        if (string.IsNullOrWhiteSpace(starterCsv))
+            return;
 
-    public static string ReadStarterDeck()
-    {
-        using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(StarterDeckResource)
-                           ?? throw new InvalidOperationException($"Missing embedded resource {StarterDeckResource}.");
-        using var reader = new StreamReader(stream);
-        return reader.ReadToEnd();
+        CsvCardIo.Parse(starterCsv, deckId, out var cards);
+        repository.AddCards(cards);
     }
 }

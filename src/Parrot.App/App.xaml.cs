@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Threading;
+using Parrot.App.Localization;
 using Parrot.App.Services;
 using Parrot.App.Views;
 using Parrot.Core;
@@ -10,7 +11,7 @@ using Parrot.Core.Settings;
 
 namespace Parrot.App;
 
-public partial class App : Application
+public partial class App : Application, IPromptHost
 {
     private const string SingleInstanceMutexName = @"Local\Parrot.SingleInstance";
 
@@ -21,11 +22,10 @@ public partial class App : Application
     private PromptService? _prompts;
     private PromptScheduler? _scheduler;
     private TrayIconService? _tray;
+    private UpdateService? _updates;
 
     private PromptWindow? _activePrompt;
-    private LibraryWindow? _library;
-    private SettingsWindow? _settingsWindow;
-    private StatisticsWindow? _statistics;
+    private MainWindow? _main;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -35,7 +35,7 @@ public partial class App : Application
         if (!isFirstInstance)
         {
             // A second copy would fight the first one over the database and the tray icon.
-            MessageBox.Show("Parrot уже запущено — шукайте його в системному треї.", "Parrot",
+            MessageBox.Show(L.T("App.AlreadyRunning"), "Parrot",
                 MessageBoxButton.OK, MessageBoxImage.Information);
             Shutdown();
             return;
@@ -50,15 +50,23 @@ public partial class App : Application
         catch (Exception ex)
         {
             Log.Error("Не вдалося запустити застосунок", ex);
-            MessageBox.Show($"Не вдалося запустити Parrot:\n\n{ex.Message}\n\nДеталі: {Log.CurrentFile}", "Parrot",
+            MessageBox.Show(L.F("App.StartFailed", ex.Message, Log.CurrentFile), "Parrot",
                 MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown();
             return;
         }
 
         // Launched by the Run key, the app should appear only as a tray icon.
-        if (!e.Args.Contains("--tray", StringComparer.OrdinalIgnoreCase))
-            ShowLibrary();
+        if (e.Args.Contains("--updated", StringComparer.OrdinalIgnoreCase))
+        {
+            Log.Info($"Оновлено до {UpdateService.CurrentVersionText}");
+            ShowMain(AppPage.Dictionary);
+            _main?.ShowToast(L.F("Update.Done", UpdateService.CurrentVersionText));
+        }
+        else if (!e.Args.Contains("--tray", StringComparer.OrdinalIgnoreCase))
+        {
+            ShowMain(AppPage.Dictionary);
+        }
     }
 
     private void Compose()
@@ -68,11 +76,21 @@ public partial class App : Application
 
         _database = new Database();
         _repository = new CardRepository(_database);
-        SeedData.EnsureSeeded(_repository);
+        SeedData.EnsureSeeded(_repository, DevData.StarterDeck.Read());
 
         _settings = new SettingsService();
+        L.Apply(_settings.Current.UiLanguage);
         ThemeManager.Apply(_settings.Current.Theme);
-        _settings.Changed += (_, updated) => ThemeManager.Apply(updated.Theme);
+        _settings.Changed += (_, updated) =>
+        {
+            if (updated.UiLanguage != L.Language)
+                Dispatcher.BeginInvoke(() => ApplyLanguage(updated.UiLanguage));
+
+            ThemeManager.Apply(updated.Theme);
+            _tray?.ShowNextPromptTime(_scheduler?.NextPromptAt);
+            StateChanged?.Invoke(this, EventArgs.Empty);
+        };
+        ThemeManager.Applied += (_, _) => _main?.RefreshData();
 
         _prompts = new PromptService(_repository, _settings);
 
@@ -80,17 +98,57 @@ public partial class App : Application
         _scheduler.PromptReady += (_, request) => ShowPrompt(request);
         _scheduler.PromptSkipped += (_, skipped) => Log.Info($"Показ пропущено: {skipped.Reason}");
 
-        _tray = new TrayIconService();
-        _tray.LibraryRequested += (_, _) => ShowLibrary();
-        _tray.SettingsRequested += (_, _) => ShowSettings();
-        _tray.StatisticsRequested += (_, _) => ShowStatistics();
-        _tray.PromptNowRequested += (_, _) => PromptNow();
-        _tray.PauseRequested += (_, duration) => Pause(duration);
-        _tray.ResumeRequested += (_, _) => Resume();
-        _tray.ExitRequested += (_, _) => Shutdown();
+        _tray = CreateTray();
 
         _scheduler.Start();
         _tray.ShowNextPromptTime(_scheduler.NextPromptAt);
+
+        UpdateService.CleanUpDownloads();
+        _updates = new UpdateService(_settings);
+        _updates.StateChanged += (_, _) => _tray?.SetUpdate(_updates.Release);
+        _updates.InstallerStarted += (_, _) => ShutdownForUpdate();
+        _updates.Start();
+    }
+
+    private TrayIconService CreateTray()
+    {
+        var tray = new TrayIconService();
+        tray.LibraryRequested += (_, _) => ShowMain(AppPage.Dictionary);
+        tray.SettingsRequested += (_, _) => ShowMain(AppPage.Settings);
+        tray.StatisticsRequested += (_, _) => ShowMain(AppPage.Statistics);
+        tray.PromptNowRequested += (_, _) => PromptNow();
+        tray.PauseRequested += (_, duration) => Pause(duration);
+        tray.ResumeRequested += (_, _) => Resume();
+        tray.ExitRequested += (_, _) => Shutdown();
+        tray.UpdateRequested += async (_, _) =>
+        {
+            ShowMain(AppPage.Dictionary);
+            if (_updates is not null)
+                await _updates.InstallAsync();
+        };
+        tray.SetUpdate(_updates?.Release);
+        return tray;
+    }
+
+    /// <summary>
+    /// UI text is read when a window is built, so a new language means rebuilding what is on
+    /// screen: the tray menu and, if open, the main window (reopened on the settings page).
+    /// </summary>
+    private void ApplyLanguage(string language)
+    {
+        L.Apply(language);
+
+        _tray?.Dispose();
+        _tray = CreateTray();
+        _tray.SetPaused(PausedUntil is not null, PausedUntil);
+        if (PausedUntil is null)
+            _tray.ShowNextPromptTime(NextPromptAt);
+
+        if (_main is null)
+            return;
+
+        _main.Close();
+        ShowMain(AppPage.Settings);
     }
 
     // ── Prompts ──────────────────────────────────────────────────────────────
@@ -120,8 +178,8 @@ public partial class App : Application
             _activePrompt = null;
             _scheduler.IsPromptOnScreen = false;
             _tray?.ShowNextPromptTime(_scheduler.NextPromptAt);
-            _library?.RefreshIfVisible();
-            _statistics?.RefreshIfVisible();
+            _main?.RefreshData();
+            StateChanged?.Invoke(this, EventArgs.Empty);
         };
 
         window.Show();
@@ -130,7 +188,15 @@ public partial class App : Application
             SoundService.PlayChime();
     }
 
-    private void PromptNow()
+    // ── IPromptHost ──────────────────────────────────────────────────────────
+
+    public DateTimeOffset? NextPromptAt => _scheduler?.NextPromptAt;
+
+    public DateTimeOffset? PausedUntil => _prompts?.IsPaused(DateTimeOffset.Now) == true ? _prompts.PausedUntil : null;
+
+    public event EventHandler? StateChanged;
+
+    public void PromptNow()
     {
         if (_activePrompt is not null)
         {
@@ -139,71 +205,51 @@ public partial class App : Application
         }
 
         if (_scheduler?.TriggerNow() == false)
-            _tray?.Notify("Зараз нема чого показати — усі картки ще не на черзі.");
+        {
+            var message = L.T("App.NothingDue");
+
+            if (_main is { IsVisible: true })
+                _main.ShowToast(message);
+            else
+                _tray?.Notify(message);
+        }
+
+        StateChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    private void Pause(TimeSpan duration)
+    public void Pause(TimeSpan duration)
     {
         _prompts?.Pause(duration);
         _scheduler?.Reschedule();
         _tray?.SetPaused(true, _prompts?.PausedUntil);
+        StateChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    private void Resume()
+    public void Resume()
     {
         _prompts?.Resume();
         _scheduler?.Reschedule();
         _tray?.SetPaused(false, null);
         _tray?.ShowNextPromptTime(_scheduler?.NextPromptAt);
+        StateChanged?.Invoke(this, EventArgs.Empty);
     }
 
     // ── Windows ──────────────────────────────────────────────────────────────
 
-    private void ShowLibrary()
+    private void ShowMain(AppPage page)
     {
         if (_repository is null || _settings is null)
             return;
 
-        if (_library is null)
+        if (_main is null)
         {
-            _library = new LibraryWindow(_repository);
-            _library.Closed += (_, _) => _library = null;
-            _library.SettingsRequested += (_, _) => ShowSettings();
-            _library.StatisticsRequested += (_, _) => ShowStatistics();
-            _library.Show();
+            _main = new MainWindow(_repository, _settings, this, _updates!);
+            _main.Closed += (_, _) => _main = null;
+            _main.Show();
         }
 
-        Restore(_library);
-    }
-
-    private void ShowSettings()
-    {
-        if (_settings is null)
-            return;
-
-        if (_settingsWindow is null)
-        {
-            _settingsWindow = new SettingsWindow(_settings);
-            _settingsWindow.Closed += (_, _) => _settingsWindow = null;
-            _settingsWindow.Show();
-        }
-
-        Restore(_settingsWindow);
-    }
-
-    private void ShowStatistics()
-    {
-        if (_repository is null)
-            return;
-
-        if (_statistics is null)
-        {
-            _statistics = new StatisticsWindow(_repository);
-            _statistics.Closed += (_, _) => _statistics = null;
-            _statistics.Show();
-        }
-
-        Restore(_statistics);
+        _main.ShowPage(page);
+        Restore(_main);
     }
 
     private static void Restore(Window window)
@@ -218,11 +264,24 @@ public partial class App : Application
 
     // ── Shutdown ─────────────────────────────────────────────────────────────
 
+    /// <summary>
+    /// The installer is waiting for this process to let go of the exe and the single-instance
+    /// mutex; it starts the new version itself once it has finished.
+    /// </summary>
+    private void ShutdownForUpdate()
+    {
+        Log.Info("Вихід для оновлення");
+        _scheduler?.Stop();
+        _activePrompt?.Close();
+        _main?.Close();
+        Shutdown();
+    }
+
     private void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
         Log.Error("Необроблена помилка", e.Exception);
 
-        MessageBox.Show($"Сталася помилка:\n\n{e.Exception.Message}\n\nДеталі: {Log.CurrentFile}", "Parrot",
+        MessageBox.Show(L.F("App.Crashed", e.Exception.Message, Log.CurrentFile), "Parrot",
             MessageBoxButton.OK, MessageBoxImage.Warning);
 
         // A failed prompt or a bad card must not take the whole tray app down with it.
@@ -234,6 +293,7 @@ public partial class App : Application
         Log.Info("Вихід");
 
         _scheduler?.Dispose();
+        _updates?.Dispose();
         _tray?.Dispose();
         _database?.Dispose();
 
