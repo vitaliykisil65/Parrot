@@ -23,7 +23,7 @@
     <Description>Parrot — вивчення слів у фоні</Description>
     <!-- owner/repo on GitHub whose releases carry Parrot-Setup-*.exe. Empty turns update
          checks off; PARROT_UPDATE_URL overrides it for testing. -->
-    <UpdateRepository></UpdateRepository>
+    <UpdateRepository>vitaliykisil65/Parrot</UpdateRepository>
     <!-- Strings.resx is Ukrainian; translations ship as satellite assemblies next to it. -->
     <NeutralLanguage>uk</NeutralLanguage>
     <!-- The Windows Forms analyzer wants DPI awareness set through its own API, but the
