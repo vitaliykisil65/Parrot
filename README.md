@@ -1,120 +1,211 @@
-# Parrot 🦜
+<div align="center">
 
-Тренажер лексики, що живе в треї Windows і час від часу показує невеличке
-вспливаюче вікно зі словом чи фразою та полем для вводу перекладу.
+<img src="assets/parrot-256.png" width="112" alt="Parrot logo — a blue macaw">
 
-- Вікно **не краде фокус** і з'являється збоку екрана — його можна просто
-  проігнорувати, і це **не зіпсує рейтинг картки**.
-- Кожна картка має власний рейтинг складності: що гірше знаєш — то частіше бачиш.
-- Кнопка «Не знаю» одразу показує переклад; одруківки зараховуються.
-- Частота, тривалість показу, позиція, тихі години — усе налаштовується.
-- Автозапуск разом із Windows.
+# Parrot
 
-## Запуск
+**Learn vocabulary in the background, a few seconds at a time.**
 
-```
+A Windows tray app that now and then slides in a small card with a word or phrase and a box
+for its translation — without stealing focus, and without punishing you for ignoring it.
+
+[![Latest release](https://img.shields.io/github/v/release/vitaliykisil65/Parrot?style=flat-square&color=f5b800)](https://github.com/vitaliykisil65/Parrot/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/vitaliykisil65/Parrot/total?style=flat-square&color=3b82f6)](https://github.com/vitaliykisil65/Parrot/releases)
+![Windows 10/11](https://img.shields.io/badge/Windows-10%20%7C%2011-0078d4?style=flat-square&logo=windows11&logoColor=white)
+![.NET 10](https://img.shields.io/badge/.NET-10-512bd4?style=flat-square&logo=dotnet&logoColor=white)
+[![MIT license](https://img.shields.io/github/license/vitaliykisil65/Parrot?style=flat-square&color=22c55e)](LICENSE)
+
+[**Download for Windows**](https://github.com/vitaliykisil65/Parrot/releases/latest) ·
+[Features](#features) · [Screenshots](#screenshots) · [Building](#building-from-source)
+
+<br>
+
+<img src="docs/screenshots/prompt.png" width="400" alt="A prompt asking for the translation of 'to point out'">
+&nbsp;
+<img src="docs/screenshots/prompt-answer.png" width="400" alt="The same prompt after 'I don't know', showing the translation and an example">
+
+</div>
+
+## Why Parrot
+
+Flashcard apps work — when you remember to open them. Parrot flips that around: the cards come
+to you while you work, one at a time, in a corner of the screen. Answer in five seconds and get
+back to what you were doing, or simply ignore the card and it will fade away on its own.
+
+## Features
+
+- 🪟 **Never steals focus.** The card appears at the edge of the screen and doesn't interrupt
+  your typing. Click it when you're ready — or don't.
+- 🙈 **Ignoring is free.** A card you let time out doesn't hurt its rating; it just comes back later.
+- 🧠 **Spaced repetition.** Every card has its own difficulty: the worse you know a word, the more
+  often you see it. New cards are introduced at a pace you choose.
+- ✍️ **Forgiving answer checking.** Small typos are accepted (and the correct spelling is shown),
+  several correct translations can be listed per card, and synonyms from other cards count too.
+- 🤷 **"I don't know"** reveals the answer with an example right away.
+- 🔕 **Knows when to stay quiet.** Quiet hours, active days, a daily limit, a pause from the tray,
+  and no cards while a full-screen app or presentation is running or you're away from the keyboard.
+- 📚 **Dictionary** with decks, search, filters (due, hard, new, suspended), a recycle bin with undo,
+  and CSV import/export.
+- 📊 **Statistics:** day streak, accuracy, a 30-day activity chart, difficulty distribution and
+  your hardest cards.
+- 🎨 **Light and dark themes** that follow Windows, a custom window frame and a quiet chime.
+- 🌍 **English and Ukrainian UI**, switchable on the fly; follows the Windows language by default.
+- 🔄 **Updates itself** from GitHub releases — verified by size and SHA-256 before installing.
+- 🚀 **Starts with Windows** straight to the tray. No admin rights, no runtime to install.
+
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/dictionary-dark.png">
+        <img src="docs/screenshots/dictionary-light.png" alt="Dictionary: word list with difficulty and next review, card details on the right">
+      </picture>
+      <p align="center"><b>Dictionary</b> — decks, search, filters and per-card progress</p>
+    </td>
+    <td width="50%">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/statistics-dark.png">
+        <img src="docs/screenshots/statistics-light.png" alt="Statistics: streak, accuracy, activity chart, difficulty and hardest cards">
+      </picture>
+      <p align="center"><b>Statistics</b> — streak, accuracy and a month of activity</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/settings-dark.png">
+        <img src="docs/screenshots/settings-light.png" alt="Settings: frequency, card position, learning options and system settings">
+      </picture>
+      <p align="center"><b>Settings</b> — applied instantly, no Save button</p>
+    </td>
+    <td width="50%">
+      <img src="docs/screenshots/settings-uk.png" alt="The settings page in Ukrainian">
+      <p align="center"><b>Localized</b> — the same app in Ukrainian</p>
+    </td>
+  </tr>
+</table>
+
+<sub>Screenshots follow your GitHub theme: switch between light and dark to see both.</sub>
+
+## Installation
+
+1. Download `Parrot-Setup-<version>.exe` from the [latest release](https://github.com/vitaliykisil65/Parrot/releases/latest).
+2. Run it. Parrot installs per user into `%LocalAppData%\Programs\Parrot` — no admin rights needed.
+
+The installer adds a Start menu shortcut (a desktop one is optional), an optional
+"Start with Windows" checkbox, and an entry in **Settings → Apps**. Uninstalling removes the
+autostart entry and asks whether to delete your dictionary and settings (`%AppData%\Parrot`);
+by default they are kept.
+
+> [!NOTE]
+> The installer isn't code-signed yet, so on first launch SmartScreen shows "Unknown publisher".
+> Click **More info → Run anyway**.
+
+### Updates
+
+An installed Parrot checks the latest GitHub release 30 seconds after start and every 6 hours
+after that. When there's a newer version, a **New version X** card appears at the bottom of the
+sidebar, plus an item in the tray menu. **Update** downloads the installer, verifies its size and
+SHA-256, installs it silently and restarts Parrot. The ✕ skips that version until the next one
+comes out. **Settings → System** has **Check for updates** and a toggle for automatic checks.
+
+Portable or dev builds can't update in place — there the button opens the release page.
+
+## Getting started
+
+- The first launch creates an empty **English** deck. Click **Add** (`Ctrl+N`) to add cards, or
+  import a CSV file from the **⋯** menu.
+- CSV columns are `Front, Back, Hint, Example, Tags`; only the first two are required, and a
+  header row is optional. Separate several correct translations with semicolons: `big; large`.
+- Don't want to wait for the first card? **Show now** in the sidebar or the tray menu.
+
+## Building from source
+
+Requirements: Windows 10/11 and the [.NET 10 SDK](https://dotnet.microsoft.com/download).
+
+```bash
 dotnet run --project src/Parrot.App
 ```
 
-Перший запуск створює колоду «Англійська» у `%AppData%\Parrot\parrot.db`.
-У Debug-збірці вона одразу заповнюється тестовим словником (419 слів і фраз з
-`src/Parrot.App/DevData/StarterDeck.csv`); у Release і в інсталяторі колода
-порожня. `-p:IncludeStarterDeck=true` вбудовує словник у будь-яку збірку.
-
-Ключ `--tray` стартує без вікна бібліотеки —
-саме так застосунок запускається разом із системою.
-
-Змінна середовища `PARROT_DATA_DIR` перенаправляє дані в іншу папку — зручно,
-щоб погратися з демо-базою, не чіпаючи справжню.
-
-## Установка
-
-`Parrot-Setup-<версія>.exe` ставить Parrot як звичайну програму Windows:
-
-- без прав адміністратора, у `%LocalAppData%\Programs\Parrot`;
-- ярлик у «Пуску», за бажанням — на робочому столі;
-- галочка «Запускати разом із Windows» (той самий автозапуск, що й у Налаштуваннях);
-- запис у «Параметри → Програми», звідки Parrot і видаляється. Видалення прибирає
-  автозапуск і питає, чи стерти словник і налаштування (`%AppData%\Parrot`);
-  за замовчуванням дані лишаються.
-
-Інсталятор не підписаний, тож при першому запуску SmartScreen покаже «Невідомий
-видавець» — «Докладніше → Усе одно запустити».
-
-### Оновлення
-
-Встановлений Parrot раз на 6 годин (і через 30 с після старту) дивиться останній
-реліз на GitHub. Якщо є новіша версія — внизу бічної панелі зʼявляється картка
-«Нова версія X» і пункт у меню трею. «Оновити» завантажує інсталятор, звіряє його
-розмір і SHA-256, тихо ставить поверх і перезапускає Parrot уже новим. Хрестик
-відкладає цю версію, доки не вийде наступна. У Налаштуваннях → Система є
-«Перевірити оновлення» й перемикач автоматичної перевірки.
-
-Portable-exe чи dev-збірка оновлюватися на місці не можуть — там кнопка відкриває
-сторінку релізу. `PARROT_UPDATE_URL` підміняє адресу «latest release» на свою
-(наприклад, локальний JSON) — так оновлення перевіряються без GitHub.
-
-### Збірка інсталятора
-
-Потрібен Inno Setup: `winget install JRSoftware.InnoSetup`.
-
+```bash
+dotnet test
 ```
+
+- Data lives in `%AppData%\Parrot\parrot.db` (SQLite). Debug builds seed the first deck with a
+  419-word starter list from `src/Parrot.App/DevData/StarterDeck.csv`; Release builds and the
+  installer start empty. `-p:IncludeStarterDeck=true` embeds the list into any build.
+- `--tray` starts without opening the main window — that's how Parrot launches with Windows.
+- `PARROT_DATA_DIR` points the app at another data folder, so you can play with a demo database
+  without touching your real one. Such a copy runs next to the everyday one.
+- `PARROT_UPDATE_URL` replaces the "latest release" URL (for example with a local JSON file),
+  so updates can be tested without GitHub.
+- Logs are written to `%AppData%\Parrot\logs`.
+
+### Building the installer
+
+Requires [Inno Setup](https://jrsoftware.org/isinfo.php): `winget install JRSoftware.InnoSetup`.
+
+```bash
 pwsh scripts/build-installer.ps1
 ```
 
-Скрипт проганяє тести, публікує самодостатній exe (`artifacts/publish/Parrot.exe`,
-рантайм ставити не треба) і збирає `artifacts/installer/Parrot-Setup-<версія>.exe`.
-Версія береться з `<Version>` у `src/Parrot.App/Parrot.App.csproj`.
+The script runs the tests, publishes a self-contained single-file `artifacts/publish/Parrot.exe`
+and builds `artifacts/installer/Parrot-Setup-<version>.exe`. The version comes from `<Version>`
+in `src/Parrot.App/Parrot.App.csproj`.
 
-### Випуск нової версії
+### Publishing a release
 
-Потрібен GitHub CLI (`winget install GitHub.cli`, `gh auth login`) і
-`<UpdateRepository>owner/repo</UpdateRepository>` у `Parrot.App.csproj` — з цього
-репозиторію застосунок братиме оновлення, тож релізи в ньому мають бути публічними.
+Requires the GitHub CLI (`winget install GitHub.cli`, then `gh auth login`) and
+`<UpdateRepository>owner/repo</UpdateRepository>` in `Parrot.App.csproj` — installed copies take
+their updates from that repository, so its releases must be public.
 
-1. Підняти `<Version>` у `Parrot.App.csproj` і закомітити.
-2. `pwsh scripts/publish-release.ps1 -Notes "Що змінилось"`
+1. Bump `<Version>` in `Parrot.App.csproj` and commit.
+2. Run `pwsh scripts/publish-release.ps1 -Notes "What changed"`.
 
-Скрипт збирає інсталятор, ставить тег `v<версія>`, пушить і створює реліз із
-`Parrot-Setup-<версія>.exe`. Встановлені копії запропонують його протягом 6 годин.
+The script builds the installer, tags `v<version>`, pushes, and creates a release with
+`Parrot-Setup-<version>.exe` attached. Installed copies offer it within 6 hours.
 
-## Структура
-
-```
-src/Parrot.Core          домен, SRS, перевірка відповідей, SQLite, логотип (net10.0)
-src/Parrot.App           WPF: трей, спливаюче вікно, головне вікно (словник, статистика, налаштування)
-tests/Parrot.Core.Tests  122 юніт-тести на ядро
-tools/Parrot.IconGen     генерує assets/parrot.ico з векторного опису логотипа
-installer/Parrot.iss     скрипт інсталятора (Inno Setup)
-scripts/                 збірка інсталятора й публікація релізу
-```
-
-### Мова інтерфейсу
-
-Усі тексти інтерфейсу лежать у `src/Parrot.App/Localization/Strings.resx`
-(українська — основна). Щоб додати мову: скопіювати файл як `Strings.<код>.resx`
-(наприклад `Strings.en.resx`), перекласти значення й перевірити, що мова є в
-`L.Known`. Вона сама з'явиться в «Налаштування → Система → Мова інтерфейсу»
-і перемикається без перезапуску. Форми множини записуються через `|`:
-`картка|картки|карток`, `card|cards`. Логи лишаються українською.
-
-Логотип — синя ара — описаний як набір path-геометрій у
-`src/Parrot.Core/Branding/ParrotLogo.cs`, тож одне джерело живить і UI, і
-іконку, і трей (на темній панелі завдань там контурна версія). Перегенерувати після правок:
+## Project layout
 
 ```
+src/Parrot.Core          domain, spaced repetition, answer checking, SQLite, logo (net10.0)
+src/Parrot.App           WPF: tray, prompt window, main window (dictionary, statistics, settings)
+tests/Parrot.Core.Tests  xUnit tests for the core
+tools/Parrot.IconGen     generates assets/parrot.ico from the vector logo
+installer/Parrot.iss     installer script (Inno Setup)
+scripts/                 installer build and release publishing
+docs/screenshots/        images used in this README
+```
+
+Stack: .NET 10 · WPF · SQLite · no third-party UI libraries.
+
+### Localization
+
+All UI text lives in `src/Parrot.App/Localization/Strings.resx` (English, the neutral language
+and the fallback for missing keys); `Strings.uk.resx` is the Ukrainian translation. To add a
+language:
+
+1. Copy `Strings.resx` to `Strings.<code>.resx` (e.g. `Strings.de.resx`) and translate the values.
+2. Add the language to `L.Known` in `src/Parrot.App/Localization/L.cs` (and plural rules to
+   `L.PluralForm` if it needs more than English's two forms).
+
+It then shows up in **Settings → System → Interface language** and switches without a restart.
+Plural forms are separated with `|`: `card|cards`, `картка|картки|карток`. The installer's
+own strings are in `installer/Parrot.iss` under `[CustomMessages]`.
+
+### Logo
+
+The logo — a blue macaw — is described as a set of path geometries in
+`src/Parrot.Core/Branding/ParrotLogo.cs`, so a single source drives the UI, the app icon and the
+tray icon (which switches to an outlined version on a dark taskbar). Regenerate the icon after
+editing it:
+
+```bash
 dotnet run --project tools/Parrot.IconGen
 ```
 
-## Стан
+## License
 
-MVP працює: трей, планувальник, спливаюче вікно з перевіркою відповіді,
-одне головне вікно з власною рамкою (словник з CRUD та імпортом/експортом CSV,
-статистика, налаштування, що застосовуються одразу), світла й темна теми в
-палітрі «жовтий веде», звук появи картки, автозапуск.
-
-Стек: .NET 10 · WPF · SQLite · без зовнішніх UI-залежностей.
-
-## Ліцензія
-
-[MIT](LICENSE).
+[MIT](LICENSE) © Vitalii Kysil
