@@ -95,12 +95,24 @@ public partial class App : Application, IPromptHost
 
         SeedData.EnsureSeeded(_repository, DevData.StarterDeck.Read(), L.T("Deck.DefaultName"));
         ThemeManager.Apply(_settings.Current.Theme);
+
+        // Compared with the stored choice, not with L.Language: "" (follow Windows) never equals the
+        // language it resolves to, and every unrelated save would rebuild the windows.
+        var (language, theme) = (_settings.Current.UiLanguage, _settings.Current.Theme);
         _settings.Changed += (_, updated) =>
         {
-            if (updated.UiLanguage != L.Language)
+            if (updated.UiLanguage != language)
+            {
+                language = updated.UiLanguage;
                 Dispatcher.BeginInvoke(() => ApplyLanguage(updated.UiLanguage));
+            }
 
-            ThemeManager.Apply(updated.Theme);
+            if (updated.Theme != theme)
+            {
+                theme = updated.Theme;
+                ThemeManager.Apply(updated.Theme);
+            }
+
             _tray?.ShowNextPromptTime(_scheduler?.NextPromptAt);
             StateChanged?.Invoke(this, EventArgs.Empty);
         };
