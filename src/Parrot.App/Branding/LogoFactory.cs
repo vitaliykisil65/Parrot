@@ -18,18 +18,11 @@ public static class LogoFactory
     /// <summary>Multi-size icon for the window chrome and the taskbar.</summary>
     public static Drawing.Icon Icon => LazyIcon.Value;
 
-    /// <summary>
-    /// Tray icon matched to the taskbar: white line art on a dark taskbar (a filled logo
-    /// turns into a dark blob there), the full-colour bird on a light one.
-    /// </summary>
-    public static Drawing.Icon TrayIcon(bool darkTaskbar)
+    /// <summary>The full-colour bird without its tile, on light and dark taskbars alike.</summary>
+    public static Drawing.Icon TrayIcon()
     {
-        var drawing = darkTaskbar
-            ? LogoDrawings.Outline(Colors.White)
-            : LogoDrawings.Colored(withTile: false);
-
         // Every size Windows may ask for between 100% and 250% scaling.
-        var ico = LogoDrawings.BuildIco(drawing, [16, 20, 24, 32, 40, 48]);
+        var ico = LogoDrawings.BuildIco(LogoDrawings.Colored(withTile: false), [16, 20, 24, 32, 40, 48]);
         return new Drawing.Icon(new MemoryStream(ico), Forms.SystemInformation.SmallIconSize);
     }
 

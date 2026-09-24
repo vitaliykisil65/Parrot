@@ -46,25 +46,6 @@ public static class ParrotLogo
         new("M29 74c2 9 10 13 18 10l-2-14z", "#39485A"),
     ];
 
-    /// <summary>
-    /// Line-art version for a dark taskbar, where the filled logo turns into a dark blob.
-    /// Stroked with <see cref="OutlineStrokeWidth"/>; the colour is chosen by the renderer.
-    /// </summary>
-    public static IReadOnlyList<string> OutlineStrokes { get; } =
-    [
-        "M43.7 56.5A35 35 0 1 1 43.7 91.5",           // skull
-        "M45 58C23 54 13 74 23 94C26 84 34 80 45 81",  // upper mandible
-        "M32 88C34 95 40 98 47 96",                    // lower mandible
-        "M72 39C71 30 77 23 86 20",                    // crest
-        "M83 41C88 34 95 30 103 31",
-    ];
-
-    /// <summary>Filled parts of the outline version (the eye).</summary>
-    public static IReadOnlyList<string> OutlineDots { get; } = [Circle(63, 70, 5.5)];
-
-    /// <summary>Thick enough to stay two device pixels wide at 16 px on a 150% screen.</summary>
-    public const double OutlineStrokeWidth = 10;
-
     private static string Circle(double cx, double cy, double r) => Ellipse(cx, cy, r, r);
 
     private static string Ellipse(double cx, double cy, double rx, double ry) =>

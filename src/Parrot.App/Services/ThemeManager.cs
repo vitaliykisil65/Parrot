@@ -14,9 +14,6 @@ public static class ThemeManager
     /// <summary>Raised after the palette changed, so views holding resolved brushes can redraw.</summary>
     public static event EventHandler? Applied;
 
-    /// <summary>Raised when the Windows light/dark setting changes (app or taskbar).</summary>
-    public static event EventHandler? SystemThemeChanged;
-
     public static void Apply(AppTheme theme)
     {
         _current = theme;
@@ -43,9 +40,6 @@ public static class ThemeManager
     /// <summary>Apps in dark mode (Settings → Personalization → Colors → app mode).</summary>
     public static bool IsSystemDark() => ReadFlag("AppsUseLightTheme") == 0;
 
-    /// <summary>The taskbar has its own light/dark switch, independent of the app mode.</summary>
-    public static bool IsTaskbarDark() => ReadFlag("SystemUsesLightTheme") != 1;
-
     private static int? ReadFlag(string name)
     {
         using var key = Registry.CurrentUser.OpenSubKey(PersonalizeKey);
@@ -68,8 +62,6 @@ public static class ThemeManager
             {
                 if (_current == AppTheme.System)
                     Apply(AppTheme.System);
-
-                SystemThemeChanged?.Invoke(null, EventArgs.Empty);
             });
         };
     }

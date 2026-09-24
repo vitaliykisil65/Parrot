@@ -15,7 +15,7 @@ public sealed class TrayIconService : IDisposable
     private readonly Forms.ToolStripMenuItem _resumeItem;
     private readonly Forms.ToolStripMenuItem _updateItem;
     private readonly Forms.ToolStripSeparator _updateSeparator;
-    private System.Drawing.Icon? _trayImage;
+    private readonly System.Drawing.Icon _trayImage;
 
     public TrayIconService()
     {
@@ -60,11 +60,11 @@ public sealed class TrayIconService : IDisposable
             ContextMenuStrip = menu,
         };
 
-        UpdateIcon();
+        _trayImage = LogoFactory.TrayIcon();
+        _icon.Icon = _trayImage;
         _icon.Visible = true;
 
         _icon.DoubleClick += (_, _) => LibraryRequested?.Invoke(this, EventArgs.Empty);
-        ThemeManager.SystemThemeChanged += OnSystemThemeChanged;
     }
 
     public event EventHandler? LibraryRequested;
@@ -107,17 +107,6 @@ public sealed class TrayIconService : IDisposable
         _icon.ShowBalloonTip(3000);
     }
 
-    /// <summary>Line art on a dark taskbar, the colour bird on a light one.</summary>
-    private void UpdateIcon()
-    {
-        var previous = _trayImage;
-        _trayImage = LogoFactory.TrayIcon(ThemeManager.IsTaskbarDark());
-        _icon.Icon = _trayImage;
-        previous?.Dispose();
-    }
-
-    private void OnSystemThemeChanged(object? sender, EventArgs e) => UpdateIcon();
-
     /// <summary>The Win32 tooltip is capped at 63 characters; anything longer is dropped silently.</summary>
     private void SetTooltip(string text) =>
         _icon.Text = text.Length <= 63 ? text : text[..63];
@@ -127,9 +116,8 @@ public sealed class TrayIconService : IDisposable
 
     public void Dispose()
     {
-        ThemeManager.SystemThemeChanged -= OnSystemThemeChanged;
         _icon.Visible = false;
         _icon.Dispose();
-        _trayImage?.Dispose();
+        _trayImage.Dispose();
     }
 }

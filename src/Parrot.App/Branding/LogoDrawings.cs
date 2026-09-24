@@ -35,30 +35,6 @@ public static class LogoDrawings
         return group;
     }
 
-    /// <summary>Single-colour line art, for the tray on a dark taskbar.</summary>
-    public static DrawingGroup Outline(Color color)
-    {
-        var brush = new SolidColorBrush(color);
-        var pen = new Pen(brush, ParrotLogo.OutlineStrokeWidth)
-        {
-            StartLineCap = PenLineCap.Round,
-            EndLineCap = PenLineCap.Round,
-            LineJoin = PenLineJoin.Round,
-        };
-
-        var group = new DrawingGroup { ClipGeometry = new RectangleGeometry(Canvas) };
-        group.Children.Add(new GeometryDrawing(Brushes.Transparent, null, new RectangleGeometry(Canvas)));
-
-        foreach (var stroke in ParrotLogo.OutlineStrokes)
-            group.Children.Add(new GeometryDrawing(null, pen, Geometry.Parse(stroke)));
-
-        foreach (var dot in ParrotLogo.OutlineDots)
-            group.Children.Add(new GeometryDrawing(brush, null, Geometry.Parse(dot)));
-
-        group.Freeze();
-        return group;
-    }
-
     public static RenderTargetBitmap Render(Drawing drawing, int size)
     {
         var visual = new DrawingVisual();

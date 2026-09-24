@@ -43,8 +43,7 @@ internal static class Program
     }
 
     /// <summary>
-    /// Three rows: the app icon on white, the bare bird on a light taskbar, and the line-art
-    /// tray icon on a dark taskbar.
+    /// Three rows: the app icon on white, and the bare tray bird on a light and a dark taskbar.
     /// </summary>
     private static RenderTargetBitmap RenderContactSheet()
     {
@@ -55,7 +54,7 @@ internal static class Program
         {
             (LogoDrawings.Colored(withTile: true), Brushes.White),
             (LogoDrawings.Colored(withTile: false), new SolidColorBrush(Color.FromRgb(0xEE, 0xEE, 0xEE))),
-            (LogoDrawings.Outline(Colors.White), new SolidColorBrush(Color.FromRgb(0x20, 0x20, 0x20))),
+            (LogoDrawings.Colored(withTile: false), new SolidColorBrush(Color.FromRgb(0x20, 0x20, 0x20))),
         };
 
         var visual = new DrawingVisual();
