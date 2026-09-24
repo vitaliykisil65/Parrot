@@ -154,4 +154,38 @@ public class SrsEngineTests
         Assert.True(_srs.Weight(dismissed, Now) < _srs.Weight(engaged, Now));
         Assert.True(_srs.Weight(dismissed, Now) > 0);
     }
+
+    [Fact]
+    public void A_practice_mistake_makes_a_known_card_harder_and_due_soon()
+    {
+        var now = DateTimeOffset.Now;
+        var schedule = new CardSchedule
+        {
+            Repetitions = 5,
+            IntervalMinutes = TimeSpan.FromDays(30).TotalMinutes,
+            DueAt = now.AddDays(30),
+            CorrectCount = 5,
+            Streak = 5,
+        };
+
+        new SrsEngine().ApplyPracticeMistake(schedule, now);
+
+        Assert.Equal(CardSchedule.DefaultEase - 0.2, schedule.EaseFactor, precision: 6);
+        Assert.Equal(0, schedule.Repetitions);
+        Assert.Equal(CardSchedule.FirstIntervalMinutes, schedule.IntervalMinutes);
+        Assert.Equal(now.AddMinutes(CardSchedule.FirstIntervalMinutes), schedule.DueAt);
+        // The prompt record is left as it was.
+        Assert.Equal((5, 5, 0), (schedule.CorrectCount, schedule.Streak, schedule.Lapses));
+    }
+
+    [Fact]
+    public void A_practice_mistake_never_postpones_a_card_that_is_already_due()
+    {
+        var now = DateTimeOffset.Now;
+        var schedule = new CardSchedule { DueAt = now.AddHours(-2) };
+
+        new SrsEngine().ApplyPracticeMistake(schedule, now);
+
+        Assert.Equal(now.AddHours(-2), schedule.DueAt);
+    }
 }

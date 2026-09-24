@@ -12,7 +12,19 @@ public sealed record ImportResult(int Imported, int Skipped, IReadOnlyList<int> 
 /// </summary>
 public static class CsvCardIo
 {
-    private static readonly string[] Header = ["Front", "Back", "Hint", "Example", "Tags"];
+    /// <summary>
+    /// The column order of an export, and of an import without a header row. New columns only
+    /// ever go at the end, so files written by older versions still read the same way.
+    /// </summary>
+    private static readonly string[] Header = ["Front", "Back", "Hint", "Example", "Tags", "Transcription", "Kind"];
+
+    private static readonly Dictionary<CardKind, string> KindNames = new()
+    {
+        [CardKind.Word] = "word",
+        [CardKind.Phrase] = "phrase",
+        [CardKind.PhrasalVerb] = "phrasal verb",
+        [CardKind.Idiom] = "idiom",
+    };
 
     public static string Export(IEnumerable<Card> cards)
     {
@@ -22,7 +34,8 @@ public static class CsvCardIo
         foreach (var card in cards)
         {
             sb.AppendLine(string.Join(',',
-                Quote(card.Front), Quote(card.Back), Quote(card.Hint), Quote(card.Example), Quote(card.Tags)));
+                Quote(card.Front), Quote(card.Back), Quote(card.Hint), Quote(card.Example), Quote(card.Tags),
+                Quote(card.Transcription), Quote(KindNames.GetValueOrDefault(card.Kind))));
         }
 
         return sb.ToString();
@@ -42,7 +55,9 @@ public static class CsvCardIo
         if (rows.Count == 0)
             return new ImportResult(0, 0, skippedRows);
 
-        var start = LooksLikeHeader(rows[0]) ? 1 : 0;
+        var hasHeader = LooksLikeHeader(rows[0]);
+        var columns = hasHeader ? MapColumns(rows[0]) : DefaultColumns();
+        var start = hasHeader ? 1 : 0;
 
         for (var i = start; i < rows.Count; i++)
         {
@@ -50,7 +65,10 @@ public static class CsvCardIo
             if (row.Count == 0 || row.All(string.IsNullOrWhiteSpace))
                 continue;
 
-            if (row.Count < 2 || string.IsNullOrWhiteSpace(row[0]) || string.IsNullOrWhiteSpace(row[1]))
+            var front = Field(row, columns, "Front");
+            var back = Field(row, columns, "Back");
+
+            if (front is null || back is null)
             {
                 skipped++;
                 skippedRows.Add(i + 1);
@@ -60,22 +78,67 @@ public static class CsvCardIo
             cards.Add(new Card
             {
                 DeckId = deckId,
-                Front = row[0].Trim(),
-                Back = row[1].Trim(),
-                Hint = Field(row, 2),
-                Example = Field(row, 3),
-                Tags = Field(row, 4),
+                Front = front,
+                Back = back,
+                Hint = Field(row, columns, "Hint"),
+                Example = Field(row, columns, "Example"),
+                Tags = Field(row, columns, "Tags"),
+                Transcription = Field(row, columns, "Transcription"),
+                Kind = ParseKind(Field(row, columns, "Kind")),
             });
         }
 
         return new ImportResult(cards.Count, skipped, skippedRows);
     }
 
-    private static string? Field(List<string> row, int index) =>
-        index < row.Count && !string.IsNullOrWhiteSpace(row[index]) ? row[index].Trim() : null;
+    private static string? Field(List<string> row, Dictionary<string, int> columns, string name) =>
+        columns.TryGetValue(name, out var index) && index < row.Count && !string.IsNullOrWhiteSpace(row[index])
+            ? row[index].Trim()
+            : null;
+
+    private static Dictionary<string, int> DefaultColumns() =>
+        Header.Select((name, i) => (name, i)).ToDictionary(x => x.name, x => x.i, StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// With a header row the columns can come in any order, and any of them but Front and Back
+    /// can be left out. Unknown columns are ignored.
+    /// </summary>
+    private static Dictionary<string, int> MapColumns(List<string> header)
+    {
+        var columns = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+        for (var i = 0; i < header.Count; i++)
+        {
+            var name = header[i].Trim();
+            if (Header.Contains(name, StringComparer.OrdinalIgnoreCase))
+                columns.TryAdd(name, i);
+        }
+
+        // "Front,Back" and nothing recognisable after them still means the classic layout.
+        columns.TryAdd("Back", 1);
+        return columns;
+    }
+
+    /// <summary>Accepts the English names written by <see cref="Export"/> and their Ukrainian equivalents.</summary>
+    public static CardKind ParseKind(string? value)
+    {
+        var text = value?.Trim().ToLowerInvariant().Replace('-', ' ').Replace('_', ' ');
+
+        return text switch
+        {
+            null or "" => CardKind.None,
+            "word" or "слово" => CardKind.Word,
+            "phrase" or "фраза" or "вираз" => CardKind.Phrase,
+            "phrasal verb" or "phrasalverb" or "phrasal" or "фразове дієслово" => CardKind.PhrasalVerb,
+            "idiom" or "ідіома" => CardKind.Idiom,
+            _ => CardKind.None,
+        };
+    }
 
     private static bool LooksLikeHeader(List<string> row) =>
-        row.Count > 0 && row[0].Trim().Equals("Front", StringComparison.OrdinalIgnoreCase);
+        row.Count > 0 && row[0].Trim().Equals("Front", StringComparison.OrdinalIgnoreCase) ||
+        row.Any(c => c.Trim().Equals("Front", StringComparison.OrdinalIgnoreCase)) &&
+        row.Any(c => c.Trim().Equals("Back", StringComparison.OrdinalIgnoreCase));
 
     private static string Quote(string? value)
     {

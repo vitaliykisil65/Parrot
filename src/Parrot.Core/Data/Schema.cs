@@ -59,4 +59,11 @@ internal static class Schema
         CREATE INDEX IX_Review_ShownAt ON ReviewLog(ShownAt);
         CREATE INDEX IX_Review_CardId  ON ReviewLog(CardId);
         """;
+
+    /// <summary>Pronunciation and kind on cards; practice answers kept apart from prompts.</summary>
+    public const string V2 = """
+        ALTER TABLE Card ADD COLUMN Transcription TEXT;
+        ALTER TABLE Card ADD COLUMN Kind INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE ReviewLog ADD COLUMN Source INTEGER NOT NULL DEFAULT 0;
+        """;
 }

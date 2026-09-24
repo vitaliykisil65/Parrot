@@ -86,6 +86,23 @@ public sealed class SrsEngine(int ignoreCooldownMinutes = SrsEngine.DefaultIgnor
     }
 
     /// <summary>
+    /// A mistake made in a practice session. Drilling the same card five times in ten minutes
+    /// says little about long-term memory, so correct practice answers leave the schedule alone —
+    /// but a miss is real news: the card gets harder and comes back as a prompt soon.
+    /// Counters, streaks and "last shown" stay untouched; they describe the prompts.
+    /// </summary>
+    public void ApplyPracticeMistake(CardSchedule schedule, DateTimeOffset now)
+    {
+        schedule.EaseFactor = Clamp(schedule.EaseFactor - 0.2, CardSchedule.MinEase, CardSchedule.MaxEase);
+        schedule.Repetitions = 0;
+        schedule.IntervalMinutes = CardSchedule.FirstIntervalMinutes;
+
+        var soon = now.AddMinutes(CardSchedule.FirstIntervalMinutes);
+        if (schedule.DueAt > soon)
+            schedule.DueAt = soon;
+    }
+
+    /// <summary>
     /// How strongly this card should compete for the next prompt. Hard cards (low ease,
     /// many lapses) and long-overdue cards win more often, but every due card keeps a
     /// non-zero share so the rotation never becomes predictable.

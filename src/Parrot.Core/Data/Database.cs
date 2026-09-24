@@ -5,7 +5,7 @@ namespace Parrot.Core.Data;
 /// <summary>Owns the SQLite connection string and the schema version.</summary>
 public sealed class Database : IDisposable
 {
-    private const int SchemaVersion = 1;
+    private const int SchemaVersion = 2;
 
     /// <summary>
     /// An in-memory database only exists while some connection to it is open, so tests
@@ -69,10 +69,15 @@ public sealed class Database : IDisposable
         using var command = connection.CreateCommand();
         command.Transaction = transaction;
 
-        if (current < 1)
-            command.CommandText = Schema.V1;
+        // Each step brings the previous version up by one, so a database of any age catches up.
+        foreach (var (version, script) in new[] { (1, Schema.V1), (2, Schema.V2) })
+        {
+            if (current >= version)
+                continue;
 
-        command.ExecuteNonQuery();
+            command.CommandText = script;
+            command.ExecuteNonQuery();
+        }
 
         command.CommandText = $"PRAGMA user_version = {SchemaVersion};";
         command.ExecuteNonQuery();

@@ -34,6 +34,27 @@ public enum TranslationDirection
     Random = 2,
 }
 
+/// <summary>What kind of thing a card holds. Optional: most cards never need it.</summary>
+public enum CardKind
+{
+    /// <summary>Not specified.</summary>
+    None = 0,
+    Word = 1,
+    Phrase = 2,
+    PhrasalVerb = 3,
+    Idiom = 4,
+}
+
+/// <summary>Where an answer came from.</summary>
+public enum ReviewSource
+{
+    /// <summary>A card that popped up during the day. Only these count toward the daily limits.</summary>
+    Prompt = 0,
+
+    /// <summary>A practice session the user started themselves.</summary>
+    Practice = 1,
+}
+
 public enum AnswerStrictness
 {
     /// <summary>Only an exact match (after normalization) counts.</summary>

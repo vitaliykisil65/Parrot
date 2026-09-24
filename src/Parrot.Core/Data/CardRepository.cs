@@ -7,7 +7,7 @@ public sealed class CardRepository(Database database)
 {
     private const string CardColumns = """
         c.Id, c.DeckId, c.Front, c.Back, c.Hint, c.Example, c.Tags, c.Notes,
-        c.IsSuspended, c.CreatedAt, c.UpdatedAt, c.DeletedAt,
+        c.IsSuspended, c.CreatedAt, c.UpdatedAt, c.DeletedAt, c.Transcription, c.Kind,
         s.EaseFactor, s.IntervalMinutes, s.Repetitions, s.Lapses, s.DueAt, s.LastShownAt,
         s.CorrectCount, s.WrongCount, s.IgnoredCount, s.ConsecutiveIgnores, s.Streak
         """;
@@ -176,8 +176,8 @@ public sealed class CardRepository(Database database)
             {
                 command.Transaction = transaction;
                 command.CommandText = """
-                    INSERT INTO Card (DeckId, Front, Back, Hint, Example, Tags, Notes, IsSuspended, CreatedAt, UpdatedAt, DeletedAt)
-                    VALUES ($deck, $front, $back, $hint, $example, $tags, $notes, $suspended, $created, $updated, NULL);
+                    INSERT INTO Card (DeckId, Front, Back, Transcription, Kind, Hint, Example, Tags, Notes, IsSuspended, CreatedAt, UpdatedAt, DeletedAt)
+                    VALUES ($deck, $front, $back, $transcription, $kind, $hint, $example, $tags, $notes, $suspended, $created, $updated, NULL);
                     SELECT last_insert_rowid();
                     """;
                 BindCardFields(command, card);
@@ -201,7 +201,8 @@ public sealed class CardRepository(Database database)
         using var connection = database.OpenConnection();
         using var command = connection.CreateCommand();
         command.CommandText = """
-            UPDATE Card SET DeckId = $deck, Front = $front, Back = $back, Hint = $hint,
+            UPDATE Card SET DeckId = $deck, Front = $front, Back = $back,
+                            Transcription = $transcription, Kind = $kind, Hint = $hint,
                             Example = $example, Tags = $tags, Notes = $notes,
                             IsSuspended = $suspended, UpdatedAt = $updated
             WHERE Id = $id;
@@ -277,8 +278,8 @@ public sealed class CardRepository(Database database)
         using var connection = database.OpenConnection();
         using var command = connection.CreateCommand();
         command.CommandText = """
-            INSERT INTO ReviewLog (CardId, ShownAt, AnsweredAt, Outcome, UserAnswer, Direction, ResponseMs)
-            VALUES ($card, $shown, $answered, $outcome, $answer, $direction, $ms);
+            INSERT INTO ReviewLog (CardId, ShownAt, AnsweredAt, Outcome, UserAnswer, Direction, ResponseMs, Source)
+            VALUES ($card, $shown, $answered, $outcome, $answer, $direction, $ms, $source);
             SELECT last_insert_rowid();
             """;
         command.Parameters.AddWithValue("$card", log.CardId);
@@ -288,23 +289,26 @@ public sealed class CardRepository(Database database)
         command.Parameters.AddWithValue("$answer", (object?)log.UserAnswer ?? DBNull.Value);
         command.Parameters.AddWithValue("$direction", (int)log.Direction);
         command.Parameters.AddWithValue("$ms", log.ResponseMs);
+        command.Parameters.AddWithValue("$source", (int)log.Source);
 
         log.Id = (long)command.ExecuteScalar()!;
         return log.Id;
     }
 
+    /// <summary>Prompts shown since <paramref name="since"/>. Practice answers are not prompts and don't count.</summary>
     public int CountPromptsSince(DateTimeOffset since)
     {
         using var connection = database.OpenConnection();
         using var command = connection.CreateCommand();
-        command.CommandText = "SELECT COUNT(*) FROM ReviewLog WHERE ShownAt >= $since;";
+        command.CommandText = "SELECT COUNT(*) FROM ReviewLog WHERE ShownAt >= $since AND Source = 0;";
         command.Parameters.AddWithValue("$since", SqlTime.To(since));
         return Convert.ToInt32(command.ExecuteScalar());
     }
 
     /// <summary>
     /// Distinct cards that were seen for the very first time since <paramref name="since"/> —
-    /// this is what the "new cards per day" limit counts.
+    /// this is what the "new cards per day" limit counts. Only prompts introduce a card: drilling it
+    /// in a practice session first does not use up a slot.
     /// </summary>
     public int CountNewCardsSince(DateTimeOffset since)
     {
@@ -314,6 +318,7 @@ public sealed class CardRepository(Database database)
             SELECT COUNT(*) FROM (
                 SELECT CardId, MIN(ShownAt) AS FirstSeen
                 FROM ReviewLog
+                WHERE Source = 0
                 GROUP BY CardId
                 HAVING FirstSeen >= $since
             );
@@ -328,7 +333,7 @@ public sealed class CardRepository(Database database)
         using var connection = database.OpenConnection();
         using var command = connection.CreateCommand();
         command.CommandText = """
-            SELECT Id, CardId, ShownAt, AnsweredAt, Outcome, UserAnswer, Direction, ResponseMs
+            SELECT Id, CardId, ShownAt, AnsweredAt, Outcome, UserAnswer, Direction, ResponseMs, Source
             FROM ReviewLog
             WHERE $since IS NULL OR ShownAt >= $since
             ORDER BY ShownAt;
@@ -350,6 +355,7 @@ public sealed class CardRepository(Database database)
                 UserAnswer = reader.IsDBNull(5) ? null : reader.GetString(5),
                 Direction = (TranslationDirection)reader.GetInt32(6),
                 ResponseMs = reader.GetInt32(7),
+                Source = (ReviewSource)reader.GetInt32(8),
             });
         }
 
@@ -387,6 +393,8 @@ public sealed class CardRepository(Database database)
         command.Parameters.AddWithValue("$deck", card.DeckId);
         command.Parameters.AddWithValue("$front", card.Front);
         command.Parameters.AddWithValue("$back", card.Back);
+        command.Parameters.AddWithValue("$transcription", (object?)card.Transcription ?? DBNull.Value);
+        command.Parameters.AddWithValue("$kind", (int)card.Kind);
         command.Parameters.AddWithValue("$hint", (object?)card.Hint ?? DBNull.Value);
         command.Parameters.AddWithValue("$example", (object?)card.Example ?? DBNull.Value);
         command.Parameters.AddWithValue("$tags", (object?)card.Tags ?? DBNull.Value);
@@ -424,20 +432,22 @@ public sealed class CardRepository(Database database)
         CreatedAt = SqlTime.From(reader.GetString(9)),
         UpdatedAt = SqlTime.From(reader.GetString(10)),
         DeletedAt = reader.IsDBNull(11) ? null : SqlTime.From(reader.GetString(11)),
+        Transcription = reader.IsDBNull(12) ? null : reader.GetString(12),
+        Kind = (CardKind)reader.GetInt32(13),
         Schedule = new CardSchedule
         {
             CardId = reader.GetInt64(0),
-            EaseFactor = reader.GetDouble(12),
-            IntervalMinutes = reader.GetDouble(13),
-            Repetitions = reader.GetInt32(14),
-            Lapses = reader.GetInt32(15),
-            DueAt = SqlTime.From(reader.GetString(16)),
-            LastShownAt = reader.IsDBNull(17) ? null : SqlTime.From(reader.GetString(17)),
-            CorrectCount = reader.GetInt32(18),
-            WrongCount = reader.GetInt32(19),
-            IgnoredCount = reader.GetInt32(20),
-            ConsecutiveIgnores = reader.GetInt32(21),
-            Streak = reader.GetInt32(22),
+            EaseFactor = reader.GetDouble(14),
+            IntervalMinutes = reader.GetDouble(15),
+            Repetitions = reader.GetInt32(16),
+            Lapses = reader.GetInt32(17),
+            DueAt = SqlTime.From(reader.GetString(18)),
+            LastShownAt = reader.IsDBNull(19) ? null : SqlTime.From(reader.GetString(19)),
+            CorrectCount = reader.GetInt32(20),
+            WrongCount = reader.GetInt32(21),
+            IgnoredCount = reader.GetInt32(22),
+            ConsecutiveIgnores = reader.GetInt32(23),
+            Streak = reader.GetInt32(24),
         },
     };
 }

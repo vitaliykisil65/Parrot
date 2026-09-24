@@ -12,9 +12,13 @@ public sealed record PeriodStats(int Shown, int Correct, int Missed, int Ignored
     public double? Accuracy => Answered == 0 ? null : (double)Correct / Answered;
 }
 
-public sealed record DailyActivity(DateOnly Day, int Correct, int Missed, int Ignored)
+/// <param name="Practice">Answers given in practice sessions; the other counts are prompts only.</param>
+public sealed record DailyActivity(DateOnly Day, int Correct, int Missed, int Ignored, int Practice = 0)
 {
     public int Total => Correct + Missed + Ignored;
+
+    /// <summary>Whether the user learned anything that day, by either route. This is what keeps a streak alive.</summary>
+    public bool IsActive => Correct + Missed + Practice > 0;
 }
 
 public sealed record DifficultyBucket(string Label, int MinPercent, int MaxPercent, int Count);
@@ -26,7 +30,10 @@ public sealed record StatisticsReport
     public required PeriodStats Last30Days { get; init; }
     public required PeriodStats AllTime { get; init; }
 
-    /// <summary>Days in a row, up to today, with at least one answered prompt.</summary>
+    /// <summary>Answers given in practice sessions today. The period figures above count prompts only.</summary>
+    public required int PracticeToday { get; init; }
+
+    /// <summary>Days in a row, up to today, with at least one answered prompt or practice question.</summary>
     public required int CurrentStreak { get; init; }
     public required int BestStreak { get; init; }
 
@@ -75,12 +82,18 @@ public static class StatisticsCalculator
             .Select(r => LocalDay(r.ShownAt))
             .ToHashSet();
 
+        // Accuracy and the prompt counts describe the cards that come to you; a practice session
+        // that drills one word ten times would otherwise drown them out.
+        var prompts = reviews.Where(r => r.Source == ReviewSource.Prompt).ToList();
+        var practice = reviews.Where(r => r.Source == ReviewSource.Practice).ToList();
+
         return new StatisticsReport
         {
-            Today = Summarize(reviews, from: today),
-            Last7Days = Summarize(reviews, from: today.AddDays(-6)),
-            Last30Days = Summarize(reviews, from: today.AddDays(-(DailyWindow - 1))),
-            AllTime = Summarize(reviews, from: DateOnly.MinValue),
+            Today = Summarize(prompts, from: today),
+            Last7Days = Summarize(prompts, from: today.AddDays(-6)),
+            Last30Days = Summarize(prompts, from: today.AddDays(-(DailyWindow - 1))),
+            AllTime = Summarize(prompts, from: DateOnly.MinValue),
+            PracticeToday = practice.Count(r => LocalDay(r.ShownAt) == today),
 
             CurrentStreak = CurrentStreak(activeDays, today),
             BestStreak = BestStreak(activeDays),
@@ -90,7 +103,7 @@ public static class StatisticsCalculator
             LearnedCards = cards.Count(c => c.Schedule.IsLearned),
             SuspendedCards = cards.Count(c => c.IsSuspended),
 
-            Daily = Daily(reviews, today),
+            Daily = Daily(prompts, practice, today),
 
             Difficulty = Buckets
                 .Select(b => new DifficultyBucket(b.Label, b.Min, b.Max,
@@ -132,9 +145,13 @@ public static class StatisticsCalculator
         return new PeriodStats(shown, correct, missed, ignored);
     }
 
-    private static List<DailyActivity> Daily(IEnumerable<ReviewLog> reviews, DateOnly today)
+    private static List<DailyActivity> Daily(IEnumerable<ReviewLog> reviews, IEnumerable<ReviewLog> practice, DateOnly today)
     {
         var first = today.AddDays(-(DailyWindow - 1));
+
+        var practiceByDay = practice
+            .GroupBy(r => LocalDay(r.ShownAt))
+            .ToDictionary(g => g.Key, g => g.Count());
 
         var byDay = reviews
             .Select(r => (Day: LocalDay(r.ShownAt), r.Outcome))
@@ -150,7 +167,8 @@ public static class StatisticsCalculator
                 return new DailyActivity(day,
                     Correct: outcomes.Count(IsCorrect),
                     Missed: outcomes.Count(o => IsAnswered(o) && !IsCorrect(o)),
-                    Ignored: outcomes.Count(o => !IsAnswered(o)));
+                    Ignored: outcomes.Count(o => !IsAnswered(o)),
+                    Practice: practiceByDay.GetValueOrDefault(day));
             })
             .ToList();
     }

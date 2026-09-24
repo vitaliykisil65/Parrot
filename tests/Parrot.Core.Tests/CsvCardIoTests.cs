@@ -144,4 +144,49 @@ public class CsvCardIoTests
 
         Assert.Single(db.Repository.GetDecks());
     }
+
+    [Fact]
+    public void Transcription_and_kind_survive_a_round_trip()
+    {
+        var card = new Card { Front = "deadline", Back = "кінцевий термін", Transcription = "/ˈdedlaɪn/", Kind = CardKind.Word };
+
+        CsvCardIo.Parse(CsvCardIo.Export([card]), deckId: 1, out var cards);
+
+        Assert.Equal("/ˈdedlaɪn/", cards[0].Transcription);
+        Assert.Equal(CardKind.Word, cards[0].Kind);
+    }
+
+    [Fact]
+    public void Files_from_before_transcriptions_still_import()
+    {
+        CsvCardIo.Parse("Front,Back,Hint,Example,Tags\nscope,обсяг,,The scope grew.,work\n", deckId: 1, out var cards);
+
+        Assert.Equal("work", cards[0].Tags);
+        Assert.Null(cards[0].Transcription);
+        Assert.Equal(CardKind.None, cards[0].Kind);
+    }
+
+    [Fact]
+    public void With_a_header_the_columns_may_come_in_any_order()
+    {
+        CsvCardIo.Parse("Kind,Transcription,Front,Back\nphrasal verb,/ɡɪv ʌp/,to give up,здатися\n", deckId: 1, out var cards);
+
+        Assert.Equal("to give up", cards[0].Front);
+        Assert.Equal("здатися", cards[0].Back);
+        Assert.Equal("/ɡɪv ʌp/", cards[0].Transcription);
+        Assert.Equal(CardKind.PhrasalVerb, cards[0].Kind);
+    }
+
+    [Theory]
+    [InlineData("word", CardKind.Word)]
+    [InlineData("Phrase", CardKind.Phrase)]
+    [InlineData("phrasal-verb", CardKind.PhrasalVerb)]
+    [InlineData("ідіома", CardKind.Idiom)]
+    [InlineData("фраза", CardKind.Phrase)]
+    [InlineData("something else", CardKind.None)]
+    [InlineData("", CardKind.None)]
+    public void Kinds_are_read_in_english_and_ukrainian(string text, CardKind expected)
+    {
+        Assert.Equal(expected, CsvCardIo.ParseKind(text));
+    }
 }

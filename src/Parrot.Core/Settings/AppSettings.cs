@@ -1,4 +1,5 @@
 using Parrot.Core.Models;
+using Parrot.Core.Practice;
 
 namespace Parrot.Core.Settings;
 
@@ -66,6 +67,23 @@ public sealed class AppSettings
 
     public TranslationDirection Direction { get; set; } = TranslationDirection.FrontToBack;
     public AnswerStrictness Strictness { get; set; } = AnswerStrictness.Lenient;
+
+    // ── Practice ─────────────────────────────────────────────────────────────
+    // The last session's choices, so "one more round" is a single click.
+
+    public PracticeMode PracticeMode { get; set; } = PracticeMode.Flashcards;
+    public PracticeScope PracticeScope { get; set; } = PracticeScope.Random;
+    public int PracticeCount { get; set; } = 20;
+    public TranslationDirection PracticeDirection { get; set; } = TranslationDirection.FrontToBack;
+
+    /// <summary>Correct answers in a row a card needs before it counts as learned in a session.</summary>
+    public int PracticeGoal { get; set; } = 1;
+
+    /// <summary>Fastest full match board, in milliseconds. Zero until the first one.</summary>
+    public int MatchBestMs { get; set; }
+
+    /// <summary>Most right answers in one round of true or false.</summary>
+    public int TrueFalseBest { get; set; }
 
     // ── Shell ────────────────────────────────────────────────────────────────
 

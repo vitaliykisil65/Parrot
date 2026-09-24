@@ -8,11 +8,13 @@ public class StatisticsCalculatorTests
     // Midday, so "n days ago" never slips across midnight whatever the local time zone.
     private static readonly DateTimeOffset Now = new(DateTime.Today.AddHours(12));
 
-    private static ReviewLog Review(ReviewOutcome outcome, int daysAgo = 0, long cardId = 1) => new()
+    private static ReviewLog Review(ReviewOutcome outcome, int daysAgo = 0, long cardId = 1,
+        ReviewSource source = ReviewSource.Prompt) => new()
     {
         CardId = cardId,
         ShownAt = Now.AddDays(-daysAgo),
         Outcome = outcome,
+        Source = source,
     };
 
     private static Card Card(double ease = CardSchedule.DefaultEase, int reps = 1, int wrong = 0, int correct = 0,
@@ -134,6 +136,26 @@ public class StatisticsCalculatorTests
 
         Assert.Equal(0, report.CurrentStreak);
         Assert.Equal(1, report.BestStreak);
+    }
+
+    [Fact]
+    public void Practice_keeps_a_streak_alive_but_stays_out_of_prompt_accuracy()
+    {
+        var report = Calculate(
+        [
+            Review(ReviewOutcome.Correct, daysAgo: 1),
+            Review(ReviewOutcome.Wrong, daysAgo: 0, source: ReviewSource.Practice),
+            Review(ReviewOutcome.Wrong, daysAgo: 0, source: ReviewSource.Practice),
+        ]);
+
+        Assert.Equal(2, report.CurrentStreak);
+        Assert.Equal(0, report.Today.Shown);
+        Assert.Equal(1.0, report.Last7Days.Accuracy);
+        Assert.Equal(2, report.PracticeToday);
+
+        var today = report.Daily[^1];
+        Assert.Equal((0, 2), (today.Total, today.Practice));
+        Assert.True(today.IsActive);
     }
 
     [Fact]

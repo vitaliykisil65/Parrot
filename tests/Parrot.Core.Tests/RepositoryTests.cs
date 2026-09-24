@@ -237,4 +237,100 @@ public class RepositoryTests : IDisposable
 
         Assert.Equal(1, _repo.GetDecks().Single().CardCount);
     }
+
+    [Fact]
+    public void Transcription_and_kind_are_stored()
+    {
+        var id = _repo.AddCard(new Card
+        {
+            DeckId = _deckId, Front = "deadline", Back = "термін", Transcription = "/ˈdedlaɪn/", Kind = CardKind.Word,
+        });
+
+        var card = _repo.GetCard(id)!;
+        Assert.Equal("/ˈdedlaɪn/", card.Transcription);
+        Assert.Equal(CardKind.Word, card.Kind);
+
+        card.Transcription = null;
+        card.Kind = CardKind.Idiom;
+        _repo.UpdateCard(card);
+
+        var updated = _repo.GetCards(CardQuery.All).Single();
+        Assert.Null(updated.Transcription);
+        Assert.Equal(CardKind.Idiom, updated.Kind);
+    }
+
+    [Fact]
+    public void Practice_answers_do_not_use_up_the_daily_limits()
+    {
+        var card = AddCard();
+        var now = DateTimeOffset.Now;
+
+        _repo.LogReview(new ReviewLog { CardId = card.Id, ShownAt = now, Outcome = ReviewOutcome.Correct, Source = ReviewSource.Practice });
+        Assert.Equal(0, _repo.CountPromptsSince(now.AddMinutes(-1)));
+        Assert.Equal(0, _repo.CountNewCardsSince(now.AddMinutes(-1)));
+
+        _repo.LogReview(new ReviewLog { CardId = card.Id, ShownAt = now, Outcome = ReviewOutcome.Correct });
+        Assert.Equal(1, _repo.CountPromptsSince(now.AddMinutes(-1)));
+        Assert.Equal(1, _repo.CountNewCardsSince(now.AddMinutes(-1)));
+    }
+}
+
+public class MigrationTests
+{
+    /// <summary>The schema as the first release created it.</summary>
+    private const string Version1 = """
+        CREATE TABLE Deck (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL, FrontLang TEXT NOT NULL DEFAULT 'en',
+            BackLang TEXT NOT NULL DEFAULT 'uk', IsActive INTEGER NOT NULL DEFAULT 1, CreatedAt TEXT NOT NULL);
+        CREATE TABLE Card (Id INTEGER PRIMARY KEY AUTOINCREMENT, DeckId INTEGER NOT NULL REFERENCES Deck(Id) ON DELETE CASCADE,
+            Front TEXT NOT NULL, Back TEXT NOT NULL, Hint TEXT, Example TEXT, Tags TEXT, Notes TEXT,
+            IsSuspended INTEGER NOT NULL DEFAULT 0, CreatedAt TEXT NOT NULL, UpdatedAt TEXT NOT NULL, DeletedAt TEXT);
+        CREATE TABLE CardSchedule (CardId INTEGER PRIMARY KEY REFERENCES Card(Id) ON DELETE CASCADE, EaseFactor REAL NOT NULL,
+            IntervalMinutes REAL NOT NULL, Repetitions INTEGER NOT NULL, Lapses INTEGER NOT NULL, DueAt TEXT NOT NULL,
+            LastShownAt TEXT, CorrectCount INTEGER NOT NULL, WrongCount INTEGER NOT NULL, IgnoredCount INTEGER NOT NULL,
+            ConsecutiveIgnores INTEGER NOT NULL, Streak INTEGER NOT NULL);
+        CREATE TABLE ReviewLog (Id INTEGER PRIMARY KEY AUTOINCREMENT, CardId INTEGER NOT NULL REFERENCES Card(Id) ON DELETE CASCADE,
+            ShownAt TEXT NOT NULL, AnsweredAt TEXT, Outcome INTEGER NOT NULL, UserAnswer TEXT, Direction INTEGER NOT NULL,
+            ResponseMs INTEGER NOT NULL);
+        INSERT INTO Deck (Name, CreatedAt) VALUES ('English', '2026-01-01T10:00:00.0000000+00:00');
+        INSERT INTO Card (DeckId, Front, Back, CreatedAt, UpdatedAt)
+            VALUES (1, 'deadline', 'термін', '2026-01-01T10:00:00.0000000+00:00', '2026-01-01T10:00:00.0000000+00:00');
+        INSERT INTO CardSchedule VALUES (1, 2.5, 10, 0, 0, '2026-01-01T10:00:00.0000000+00:00', NULL, 0, 0, 0, 0, 0);
+        INSERT INTO ReviewLog (CardId, ShownAt, Outcome, Direction, ResponseMs)
+            VALUES (1, '2026-01-02T10:00:00.0000000+00:00', 0, 0, 1200);
+        PRAGMA user_version = 1;
+        """;
+
+    [Fact]
+    public void A_version_1_database_is_upgraded_in_place()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"parrot-v1-{Guid.NewGuid():N}.db");
+
+        try
+        {
+            using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={path}"))
+            {
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText = Version1;
+                command.ExecuteNonQuery();
+            }
+
+            using var database = new Database(path);
+            var repository = new CardRepository(database);
+
+            var card = repository.GetCards(CardQuery.All).Single();
+            Assert.Equal("deadline", card.Front);
+            Assert.Null(card.Transcription);
+            Assert.Equal(CardKind.None, card.Kind);
+
+            var review = repository.GetReviews().Single();
+            Assert.Equal(ReviewSource.Prompt, review.Source);
+            Assert.Equal(1200, review.ResponseMs);
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            try { File.Delete(path); } catch (IOException) { }
+        }
+    }
 }

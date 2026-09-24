@@ -12,6 +12,12 @@ public sealed class Card
     public string Front { get; set; } = "";
     public string Back { get; set; } = "";
 
+    /// <summary>How the front side is pronounced, e.g. "/ˈdedlaɪn/". Optional.</summary>
+    public string? Transcription { get; set; }
+
+    /// <summary>Word, phrase, idiom… Optional.</summary>
+    public CardKind Kind { get; set; }
+
     /// <summary>Optional nudge shown on demand before answering.</summary>
     public string? Hint { get; set; }
 
