@@ -140,6 +140,7 @@ public partial class App : Application, IPromptHost
     {
         var tray = new TrayIconService();
         tray.LibraryRequested += (_, _) => ShowMain(AppPage.Dictionary);
+        tray.PracticeRequested += (_, _) => ShowMain(AppPage.Practice);
         tray.SettingsRequested += (_, _) => ShowMain(AppPage.Settings);
         tray.StatisticsRequested += (_, _) => ShowMain(AppPage.Statistics);
         tray.PromptNowRequested += (_, _) => PromptNow();
@@ -221,6 +222,16 @@ public partial class App : Application, IPromptHost
     public DateTimeOffset? PausedUntil => _prompts?.IsPaused(DateTimeOffset.Now) == true ? _prompts.PausedUntil : null;
 
     public event EventHandler? StateChanged;
+
+    public bool IsPracticing
+    {
+        get => _scheduler?.IsPracticeActive == true;
+        set
+        {
+            if (_scheduler is not null)
+                _scheduler.IsPracticeActive = value;
+        }
+    }
 
     public void PromptNow()
     {

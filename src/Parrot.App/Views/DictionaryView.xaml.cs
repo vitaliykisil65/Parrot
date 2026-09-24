@@ -47,6 +47,9 @@ public sealed class CardRow
     public string Front => Card.Front;
     public string Back { get; }
 
+    /// <summary>Shown after the word in a lighter type, with a leading space; empty when there is none.</summary>
+    public string Transcription => CardText.Transcription(Card) is { } text ? "  " + text : "";
+
     public double DifficultyWidth { get; }
     public Brush DifficultyBrush { get; }
     public string DifficultyTip { get; }
@@ -130,6 +133,15 @@ public sealed partial class DictionaryView : UserControl
         InitializeComponent();
 
         CardsList.ItemsSource = _rows;
+        KindBox.ItemsSource = CardText.Kinds.Select(kind => new KindOption(kind, CardText.KindName(kind))).ToList();
+
+        foreach (var symbol in CardText.IpaSymbols)
+        {
+            var key = new Button { Style = (Style)FindResource("IpaKey"), Content = symbol };
+            key.Click += (_, _) => InsertIpa(symbol);
+            IpaPanel.Children.Add(key);
+        }
+
         Loaded += (_, _) => Reload();
     }
 
@@ -302,6 +314,14 @@ public sealed partial class DictionaryView : UserControl
         DetailFront.Text = card.Front;
         DetailBack.Text = row.Back;
 
+        DetailTranscription.Text = CardText.Transcription(card) ?? "";
+        DetailTranscription.Visibility = DetailTranscription.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+        DetailKindText.Text = CardText.KindName(card.Kind);
+        DetailKind.Visibility = card.Kind == CardKind.None ? Visibility.Collapsed : Visibility.Visible;
+        DetailMeta.Visibility = DetailTranscription.Visibility == Visibility.Visible || DetailKind.Visibility == Visibility.Visible
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+
         Section(DetailHintBlock, DetailHint, card.Hint);
         Section(DetailExampleBlock, DetailExample, card.Example);
         Section(DetailNotesBlock, DetailNotes, card.Notes);
@@ -374,6 +394,8 @@ public sealed partial class DictionaryView : UserControl
         DeckBox.SelectedItem = _decks.FirstOrDefault(d => d.Id == card.DeckId) ?? _decks.FirstOrDefault();
 
         FrontBox.Text = card.Front;
+        TranscriptionBox.Text = card.Transcription ?? "";
+        KindBox.SelectedItem = KindBox.Items.OfType<KindOption>().FirstOrDefault(k => k.Value == card.Kind);
         BackBox.Text = card.Back;
         HintBox.Text = card.Hint ?? "";
         ExampleBox.Text = card.Example ?? "";
@@ -407,6 +429,8 @@ public sealed partial class DictionaryView : UserControl
         card.DeckId = deck.Id;
         card.Front = FrontBox.Text.Trim();
         card.Back = BackBox.Text.Trim();
+        card.Transcription = Optional(TranscriptionBox.Text);
+        card.Kind = (KindBox.SelectedItem as KindOption)?.Value ?? CardKind.None;
         card.Hint = Optional(HintBox.Text);
         card.Example = Optional(ExampleBox.Text);
         card.Tags = Optional(TagsBox.Text);
@@ -448,6 +472,15 @@ public sealed partial class DictionaryView : UserControl
         CardsList.SelectedItems.Clear();
         CardsList.SelectedItem = row;
         CardsList.ScrollIntoView(row);
+    }
+
+    /// <summary>Types an IPA symbol into the transcription box at the caret, replacing any selection.</summary>
+    private void InsertIpa(string symbol)
+    {
+        var start = TranscriptionBox.SelectionStart;
+        TranscriptionBox.SelectedText = symbol;
+        TranscriptionBox.CaretIndex = start + symbol.Length;
+        TranscriptionBox.Focus();
     }
 
     private static string? Optional(string value) =>

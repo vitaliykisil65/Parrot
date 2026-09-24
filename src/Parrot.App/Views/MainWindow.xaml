@@ -43,12 +43,15 @@
                     <RadioButton x:Name="NavDictionary" Style="{StaticResource NavItem}" GroupName="Nav"
                                  Content="{l:T Nav.Dictionary}" c:Ui.Icon="{StaticResource Icon.Book}"
                                  ToolTip="Ctrl+1" Checked="OnNavChecked" />
+                    <RadioButton x:Name="NavPractice" Style="{StaticResource NavItem}" GroupName="Nav" Margin="0,2,0,0"
+                                 Content="{l:T Nav.Practice}" c:Ui.Icon="{StaticResource Icon.Cards}"
+                                 ToolTip="Ctrl+2" Checked="OnNavChecked" />
                     <RadioButton x:Name="NavStatistics" Style="{StaticResource NavItem}" GroupName="Nav" Margin="0,2,0,0"
                                  Content="{l:T Nav.Statistics}" c:Ui.Icon="{StaticResource Icon.Chart}"
-                                 ToolTip="Ctrl+2" Checked="OnNavChecked" />
+                                 ToolTip="Ctrl+3" Checked="OnNavChecked" />
                     <RadioButton x:Name="NavSettings" Style="{StaticResource NavItem}" GroupName="Nav" Margin="0,2,0,0"
                                  Content="{l:T Nav.Settings}" c:Ui.Icon="{StaticResource Icon.Sliders}"
-                                 ToolTip="Ctrl+3" Checked="OnNavChecked" />
+                                 ToolTip="Ctrl+4" Checked="OnNavChecked" />
                 </StackPanel>
 
                 <!-- New version: docked first, so it sits at the very bottom, under the streak -->

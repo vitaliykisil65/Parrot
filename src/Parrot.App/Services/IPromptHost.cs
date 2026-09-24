@@ -8,6 +8,9 @@ public interface IPromptHost
     /// <summary>Set while prompts are paused; null otherwise.</summary>
     DateTimeOffset? PausedUntil { get; }
 
+    /// <summary>Set while a practice game is on screen: prompts wait until it is over.</summary>
+    bool IsPracticing { get; set; }
+
     void PromptNow();
     void Pause(TimeSpan duration);
     void Resume();

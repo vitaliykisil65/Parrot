@@ -956,4 +956,256 @@
   <data name="Deck.DefaultName" xml:space="preserve">
     <value>Англійська</value>
   </data>
+  <data name="Nav.Practice" xml:space="preserve">
+    <value>Тренування</value>
+  </data>
+  <data name="Tray.Practice" xml:space="preserve">
+    <value>Тренування</value>
+  </data>
+  <data name="Card.Transcription" xml:space="preserve">
+    <value>Транскрипція</value>
+  </data>
+  <data name="Card.Kind" xml:space="preserve">
+    <value>Тип</value>
+  </data>
+  <data name="Kind.None" xml:space="preserve">
+    <value>Не вказано</value>
+  </data>
+  <data name="Kind.Word" xml:space="preserve">
+    <value>Слово</value>
+  </data>
+  <data name="Kind.Phrase" xml:space="preserve">
+    <value>Фраза</value>
+  </data>
+  <data name="Kind.PhrasalVerb" xml:space="preserve">
+    <value>Фразове дієслово</value>
+  </data>
+  <data name="Kind.Idiom" xml:space="preserve">
+    <value>Ідіома</value>
+  </data>
+  <data name="Edit.TranscriptionNote" xml:space="preserve">
+    <value>Натисніть символ, щоб вставити його в позицію курсора.</value>
+  </data>
+  <data name="Stats.DayPractice" xml:space="preserve">
+    <value>тренування: {0}</value>
+  </data>
+  <data name="Stats.TodayPractice" xml:space="preserve">
+    <value>тренування: {0}</value>
+  </data>
+  <data name="Stats.TodayPracticeOnly" xml:space="preserve">
+    <value>Сьогодні: {0} у тренуванні</value>
+  </data>
+  <data name="Practice.Subtitle" xml:space="preserve">
+    <value>Грайте з картками, поки не запам'ятаєте весь набір.</value>
+  </data>
+  <data name="Practice.Mode" xml:space="preserve">
+    <value>Гра</value>
+  </data>
+  <data name="Mode.Flashcards" xml:space="preserve">
+    <value>Картки</value>
+  </data>
+  <data name="Mode.Flashcards.Note" xml:space="preserve">
+    <value>Переверніть картку й чесно скажіть, чи знали її.</value>
+  </data>
+  <data name="Mode.Choice" xml:space="preserve">
+    <value>Вибір варіанта</value>
+  </data>
+  <data name="Mode.Choice.Note" xml:space="preserve">
+    <value>Оберіть правильний переклад із чотирьох.</value>
+  </data>
+  <data name="Mode.Write" xml:space="preserve">
+    <value>Письмо</value>
+  </data>
+  <data name="Mode.Write.Note" xml:space="preserve">
+    <value>Напишіть переклад. Дрібні одруківки прощаються.</value>
+  </data>
+  <data name="Mode.Learn" xml:space="preserve">
+    <value>Вивчення</value>
+  </data>
+  <data name="Mode.Learn.Note" xml:space="preserve">
+    <value>Від вибору до письма — поки не вивчите кожну картку.</value>
+  </data>
+  <data name="Mode.Match" xml:space="preserve">
+    <value>Пари</value>
+  </data>
+  <data name="Mode.Match.Note" xml:space="preserve">
+    <value>З'єднайте шість слів із перекладами на швидкість.</value>
+  </data>
+  <data name="Mode.TrueFalse" xml:space="preserve">
+    <value>Правда чи ні</value>
+  </data>
+  <data name="Mode.TrueFalse.Note" xml:space="preserve">
+    <value>Чи правильний переклад? Одна хвилина — скільки встигнете.</value>
+  </data>
+  <data name="Practice.Cards" xml:space="preserve">
+    <value>Картки</value>
+  </data>
+  <data name="Practice.Deck" xml:space="preserve">
+    <value>Колода</value>
+  </data>
+  <data name="Practice.Kind" xml:space="preserve">
+    <value>Тип</value>
+  </data>
+  <data name="Practice.AnyKind" xml:space="preserve">
+    <value>Будь-який</value>
+  </data>
+  <data name="Practice.Scope" xml:space="preserve">
+    <value>Які картки</value>
+  </data>
+  <data name="Scope.All" xml:space="preserve">
+    <value>Усі</value>
+  </data>
+  <data name="Scope.Random" xml:space="preserve">
+    <value>Випадкові</value>
+  </data>
+  <data name="Scope.Hardest" xml:space="preserve">
+    <value>Найважчі</value>
+  </data>
+  <data name="Scope.New" xml:space="preserve">
+    <value>Нові</value>
+  </data>
+  <data name="Scope.Mistakes" xml:space="preserve">
+    <value>Помилки</value>
+  </data>
+  <data name="ScopeNote.All" xml:space="preserve">
+    <value>Усі картки, що підходять під фільтри</value>
+  </data>
+  <data name="ScopeNote.Random" xml:space="preserve">
+    <value>Випадкова добірка</value>
+  </data>
+  <data name="ScopeNote.Hardest" xml:space="preserve">
+    <value>Ті, в яких ви найчастіше помиляєтеся</value>
+  </data>
+  <data name="ScopeNote.New" xml:space="preserve">
+    <value>Картки, яких ви ще не бачили</value>
+  </data>
+  <data name="ScopeNote.Mistakes" xml:space="preserve">
+    <value>З помилками за останні 7 днів</value>
+  </data>
+  <data name="Practice.Count" xml:space="preserve">
+    <value>Скільки</value>
+  </data>
+  <data name="Practice.Goal" xml:space="preserve">
+    <value>Вивчено після</value>
+  </data>
+  <data name="Practice.GoalNote" xml:space="preserve">
+    <value>Скільки правильних відповідей підряд потрібно кожній картці</value>
+  </data>
+  <data name="Goal.One" xml:space="preserve">
+    <value>1 правильної відповіді</value>
+  </data>
+  <data name="Goal.Two" xml:space="preserve">
+    <value>2 підряд</value>
+  </data>
+  <data name="Practice.Start" xml:space="preserve">
+    <value>Почати</value>
+  </data>
+  <data name="Practice.Summary" xml:space="preserve">
+    <value>У наборі: {0}</value>
+  </data>
+  <data name="Practice.NoCards" xml:space="preserve">
+    <value>Жодна картка не підходить під ці налаштування.</value>
+  </data>
+  <data name="Practice.TooFew" xml:space="preserve">
+    <value>Для цієї гри потрібно щонайменше {0}.</value>
+  </data>
+  <data name="Practice.SrsNote" xml:space="preserve">
+    <value>Картки з помилками частіше з'являтимуться протягом дня.</value>
+  </data>
+  <data name="Practice.Finish" xml:space="preserve">
+    <value>Завершити (Esc)</value>
+  </data>
+  <data name="Practice.Progress" xml:space="preserve">
+    <value>Вивчено {0} з {1}</value>
+  </data>
+  <data name="Practice.Flip" xml:space="preserve">
+    <value>Клацніть або натисніть пробіл, щоб перевернути</value>
+  </data>
+  <data name="Practice.StillLearning" xml:space="preserve">
+    <value>Ще вчу</value>
+  </data>
+  <data name="Practice.Know" xml:space="preserve">
+    <value>Знаю</value>
+  </data>
+  <data name="Practice.ChooseAnswer" xml:space="preserve">
+    <value>Оберіть правильну відповідь</value>
+  </data>
+  <data name="Practice.WriteAnswer" xml:space="preserve">
+    <value>Напишіть відповідь</value>
+  </data>
+  <data name="Practice.AnswerHint" xml:space="preserve">
+    <value>Ваша відповідь</value>
+  </data>
+  <data name="Practice.Override" xml:space="preserve">
+    <value>Моя відповідь правильна</value>
+  </data>
+  <data name="Practice.MatchHint" xml:space="preserve">
+    <value>Натисніть слово, а потім його переклад.</value>
+  </data>
+  <data name="Practice.Best" xml:space="preserve">
+    <value>Рекорд: {0}</value>
+  </data>
+  <data name="Practice.Yes" xml:space="preserve">
+    <value>Так</value>
+  </data>
+  <data name="Practice.No" xml:space="preserve">
+    <value>Ні</value>
+  </data>
+  <data name="Practice.IsItRight" xml:space="preserve">
+    <value>Це правильний переклад?</value>
+  </data>
+  <data name="Practice.ScoreValue" xml:space="preserve">
+    <value>Рахунок: {0}</value>
+  </data>
+  <data name="Result.Learned" xml:space="preserve">
+    <value>Набір вивчено!</value>
+  </data>
+  <data name="Result.Stopped" xml:space="preserve">
+    <value>Сесію завершено</value>
+  </data>
+  <data name="Result.StoppedNote" xml:space="preserve">
+    <value>Вивчено {0} з {1}</value>
+  </data>
+  <data name="Result.MatchDone" xml:space="preserve">
+    <value>Поле очищено!</value>
+  </data>
+  <data name="Result.TimeUp" xml:space="preserve">
+    <value>Час вийшов!</value>
+  </data>
+  <data name="Result.Record" xml:space="preserve">
+    <value>Новий рекорд!</value>
+  </data>
+  <data name="Result.Accuracy" xml:space="preserve">
+    <value>Точність</value>
+  </data>
+  <data name="Result.Time" xml:space="preserve">
+    <value>Час</value>
+  </data>
+  <data name="Result.Cards" xml:space="preserve">
+    <value>Картки</value>
+  </data>
+  <data name="Result.Mistakes" xml:space="preserve">
+    <value>Помилки</value>
+  </data>
+  <data name="Result.Score" xml:space="preserve">
+    <value>Правильних</value>
+  </data>
+  <data name="Result.Best" xml:space="preserve">
+    <value>Рекорд</value>
+  </data>
+  <data name="Result.Troublesome" xml:space="preserve">
+    <value>Варто повторити</value>
+  </data>
+  <data name="Result.Perfect" xml:space="preserve">
+    <value>Жодної помилки — чудово!</value>
+  </data>
+  <data name="Result.RetryMistakes" xml:space="preserve">
+    <value>Повторити помилки</value>
+  </data>
+  <data name="Result.Again" xml:space="preserve">
+    <value>Ще раз</value>
+  </data>
+  <data name="Result.Settings" xml:space="preserve">
+    <value>Змінити налаштування</value>
+  </data>
 </root>

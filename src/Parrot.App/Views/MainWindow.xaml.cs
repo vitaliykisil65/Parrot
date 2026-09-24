@@ -19,11 +19,11 @@ using Parrot.Core.Statistics;
 
 namespace Parrot.App.Views;
 
-public enum AppPage { Dictionary, Statistics, Settings }
+public enum AppPage { Dictionary, Practice, Statistics, Settings }
 
 /// <summary>
 /// The single app window: a sidebar with sections, decks and the prompt schedule, and one
-/// content area that hosts the dictionary, the statistics or the settings.
+/// content area that hosts the dictionary, practice, the statistics or the settings.
 /// </summary>
 public sealed partial class MainWindow : Window
 {
@@ -36,6 +36,7 @@ public sealed partial class MainWindow : Window
     private readonly DispatcherTimer _toastTimer = new() { Interval = TimeSpan.FromSeconds(6) };
 
     private DictionaryView? _dictionary;
+    private PracticeView? _practice;
     private StatisticsView? _statistics;
     private SettingsView? _settingsView;
 
@@ -76,6 +77,7 @@ public sealed partial class MainWindow : Window
         {
             _clock.Stop();
             _toastTimer.Stop();
+            _host.IsPracticing = false;
             _host.StateChanged -= OnHostStateChanged;
             _updates.StateChanged -= OnUpdateStateChanged;
             _dialog?.TrySetResult(false);
@@ -90,6 +92,7 @@ public sealed partial class MainWindow : Window
     {
         var target = page switch
         {
+            AppPage.Practice => NavPractice,
             AppPage.Statistics => NavStatistics,
             AppPage.Settings => NavSettings,
             _ => NavDictionary,
@@ -106,7 +109,18 @@ public sealed partial class MainWindow : Window
         if (!IsInitialized)
             return;
 
-        if (sender == NavStatistics)
+        if (sender == NavPractice)
+        {
+            if (_practice is null)
+            {
+                _practice = new PracticeView(_repository, _settings, this);
+                _practice.PlayingChanged += (_, _) => UpdatePracticeState();
+            }
+
+            _practice.Reload();
+            PageHost.Content = _practice;
+        }
+        else if (sender == NavStatistics)
         {
             _statistics ??= new StatisticsView(_repository);
             _statistics.Reload();
@@ -122,7 +136,13 @@ public sealed partial class MainWindow : Window
             _dictionary ??= CreateDictionary();
             PageHost.Content = _dictionary;
         }
+
+        UpdatePracticeState();
     }
+
+    /// <summary>Prompts hold off while a game is on screen, and only then — a game left in another tab doesn't count.</summary>
+    private void UpdatePracticeState() =>
+        _host.IsPracticing = _practice is { IsPlaying: true } && PageHost.Content == _practice;
 
     private DictionaryView CreateDictionary()
     {
@@ -330,7 +350,7 @@ public sealed partial class MainWindow : Window
         StreakDays.Children.Clear();
         foreach (var day in report.Daily.TakeLast(7))
         {
-            var answered = day.Correct + day.Missed > 0;
+            var answered = day.IsActive;
             StreakDays.Children.Add(new Rectangle
             {
                 Height = 6,
@@ -628,8 +648,9 @@ public sealed partial class MainWindow : Window
             switch (e.Key)
             {
                 case Key.D1: ShowPage(AppPage.Dictionary); e.Handled = true; return;
-                case Key.D2: ShowPage(AppPage.Statistics); e.Handled = true; return;
-                case Key.D3: ShowPage(AppPage.Settings); e.Handled = true; return;
+                case Key.D2: ShowPage(AppPage.Practice); e.Handled = true; return;
+                case Key.D3: ShowPage(AppPage.Statistics); e.Handled = true; return;
+                case Key.D4: ShowPage(AppPage.Settings); e.Handled = true; return;
                 case Key.K or Key.F:
                     ShowPage(AppPage.Dictionary);
                     _dictionary?.FocusSearch();
@@ -641,6 +662,12 @@ public sealed partial class MainWindow : Window
                     e.Handled = true;
                     return;
             }
+        }
+
+        if (Keyboard.Modifiers == ModifierKeys.None && PageHost.Content == _practice && _practice?.HandleKey(e) == true)
+        {
+            e.Handled = true;
+            return;
         }
 
         base.OnPreviewKeyDown(e);

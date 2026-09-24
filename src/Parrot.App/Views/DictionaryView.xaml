@@ -17,6 +17,18 @@
             <Setter Property="Padding" Value="10,9" />
         </Style>
 
+        <!-- One IPA symbol in the transcription helper. Not focusable, so clicking it keeps the caret in the box. -->
+        <Style x:Key="IpaKey" TargetType="Button" BasedOn="{StaticResource Button.Base}">
+            <Setter Property="MinHeight" Value="26" />
+            <Setter Property="MinWidth" Value="28" />
+            <Setter Property="Padding" Value="4,0" />
+            <Setter Property="Margin" Value="0,0,4,4" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="c:Ui.CornerRadius" Value="7" />
+        </Style>
+
         <Style x:Key="FilterChip" TargetType="RadioButton" BasedOn="{StaticResource Chip}">
             <Setter Property="GroupName" Value="Filter" />
             <Setter Property="Margin" Value="0,0,8,0" />
@@ -114,8 +126,11 @@
                                     <DockPanel Grid.Column="0" Margin="0,0,12,0">
                                         <Ellipse DockPanel.Dock="Left" Width="6" Height="6" Margin="0,0,10,0"
                                                  Fill="{Binding DeckBrush}" VerticalAlignment="Center" />
-                                        <TextBlock Text="{Binding Front}" FontWeight="SemiBold"
-                                                   TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                        <TextBlock TextTrimming="CharacterEllipsis" VerticalAlignment="Center">
+                                            <Run Text="{Binding Front, Mode=OneWay}" FontWeight="SemiBold" />
+                                            <Run Text="{Binding Transcription, Mode=OneWay}" FontSize="12"
+                                                 Foreground="{DynamicResource Brush.TextMuted}" />
+                                        </TextBlock>
                                     </DockPanel>
 
                                     <TextBlock Grid.Column="1" Text="{Binding Back}" Margin="0,0,12,0"
@@ -221,6 +236,15 @@
                                 </DockPanel>
 
                                 <TextBlock x:Name="DetailFront" Style="{StaticResource Text.Word}" Margin="0,18,0,0" />
+                                <WrapPanel x:Name="DetailMeta" Margin="0,4,0,0">
+                                    <TextBlock x:Name="DetailTranscription" FontSize="15" Margin="0,0,10,0"
+                                               VerticalAlignment="Center" Foreground="{DynamicResource Brush.TextMuted}" />
+                                    <Border x:Name="DetailKind" CornerRadius="7" Padding="9,3" VerticalAlignment="Center"
+                                            Background="{DynamicResource Brush.Segmented}">
+                                        <TextBlock x:Name="DetailKindText" FontSize="12"
+                                                   Foreground="{DynamicResource Brush.TextSecondary}" />
+                                    </Border>
+                                </WrapPanel>
                                 <TextBlock x:Name="DetailBack" FontSize="16" TextWrapping="Wrap" Margin="0,6,0,0"
                                            Foreground="{DynamicResource Brush.TextSecondary}" />
 
@@ -327,6 +351,10 @@
                                 <TextBlock Text="{l:T Edit.Front}" Style="{StaticResource FieldLabel}" />
                                 <TextBox x:Name="FrontBox" FontWeight="SemiBold" />
 
+                                <TextBlock Text="{l:T Card.Transcription}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6" />
+                                <TextBox x:Name="TranscriptionBox" c:Ui.Hint="/ˈdedlaɪn/" />
+                                <WrapPanel x:Name="IpaPanel" Margin="0,6,0,0" ToolTip="{l:T Edit.TranscriptionNote}" />
+
                                 <TextBlock Text="{l:T Dict.Column.Translation}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6" />
                                 <TextBox x:Name="BackBox" />
                                 <TextBlock Style="{StaticResource Text.Caption}" FontWeight="Normal" Margin="0,5,0,0"
@@ -335,6 +363,9 @@
 
                                 <TextBlock Text="{l:T Edit.Deck}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6" />
                                 <ComboBox x:Name="DeckBox" DisplayMemberPath="Name" MinHeight="38" />
+
+                                <TextBlock Text="{l:T Card.Kind}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6" />
+                                <ComboBox x:Name="KindBox" MinHeight="38" />
 
                                 <TextBlock Text="{l:T Card.Hint}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6" />
                                 <TextBox x:Name="HintBox" c:Ui.Hint="{l:T Edit.Optional}" />

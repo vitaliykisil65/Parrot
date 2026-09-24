@@ -42,6 +42,7 @@ public sealed class TrayIconService : IDisposable
             Font = new System.Drawing.Font(Forms.Control.DefaultFont, System.Drawing.FontStyle.Bold),
         });
         menu.Items.Add(new Forms.ToolStripMenuItem(L.T("Tray.ShowNow"), null, (_, _) => PromptNowRequested?.Invoke(this, EventArgs.Empty)));
+        menu.Items.Add(new Forms.ToolStripMenuItem(L.T("Tray.Practice"), null, (_, _) => PracticeRequested?.Invoke(this, EventArgs.Empty)));
         menu.Items.Add(new Forms.ToolStripMenuItem(L.T("Nav.Statistics"), null, (_, _) => StatisticsRequested?.Invoke(this, EventArgs.Empty)));
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add(_pauseItem);
@@ -67,6 +68,7 @@ public sealed class TrayIconService : IDisposable
     }
 
     public event EventHandler? LibraryRequested;
+    public event EventHandler? PracticeRequested;
     public event EventHandler? SettingsRequested;
     public event EventHandler? StatisticsRequested;
     public event EventHandler? PromptNowRequested;

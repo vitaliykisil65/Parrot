@@ -413,11 +413,14 @@ public sealed partial class SettingsView : UserControl
         if (!confirmed)
             return;
 
-        // Autostart lives in the registry and is not a preference to reset silently.
+        // Autostart lives in the registry and is not a preference to reset silently; game records
+        // are achievements, not preferences.
         _settings.Save(new AppSettings
         {
             RunAtStartup = _settings.Current.RunAtStartup,
             DismissedUpdateVersion = _settings.Current.DismissedUpdateVersion,
+            MatchBestMs = _settings.Current.MatchBestMs,
+            TrueFalseBest = _settings.Current.TrueFalseBest,
         });
         Load(_settings.Current);
         _shell.ShowToast(L.T("Settings.Reset.Done"));

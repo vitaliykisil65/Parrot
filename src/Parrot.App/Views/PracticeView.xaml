@@ -1,0 +1,487 @@
+<UserControl x:Class="Parrot.App.Views.PracticeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:Parrot.App.Localization"
+             xmlns:c="clr-namespace:Parrot.App.Controls"
+             Focusable="True" FocusVisualStyle="{x:Null}">
+
+    <UserControl.Resources>
+        <!-- A game on the setup screen: icon, name and one line on how it plays. -->
+        <Style x:Key="ModeTile" TargetType="RadioButton">
+            <Setter Property="GroupName" Value="Mode" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Margin" Value="0,0,12,12" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
+            <Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Ring}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Root" CornerRadius="14" Padding="14,12" BorderThickness="1.5"
+                                Background="{DynamicResource Brush.Surface}" BorderBrush="{DynamicResource Brush.Line}">
+                            <DockPanel>
+                                <Border x:Name="IconBox" DockPanel.Dock="Left" Width="36" Height="36" CornerRadius="10"
+                                        VerticalAlignment="Top" Background="{DynamicResource Brush.Segmented}">
+                                    <c:Icon x:Name="Glyph" Data="{TemplateBinding c:Ui.Icon}" Size="18"
+                                            Foreground="{DynamicResource Brush.TextSecondary}"
+                                            HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                                    <ContentPresenter TextElement.FontWeight="SemiBold" />
+                                    <TextBlock Text="{TemplateBinding c:Ui.Hint}" Style="{StaticResource Text.Caption}"
+                                               FontWeight="Normal" TextWrapping="Wrap" Margin="0,2,0,0" />
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="{DynamicResource Brush.SurfaceSunk}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="{DynamicResource Brush.Selection}" />
+                                <Setter TargetName="Root" Property="BorderBrush" Value="{DynamicResource Brush.Primary}" />
+                                <Setter TargetName="IconBox" Property="Background" Value="{DynamicResource Brush.Primary}" />
+                                <Setter TargetName="Glyph" Property="Foreground" Value="{DynamicResource Brush.PrimaryText}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SectionCard" TargetType="Border" BasedOn="{StaticResource Card}">
+            <Setter Property="Padding" Value="18,6,18,6" />
+        </Style>
+
+        <Style x:Key="Row" TargetType="DockPanel">
+            <Setter Property="MinHeight" Value="56" />
+        </Style>
+
+        <Style x:Key="RowTitle" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+            <Setter Property="FontWeight" Value="Medium" />
+        </Style>
+
+        <Style x:Key="RowNote" TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="0,2,0,0" />
+        </Style>
+
+        <Style x:Key="RowText" TargetType="StackPanel">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,10,16,10" />
+        </Style>
+
+        <Style x:Key="Picker" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+            <Setter Property="Width" Value="220" />
+            <Setter Property="MinHeight" Value="36" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <!-- A multiple-choice answer. -->
+        <Style x:Key="OptionButton" TargetType="Button" BasedOn="{StaticResource Button.Base}">
+            <Setter Property="MinHeight" Value="58" />
+            <Setter Property="Margin" Value="0,0,10,10" />
+            <Setter Property="Padding" Value="14,8" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="c:Ui.CornerRadius" Value="12" />
+        </Style>
+
+        <!-- A word or a translation on the match board. -->
+        <Style x:Key="MatchTile" TargetType="Button" BasedOn="{StaticResource Button.Base}">
+            <Setter Property="MinHeight" Value="92" />
+            <Setter Property="Margin" Value="0,0,10,10" />
+            <Setter Property="Padding" Value="10,8" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="c:Ui.CornerRadius" Value="14" />
+        </Style>
+
+        <Style x:Key="ResultTile" TargetType="Border" BasedOn="{StaticResource Card}">
+            <Setter Property="Padding" Value="16,14" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="28,22,24,20">
+
+        <!-- ═══ Setup ═══════════════════════════════════════════════════════════ -->
+        <DockPanel x:Name="SetupPanel">
+            <StackPanel DockPanel.Dock="Top">
+                <TextBlock Text="{l:T Nav.Practice}" Style="{StaticResource Text.Title}" />
+                <TextBlock Text="{l:T Practice.Subtitle}" Style="{StaticResource Text.Muted}" Margin="0,2,0,0" />
+            </StackPanel>
+
+            <!-- Start bar -->
+            <Border DockPanel.Dock="Bottom" Margin="0,14,0,0" Padding="0,12,0,0"
+                    BorderBrush="{DynamicResource Brush.Line}" BorderThickness="0,1,0,0">
+                <DockPanel>
+                    <Button x:Name="StartButton" DockPanel.Dock="Right" Style="{StaticResource Button.Primary}"
+                            MinHeight="42" Padding="20,0,14,0" Click="OnStart">
+                        <StackPanel Orientation="Horizontal">
+                            <c:Icon Data="{StaticResource Icon.Play}" Size="12" IsFilled="True" Margin="0,0,8,0"
+                                    VerticalAlignment="Center" />
+                            <TextBlock Text="{l:T Practice.Start}" />
+                            <Border Style="{StaticResource Kbd.OnPrimary}"><TextBlock Text="Enter" /></Border>
+                        </StackPanel>
+                    </Button>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock x:Name="SummaryText" FontWeight="SemiBold" />
+                        <TextBlock x:Name="SummaryNote" Style="{StaticResource Text.Caption}" FontWeight="Normal"
+                                   TextWrapping="Wrap" Margin="0,2,16,0" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,18,-12,0" Padding="0,0,12,0">
+                <StackPanel>
+                    <TextBlock Text="{l:T Practice.Mode}" Style="{StaticResource Text.Section}" Margin="0,0,0,10" />
+                    <UniformGrid x:Name="ModeGrid" Columns="3" Margin="0,0,-12,0" />
+
+                    <TextBlock Text="{l:T Practice.Cards}" Style="{StaticResource Text.Section}" Margin="0,8,0,10" />
+                    <Border Style="{StaticResource SectionCard}">
+                        <StackPanel>
+                            <DockPanel Style="{StaticResource Row}">
+                                <ComboBox x:Name="DeckPicker" DockPanel.Dock="Right" Style="{StaticResource Picker}"
+                                          SelectionChanged="OnFilterChanged" />
+                                <StackPanel Style="{StaticResource RowText}">
+                                    <TextBlock Text="{l:T Practice.Deck}" Style="{StaticResource RowTitle}" />
+                                </StackPanel>
+                            </DockPanel>
+
+                            <Border Style="{StaticResource RowRule}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <ComboBox x:Name="KindPicker" DockPanel.Dock="Right" Style="{StaticResource Picker}"
+                                          SelectionChanged="OnFilterChanged" />
+                                <StackPanel Style="{StaticResource RowText}">
+                                    <TextBlock Text="{l:T Practice.Kind}" Style="{StaticResource RowTitle}" />
+                                </StackPanel>
+                            </DockPanel>
+
+                            <Border Style="{StaticResource RowRule}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <Border DockPanel.Dock="Right" Style="{StaticResource Segmented}">
+                                    <StackPanel x:Name="ScopePanel" Orientation="Horizontal" />
+                                </Border>
+                                <StackPanel Style="{StaticResource RowText}">
+                                    <TextBlock Text="{l:T Practice.Scope}" Style="{StaticResource RowTitle}" />
+                                    <TextBlock x:Name="ScopeNote" Style="{StaticResource RowNote}" />
+                                </StackPanel>
+                            </DockPanel>
+
+                            <StackPanel x:Name="CountRow">
+                                <Border Style="{StaticResource RowRule}" />
+                                <DockPanel Style="{StaticResource Row}">
+                                    <c:NumberStepper x:Name="CountStepper" DockPanel.Dock="Right" Minimum="5" Maximum="200"
+                                                     Step="5" ValueCommitted="OnCountChanged" />
+                                    <StackPanel Style="{StaticResource RowText}">
+                                        <TextBlock Text="{l:T Practice.Count}" Style="{StaticResource RowTitle}" />
+                                    </StackPanel>
+                                </DockPanel>
+                            </StackPanel>
+
+                            <StackPanel x:Name="DirectionRow">
+                                <Border Style="{StaticResource RowRule}" />
+                                <DockPanel Style="{StaticResource Row}">
+                                    <Border DockPanel.Dock="Right" Style="{StaticResource Segmented}">
+                                        <StackPanel x:Name="DirectionPanel" Orientation="Horizontal" />
+                                    </Border>
+                                    <StackPanel Style="{StaticResource RowText}">
+                                        <TextBlock Text="{l:T Settings.Direction}" Style="{StaticResource RowTitle}" />
+                                    </StackPanel>
+                                </DockPanel>
+                            </StackPanel>
+
+                            <StackPanel x:Name="GoalRow">
+                                <Border Style="{StaticResource RowRule}" />
+                                <DockPanel Style="{StaticResource Row}">
+                                    <Border DockPanel.Dock="Right" Style="{StaticResource Segmented}">
+                                        <StackPanel x:Name="GoalPanel" Orientation="Horizontal" />
+                                    </Border>
+                                    <StackPanel Style="{StaticResource RowText}">
+                                        <TextBlock Text="{l:T Practice.Goal}" Style="{StaticResource RowTitle}" />
+                                        <TextBlock Text="{l:T Practice.GoalNote}" Style="{StaticResource RowNote}" />
+                                    </StackPanel>
+                                </DockPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+
+        <!-- ═══ Playing ═════════════════════════════════════════════════════════ -->
+        <DockPanel x:Name="PlayPanel" Visibility="Collapsed">
+            <DockPanel DockPanel.Dock="Top">
+                <Button DockPanel.Dock="Left" Style="{StaticResource Button.IconGhost}" VerticalAlignment="Center"
+                        c:Ui.Icon="{StaticResource Icon.Close}" ToolTip="{l:T Practice.Finish}"
+                        AutomationProperties.Name="{l:T Practice.Finish}" Click="OnFinish" />
+
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock x:Name="ScoreText" Style="{StaticResource Text.Section}" Margin="0,0,16,0"
+                               VerticalAlignment="Center" />
+                    <TextBlock x:Name="TimerText" Style="{StaticResource Text.Section}" Margin="0,0,16,0"
+                               VerticalAlignment="Center" />
+                    <Border x:Name="PlayDirectionBox" Style="{StaticResource Segmented}">
+                        <StackPanel x:Name="PlayDirectionPanel" Orientation="Horizontal" />
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0">
+                    <TextBlock x:Name="PlayTitle" Style="{StaticResource Text.Section}" FontSize="17" VerticalAlignment="Center" />
+                    <Border x:Name="StepChip" CornerRadius="7" Padding="9,3" Margin="10,0,0,0" VerticalAlignment="Center"
+                            Background="{DynamicResource Brush.InfoSoft}">
+                        <TextBlock x:Name="StepChipText" FontSize="12" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Brush.InfoDeep}" />
+                    </Border>
+                </StackPanel>
+            </DockPanel>
+
+            <!-- Progress -->
+            <DockPanel DockPanel.Dock="Top" Margin="0,14,0,0">
+                <TextBlock x:Name="ProgressText" DockPanel.Dock="Right" Style="{StaticResource Text.Caption}"
+                           Margin="12,0,0,0" VerticalAlignment="Center" />
+                <Grid Height="6" VerticalAlignment="Center">
+                    <Border CornerRadius="3" Background="{DynamicResource Brush.Track}" />
+                    <Border CornerRadius="3" Background="{DynamicResource Brush.Primary}" RenderTransformOrigin="0,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="ProgressScale" ScaleX="0" />
+                        </Border.RenderTransform>
+                    </Border>
+                </Grid>
+            </DockPanel>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,16,0,0">
+                <Grid MaxWidth="700" VerticalAlignment="Center" Margin="0,8">
+
+                    <!-- Flashcards -->
+                    <StackPanel x:Name="FlashSurface" Visibility="Collapsed">
+                        <Border x:Name="FlashCard" Style="{StaticResource Card}" MinHeight="300" CornerRadius="22"
+                                Padding="32,24" Cursor="Hand" RenderTransformOrigin="0.5,0.5"
+                                MouseLeftButtonUp="OnFlashClick">
+                            <Border.RenderTransform>
+                                <ScaleTransform x:Name="FlashScale" />
+                            </Border.RenderTransform>
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="24" ShadowDepth="4" Direction="270" Opacity="0.08" Color="#14202E" />
+                            </Border.Effect>
+                            <Grid>
+                                <TextBlock x:Name="FlashSide" Style="{StaticResource Text.Caption}" VerticalAlignment="Top" />
+                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,28">
+                                    <TextBlock x:Name="FlashText" FontFamily="{StaticResource Font.Display}" FontSize="34"
+                                               FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center" />
+                                    <TextBlock x:Name="FlashTranscription" FontSize="17" Margin="0,6,0,0" TextAlignment="Center"
+                                               TextWrapping="Wrap" Foreground="{DynamicResource Brush.TextMuted}" />
+                                    <TextBlock x:Name="FlashExample" Style="{StaticResource Text.Muted}" FontSize="14"
+                                               FontStyle="Italic" Margin="0,16,0,0" TextAlignment="Center" TextWrapping="Wrap" />
+                                </StackPanel>
+                                <TextBlock Text="{l:T Practice.Flip}" Style="{StaticResource Text.Caption}" FontWeight="Normal"
+                                           HorizontalAlignment="Center" VerticalAlignment="Bottom" />
+                            </Grid>
+                        </Border>
+
+                        <UniformGrid Columns="2" Margin="0,18,-12,0">
+                            <Button MinHeight="50" Margin="0,0,12,0" Click="OnStillLearning">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Style="{StaticResource Kbd}" Margin="0,0,10,0"><TextBlock Text="←" /></Border>
+                                    <TextBlock Text="{l:T Practice.StillLearning}" />
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource Button.Primary}" MinHeight="50" Margin="0,0,12,0" Click="OnKnow">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{l:T Practice.Know}" />
+                                    <Border Style="{StaticResource Kbd.OnPrimary}" Margin="10,0,0,0"><TextBlock Text="→" /></Border>
+                                </StackPanel>
+                            </Button>
+                        </UniformGrid>
+                    </StackPanel>
+
+                    <!-- Multiple choice and writing -->
+                    <StackPanel x:Name="QuestionSurface" Visibility="Collapsed">
+                        <Border Style="{StaticResource Card}" CornerRadius="22" Padding="28,22">
+                            <StackPanel>
+                                <TextBlock x:Name="QuestionCaption" Style="{StaticResource Text.Caption}" />
+                                <TextBlock x:Name="QuestionText" FontFamily="{StaticResource Font.Display}" FontSize="30"
+                                           FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,8,0,0" />
+                                <TextBlock x:Name="QuestionTranscription" FontSize="16" Margin="0,2,0,0" TextWrapping="Wrap"
+                                           Foreground="{DynamicResource Brush.TextMuted}" />
+                                <TextBlock x:Name="QuestionHint" Style="{StaticResource Text.Muted}" Margin="0,6,0,0"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <UniformGrid x:Name="ChoicePanel" Columns="2" Margin="0,16,-10,0" />
+
+                        <StackPanel x:Name="WritePanel" Margin="0,16,0,0">
+                            <TextBox x:Name="WriteBox" MinHeight="46" FontSize="17" c:Ui.Hint="{l:T Practice.AnswerHint}" />
+                            <StackPanel x:Name="WriteActions" Orientation="Horizontal" Margin="0,12,0,0">
+                                <Button Style="{StaticResource Button.Primary}" Padding="16,0,10,0" Click="OnCheck">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{l:T Prompt.Check}" />
+                                        <Border Style="{StaticResource Kbd.OnPrimary}"><TextBlock Text="Enter" /></Border>
+                                    </StackPanel>
+                                </Button>
+                                <Button Content="{l:T Prompt.DontKnow}" Margin="8,0,0,0" Click="OnDontKnow" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Feedback after an answer -->
+                        <Border x:Name="FeedbackPanel" Visibility="Collapsed" Margin="0,16,0,0" Padding="16,14" CornerRadius="14">
+                            <DockPanel>
+                                <Border x:Name="FeedbackBadge" DockPanel.Dock="Left" Width="28" Height="28" CornerRadius="14"
+                                        VerticalAlignment="Top" Margin="0,0,12,0">
+                                    <c:Icon x:Name="FeedbackIcon" Size="15" StrokeThickness="2.6"
+                                            HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <StackPanel>
+                                    <TextBlock x:Name="FeedbackStatus" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                    <TextBlock x:Name="FeedbackYours" Style="{StaticResource Text.Muted}" Margin="0,2,0,0"
+                                               TextWrapping="Wrap" />
+                                    <TextBlock x:Name="FeedbackAnswer" FontSize="19" FontWeight="SemiBold" Margin="0,4,0,0"
+                                               TextWrapping="Wrap" />
+                                    <TextBlock x:Name="FeedbackTranscription" Style="{StaticResource Text.Muted}" FontSize="14"
+                                               TextWrapping="Wrap" />
+                                    <TextBlock x:Name="FeedbackExample" Style="{StaticResource Text.Muted}" Margin="0,6,0,0"
+                                               TextWrapping="Wrap" FontStyle="Italic" />
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+
+                        <DockPanel x:Name="ContinuePanel" Visibility="Collapsed" Margin="0,12,0,0">
+                            <Button DockPanel.Dock="Right" Style="{StaticResource Button.Primary}" Padding="16,0,10,0"
+                                    Click="OnContinue">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{l:T Prompt.Next}" />
+                                    <Border Style="{StaticResource Kbd.OnPrimary}"><TextBlock Text="Enter" /></Border>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="OverrideButton" DockPanel.Dock="Left" Style="{StaticResource Button.Ghost}"
+                                    HorizontalAlignment="Left" Foreground="{DynamicResource Brush.TextMuted}"
+                                    Content="{l:T Practice.Override}" Click="OnOverride" />
+                        </DockPanel>
+                    </StackPanel>
+
+                    <!-- Match -->
+                    <StackPanel x:Name="MatchSurface" Visibility="Collapsed">
+                        <UniformGrid x:Name="MatchGrid" Columns="4" Margin="0,0,-10,0" />
+                        <TextBlock Text="{l:T Practice.MatchHint}" Style="{StaticResource Text.Caption}" FontWeight="Normal"
+                                   HorizontalAlignment="Center" Margin="0,8,0,0" />
+                    </StackPanel>
+
+                    <!-- True or false -->
+                    <StackPanel x:Name="TrueFalseSurface" Visibility="Collapsed">
+                        <Border x:Name="TfCard" Style="{StaticResource Card}" CornerRadius="22" Padding="28,30"
+                                BorderThickness="2">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock x:Name="TfQuestion" FontFamily="{StaticResource Font.Display}" FontSize="32"
+                                           FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center" />
+                                <TextBlock x:Name="TfTranscription" FontSize="16" TextAlignment="Center" TextWrapping="Wrap"
+                                           Foreground="{DynamicResource Brush.TextMuted}" />
+                                <c:Icon Data="{StaticResource Icon.ChevronDown}" Size="22" Margin="0,14"
+                                        HorizontalAlignment="Center" Foreground="{DynamicResource Brush.TextMuted}" />
+                                <TextBlock x:Name="TfShown" FontSize="24" FontWeight="SemiBold" TextWrapping="Wrap"
+                                           TextAlignment="Center" Foreground="{DynamicResource Brush.InfoStrong}" />
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="{l:T Practice.IsItRight}" Style="{StaticResource Text.Muted}"
+                                   HorizontalAlignment="Center" Margin="0,16,0,0" />
+
+                        <UniformGrid Columns="2" Margin="0,12,-12,0">
+                            <Button MinHeight="52" Margin="0,0,12,0" Click="OnFalse">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Style="{StaticResource Kbd}" Margin="0,0,10,0"><TextBlock Text="←" /></Border>
+                                    <TextBlock Text="{l:T Practice.No}" />
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource Button.Primary}" MinHeight="52" Margin="0,0,12,0" Click="OnTrue">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{l:T Practice.Yes}" />
+                                    <Border Style="{StaticResource Kbd.OnPrimary}" Margin="10,0,0,0"><TextBlock Text="→" /></Border>
+                                </StackPanel>
+                            </Button>
+                        </UniformGrid>
+
+                        <TextBlock x:Name="TfFeedback" Style="{StaticResource Text.Muted}" HorizontalAlignment="Center"
+                                   TextAlignment="Center" TextWrapping="Wrap" Margin="0,14,0,0" />
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+        </DockPanel>
+
+        <!-- ═══ Results ═════════════════════════════════════════════════════════ -->
+        <ScrollViewer x:Name="ResultPanel" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+            <StackPanel MaxWidth="640" Margin="0,24">
+                <Border Width="64" Height="64" CornerRadius="20" HorizontalAlignment="Center"
+                        Background="{DynamicResource Brush.Active}">
+                    <c:Icon x:Name="ResultIcon" Size="30" Foreground="{DynamicResource Brush.ActiveIcon}"
+                            HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <TextBlock x:Name="ResultTitle" Style="{StaticResource Text.Title}" HorizontalAlignment="Center"
+                           Margin="0,16,0,4" />
+                <TextBlock x:Name="ResultNote" Style="{StaticResource Text.Muted}" HorizontalAlignment="Center"
+                           TextAlignment="Center" TextWrapping="Wrap" />
+
+                <UniformGrid Columns="3" Margin="0,22,-12,0">
+                    <Border Style="{StaticResource ResultTile}" Margin="0,0,12,0">
+                        <StackPanel>
+                            <TextBlock x:Name="ResultValue1" Style="{StaticResource Text.Metric}" FontSize="28" />
+                            <TextBlock x:Name="ResultLabel1" Style="{StaticResource Text.Caption}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource ResultTile}" Margin="0,0,12,0">
+                        <StackPanel>
+                            <TextBlock x:Name="ResultValue2" Style="{StaticResource Text.Metric}" FontSize="28" />
+                            <TextBlock x:Name="ResultLabel2" Style="{StaticResource Text.Caption}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource ResultTile}" Margin="0,0,12,0">
+                        <StackPanel>
+                            <TextBlock x:Name="ResultValue3" Style="{StaticResource Text.Metric}" FontSize="28" />
+                            <TextBlock x:Name="ResultLabel3" Style="{StaticResource Text.Caption}" />
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <StackPanel x:Name="TroublesomeBlock" Margin="0,24,0,0">
+                    <TextBlock Text="{l:T Result.Troublesome}" Style="{StaticResource Text.Section}" Margin="0,0,0,8" />
+                    <ItemsControl x:Name="TroublesomeList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="4,9" BorderBrush="{DynamicResource Brush.LineFaint}" BorderThickness="0,0,0,1">
+                                    <DockPanel>
+                                        <TextBlock DockPanel.Dock="Right" Text="{Binding Count}" FontSize="12"
+                                                   Foreground="{DynamicResource Brush.TextMuted}" VerticalAlignment="Center" />
+                                        <StackPanel Margin="0,0,12,0">
+                                            <TextBlock TextWrapping="Wrap">
+                                                <Run Text="{Binding Front, Mode=OneWay}" FontWeight="SemiBold" />
+                                                <Run Text="{Binding Transcription, Mode=OneWay}" FontSize="12"
+                                                     Foreground="{DynamicResource Brush.TextMuted}" />
+                                            </TextBlock>
+                                            <TextBlock Text="{Binding Back}" FontSize="13" TextWrapping="Wrap"
+                                                       Foreground="{DynamicResource Brush.TextSecondary}" />
+                                        </StackPanel>
+                                    </DockPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <TextBlock x:Name="ResultPerfect" Text="{l:T Result.Perfect}" Style="{StaticResource Text.Muted}"
+                           HorizontalAlignment="Center" Margin="0,22,0,0" />
+                <TextBlock x:Name="ResultSrsNote" Text="{l:T Practice.SrsNote}" Style="{StaticResource Text.Caption}"
+                           FontWeight="Normal" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0,12,0,0" />
+
+                <WrapPanel HorizontalAlignment="Center" Margin="0,24,0,0">
+                    <Button x:Name="RetryMistakesButton" Style="{StaticResource Button.Primary}" Margin="0,0,8,8"
+                            Padding="16,0" Content="{l:T Result.RetryMistakes}" c:Ui.Icon="{StaticResource Icon.Reset}"
+                            Click="OnRetryMistakes" />
+                    <Button x:Name="AgainButton" Margin="0,0,8,8" Padding="16,0" Content="{l:T Result.Again}"
+                            c:Ui.Icon="{StaticResource Icon.Play}" c:Ui.IconSize="12" Click="OnAgain" />
+                    <Button Style="{StaticResource Button.Ghost}" Margin="0,0,0,8" Content="{l:T Result.Settings}"
+                            c:Ui.Icon="{StaticResource Icon.Sliders}" Click="OnBackToSetup" />
+                </WrapPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

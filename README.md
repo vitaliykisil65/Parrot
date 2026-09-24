@@ -44,8 +44,16 @@ back to what you were doing, or simply ignore the card and it will fade away on 
 - 🤷 **"I don't know"** reveals the answer with an example right away.
 - 🔕 **Knows when to stay quiet.** Quiet hours, active days, a daily limit, a pause from the tray,
   and no cards while a full-screen app or presentation is running or you're away from the keyboard.
-- 📚 **Dictionary** with decks, search, filters (due, hard, new, suspended), a recycle bin with undo,
-  and CSV import/export.
+- 🎮 **Practice games** when you want more than a card at a time: flashcards, multiple choice,
+  writing, a *learn* mode that walks every card from choice to writing, a timed *match* board and
+  a one-minute *true or false*. Pick the whole dictionary, a deck, a random handful, the hardest
+  cards, the new ones or last week's mistakes, switch the direction on the fly, and keep going
+  until the whole set is learned. Mistakes made in a game make the card come back sooner as a
+  prompt; practice never eats into the daily prompt limits.
+- 🔤 **Transcriptions** — an optional pronunciation for every word, with a bar of IPA symbols to
+  type it, shown on the prompt, in the dictionary and in the games.
+- 📚 **Dictionary** with decks, search, filters (due, hard, new, suspended), an optional type for
+  each card (word, phrase, phrasal verb, idiom), a recycle bin with undo, and CSV import/export.
 - 📊 **Statistics:** day streak, accuracy, a 30-day activity chart, difficulty distribution and
   your hardest cards.
 - 🎨 **Light and dark themes** that follow Windows, a custom window frame and a quiet chime.
@@ -117,8 +125,13 @@ Portable or dev builds can't update in place — there the button opens the rele
 
 - The first launch creates an empty **English** deck. Click **Add** (`Ctrl+N`) to add cards, or
   import a CSV file from the **⋯** menu.
-- CSV columns are `Front, Back, Hint, Example, Tags`; only the first two are required, and a
-  header row is optional. Separate several correct translations with semicolons: `big; large`.
+- CSV columns are `Front, Back, Hint, Example, Tags, Transcription, Kind`; only the first two
+  are required, and a header row is optional. With a header the columns may come in any order.
+  Separate several correct translations with semicolons: `big; large`. `Kind` is `word`,
+  `phrase`, `phrasal verb` or `idiom`.
+- **Practice** (`Ctrl+2`) is for a focused session: choose a game and a set of cards and press
+  `Enter`. Every game is playable from the keyboard — `Space` flips a card, `←`/`→` answer,
+  `1`–`4` pick an option, `Esc` ends the session.
 - Don't want to wait for the first card? **Show now** in the sidebar or the tray menu.
 
 ## Building from source

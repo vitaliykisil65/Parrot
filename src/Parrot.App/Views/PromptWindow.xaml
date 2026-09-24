@@ -59,6 +59,9 @@
                 <TextBlock x:Name="QuestionText" FontFamily="{StaticResource Font.Display}" FontSize="26"
                            FontWeight="SemiBold" TextWrapping="Wrap" />
 
+                <TextBlock x:Name="TranscriptionText" FontSize="15" Margin="0,2,0,0" TextWrapping="Wrap"
+                           Foreground="{DynamicResource Brush.TextMuted}" Visibility="Collapsed" />
+
                 <TextBlock x:Name="HintText" Style="{StaticResource Text.Muted}" Margin="0,4,0,0"
                            TextWrapping="Wrap" Visibility="Collapsed" />
 
@@ -93,6 +96,8 @@
                                        TextWrapping="Wrap" Visibility="Collapsed" />
                             <TextBlock x:Name="ResultAnswer" FontSize="18" FontWeight="SemiBold" Margin="0,4,0,0"
                                        TextWrapping="Wrap" />
+                            <TextBlock x:Name="ResultTranscription" Style="{StaticResource Text.Muted}" FontSize="14"
+                                       TextWrapping="Wrap" Visibility="Collapsed" />
                             <TextBlock x:Name="ResultExample" Style="{StaticResource Text.Muted}" Margin="0,6,0,0"
                                        TextWrapping="Wrap" FontStyle="Italic" Visibility="Collapsed" />
                         </StackPanel>

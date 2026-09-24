@@ -105,9 +105,16 @@ public sealed partial class StatisticsView : UserControl
             .ToList();
 
         var today = report.Today;
-        TodayNote.Text = today.Shown == 0
-            ? L.T("Stats.TodayEmpty")
-            : L.F("Stats.TodaySummary", L.Plural(today.Shown, "Plural.Card"), today.Correct, today.Missed, today.Ignored);
+        var practice = L.Plural(report.PracticeToday, "Plural.Answer");
+
+        TodayNote.Text = (today.Shown, report.PracticeToday) switch
+        {
+            (0, 0) => L.T("Stats.TodayEmpty"),
+            (0, _) => L.F("Stats.TodayPracticeOnly", practice),
+            (_, 0) => L.F("Stats.TodaySummary", L.Plural(today.Shown, "Plural.Card"), today.Correct, today.Missed, today.Ignored),
+            _ => L.F("Stats.TodaySummary", L.Plural(today.Shown, "Plural.Card"), today.Correct, today.Missed, today.Ignored)
+                 + " · " + L.F("Stats.TodayPractice", practice),
+        };
     }
 
     private void ShowDifficulty(StatisticsReport report)
@@ -159,9 +166,11 @@ public sealed partial class StatisticsView : UserControl
     {
         var date = day.Day.ToString("dddd, " + L.DayMonthFormat(), L.Culture);
 
-        return day.Total == 0
+        var tip = day.Total == 0
             ? L.F("Stats.DayEmpty", date)
             : L.F("Stats.DayTip", date, day.Correct, day.Missed, day.Ignored);
+
+        return day.Practice == 0 ? tip : tip + "\n" + L.F("Stats.DayPractice", day.Practice);
     }
 
     private Brush Res(string key) => TryFindResource(key) as Brush ?? Brushes.Gray;

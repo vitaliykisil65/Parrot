@@ -42,6 +42,14 @@ public sealed partial class PromptWindow : Window
         DeckLabel.Text = deckName;
         QuestionText.Text = request.Question;
 
+        // The pronunciation belongs to the foreign side: under the question when that is what is
+        // asked, next to the answer otherwise (so it doesn't give the answer away).
+        if (CardText.Transcription(request.Card) is { } transcription && request.Direction == TranslationDirection.FrontToBack)
+        {
+            TranscriptionText.Text = transcription;
+            TranscriptionText.Visibility = Visibility.Visible;
+        }
+
         if (!string.IsNullOrWhiteSpace(request.Card.Hint) && request.Direction == TranslationDirection.FrontToBack)
         {
             HintText.Text = request.Card.Hint;
@@ -321,6 +329,12 @@ public sealed partial class PromptWindow : Window
         // A synonym from another card is accepted, but this card still wants its own word learned.
         if (matched is not null && _request.AlsoAccepted.Contains(matched))
             ResultAnswer.Text = L.F("Prompt.Synonym", matched, _request.Answer);
+
+        if (_request.Direction == TranslationDirection.BackToFront && CardText.Transcription(_request.Card) is { } transcription)
+        {
+            ResultTranscription.Text = transcription;
+            ResultTranscription.Visibility = Visibility.Visible;
+        }
 
         if (!string.IsNullOrWhiteSpace(_request.Card.Example))
         {

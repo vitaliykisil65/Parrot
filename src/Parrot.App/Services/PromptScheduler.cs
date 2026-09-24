@@ -51,6 +51,9 @@ public sealed class PromptScheduler : IDisposable
     /// <summary>Set by the UI while a prompt window is visible, to avoid stacking prompts.</summary>
     public bool IsPromptOnScreen { get; set; }
 
+    /// <summary>Set while the user plays a practice game; a prompt then would only get in the way.</summary>
+    public bool IsPracticeActive { get; set; }
+
     public void Start() => Reschedule();
 
     public void Stop()
@@ -112,6 +115,9 @@ public sealed class PromptScheduler : IDisposable
     {
         if (IsPromptOnScreen)
             return RetryDelay;
+
+        if (IsPracticeActive)
+            return Skip("A practice session is running.");
 
         var settings = _settings.Current;
 

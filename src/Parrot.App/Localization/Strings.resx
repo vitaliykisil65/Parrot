@@ -959,4 +959,256 @@ skipped: {3}</value>
   <data name="Deck.DefaultName" xml:space="preserve">
     <value>English</value>
   </data>
+  <data name="Nav.Practice" xml:space="preserve">
+    <value>Practice</value>
+  </data>
+  <data name="Tray.Practice" xml:space="preserve">
+    <value>Practice</value>
+  </data>
+  <data name="Card.Transcription" xml:space="preserve">
+    <value>Transcription</value>
+  </data>
+  <data name="Card.Kind" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Kind.None" xml:space="preserve">
+    <value>Not set</value>
+  </data>
+  <data name="Kind.Word" xml:space="preserve">
+    <value>Word</value>
+  </data>
+  <data name="Kind.Phrase" xml:space="preserve">
+    <value>Phrase</value>
+  </data>
+  <data name="Kind.PhrasalVerb" xml:space="preserve">
+    <value>Phrasal verb</value>
+  </data>
+  <data name="Kind.Idiom" xml:space="preserve">
+    <value>Idiom</value>
+  </data>
+  <data name="Edit.TranscriptionNote" xml:space="preserve">
+    <value>Click a symbol to insert it at the cursor.</value>
+  </data>
+  <data name="Stats.DayPractice" xml:space="preserve">
+    <value>practice: {0}</value>
+  </data>
+  <data name="Stats.TodayPractice" xml:space="preserve">
+    <value>practice: {0}</value>
+  </data>
+  <data name="Stats.TodayPracticeOnly" xml:space="preserve">
+    <value>Today: {0} in practice</value>
+  </data>
+  <data name="Practice.Subtitle" xml:space="preserve">
+    <value>Play with your cards until the whole set sticks.</value>
+  </data>
+  <data name="Practice.Mode" xml:space="preserve">
+    <value>Game</value>
+  </data>
+  <data name="Mode.Flashcards" xml:space="preserve">
+    <value>Flashcards</value>
+  </data>
+  <data name="Mode.Flashcards.Note" xml:space="preserve">
+    <value>Flip a card and say honestly whether you knew it.</value>
+  </data>
+  <data name="Mode.Choice" xml:space="preserve">
+    <value>Multiple choice</value>
+  </data>
+  <data name="Mode.Choice.Note" xml:space="preserve">
+    <value>Pick the translation out of four.</value>
+  </data>
+  <data name="Mode.Write" xml:space="preserve">
+    <value>Writing</value>
+  </data>
+  <data name="Mode.Write.Note" xml:space="preserve">
+    <value>Type the translation. Small typos are forgiven.</value>
+  </data>
+  <data name="Mode.Learn" xml:space="preserve">
+    <value>Learn</value>
+  </data>
+  <data name="Mode.Learn.Note" xml:space="preserve">
+    <value>From choice to writing, until every card is learned.</value>
+  </data>
+  <data name="Mode.Match" xml:space="preserve">
+    <value>Match</value>
+  </data>
+  <data name="Mode.Match.Note" xml:space="preserve">
+    <value>Pair six words with their translations against the clock.</value>
+  </data>
+  <data name="Mode.TrueFalse" xml:space="preserve">
+    <value>True or false</value>
+  </data>
+  <data name="Mode.TrueFalse.Note" xml:space="preserve">
+    <value>Is it the right translation? One minute, as many as you can.</value>
+  </data>
+  <data name="Practice.Cards" xml:space="preserve">
+    <value>Cards</value>
+  </data>
+  <data name="Practice.Deck" xml:space="preserve">
+    <value>Deck</value>
+  </data>
+  <data name="Practice.Kind" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Practice.AnyKind" xml:space="preserve">
+    <value>Any</value>
+  </data>
+  <data name="Practice.Scope" xml:space="preserve">
+    <value>Which cards</value>
+  </data>
+  <data name="Scope.All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Scope.Random" xml:space="preserve">
+    <value>Random</value>
+  </data>
+  <data name="Scope.Hardest" xml:space="preserve">
+    <value>Hardest</value>
+  </data>
+  <data name="Scope.New" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="Scope.Mistakes" xml:space="preserve">
+    <value>Mistakes</value>
+  </data>
+  <data name="ScopeNote.All" xml:space="preserve">
+    <value>Every card that fits the filters</value>
+  </data>
+  <data name="ScopeNote.Random" xml:space="preserve">
+    <value>A random handful</value>
+  </data>
+  <data name="ScopeNote.Hardest" xml:space="preserve">
+    <value>The ones you miss most often</value>
+  </data>
+  <data name="ScopeNote.New" xml:space="preserve">
+    <value>Cards you haven't seen yet</value>
+  </data>
+  <data name="ScopeNote.Mistakes" xml:space="preserve">
+    <value>Missed in the last 7 days</value>
+  </data>
+  <data name="Practice.Count" xml:space="preserve">
+    <value>How many</value>
+  </data>
+  <data name="Practice.Goal" xml:space="preserve">
+    <value>Learned after</value>
+  </data>
+  <data name="Practice.GoalNote" xml:space="preserve">
+    <value>Right answers in a row each card needs</value>
+  </data>
+  <data name="Goal.One" xml:space="preserve">
+    <value>1 right answer</value>
+  </data>
+  <data name="Goal.Two" xml:space="preserve">
+    <value>2 in a row</value>
+  </data>
+  <data name="Practice.Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="Practice.Summary" xml:space="preserve">
+    <value>{0} in the set</value>
+  </data>
+  <data name="Practice.NoCards" xml:space="preserve">
+    <value>No cards fit these settings.</value>
+  </data>
+  <data name="Practice.TooFew" xml:space="preserve">
+    <value>This game needs at least {0}.</value>
+  </data>
+  <data name="Practice.SrsNote" xml:space="preserve">
+    <value>Cards you miss here will pop up sooner during the day.</value>
+  </data>
+  <data name="Practice.Finish" xml:space="preserve">
+    <value>Finish (Esc)</value>
+  </data>
+  <data name="Practice.Progress" xml:space="preserve">
+    <value>{0} of {1} learned</value>
+  </data>
+  <data name="Practice.Flip" xml:space="preserve">
+    <value>Click or press Space to flip</value>
+  </data>
+  <data name="Practice.StillLearning" xml:space="preserve">
+    <value>Still learning</value>
+  </data>
+  <data name="Practice.Know" xml:space="preserve">
+    <value>Know it</value>
+  </data>
+  <data name="Practice.ChooseAnswer" xml:space="preserve">
+    <value>Choose the right answer</value>
+  </data>
+  <data name="Practice.WriteAnswer" xml:space="preserve">
+    <value>Type the answer</value>
+  </data>
+  <data name="Practice.AnswerHint" xml:space="preserve">
+    <value>Your answer</value>
+  </data>
+  <data name="Practice.Override" xml:space="preserve">
+    <value>I was right</value>
+  </data>
+  <data name="Practice.MatchHint" xml:space="preserve">
+    <value>Click a word, then its translation.</value>
+  </data>
+  <data name="Practice.Best" xml:space="preserve">
+    <value>Best: {0}</value>
+  </data>
+  <data name="Practice.Yes" xml:space="preserve">
+    <value>True</value>
+  </data>
+  <data name="Practice.No" xml:space="preserve">
+    <value>False</value>
+  </data>
+  <data name="Practice.IsItRight" xml:space="preserve">
+    <value>Is this the right translation?</value>
+  </data>
+  <data name="Practice.ScoreValue" xml:space="preserve">
+    <value>Score: {0}</value>
+  </data>
+  <data name="Result.Learned" xml:space="preserve">
+    <value>Set learned!</value>
+  </data>
+  <data name="Result.Stopped" xml:space="preserve">
+    <value>Session finished</value>
+  </data>
+  <data name="Result.StoppedNote" xml:space="preserve">
+    <value>{0} of {1} learned</value>
+  </data>
+  <data name="Result.MatchDone" xml:space="preserve">
+    <value>Board cleared!</value>
+  </data>
+  <data name="Result.TimeUp" xml:space="preserve">
+    <value>Time's up!</value>
+  </data>
+  <data name="Result.Record" xml:space="preserve">
+    <value>New record!</value>
+  </data>
+  <data name="Result.Accuracy" xml:space="preserve">
+    <value>Accuracy</value>
+  </data>
+  <data name="Result.Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Result.Cards" xml:space="preserve">
+    <value>Cards</value>
+  </data>
+  <data name="Result.Mistakes" xml:space="preserve">
+    <value>Mistakes</value>
+  </data>
+  <data name="Result.Score" xml:space="preserve">
+    <value>Right answers</value>
+  </data>
+  <data name="Result.Best" xml:space="preserve">
+    <value>Best</value>
+  </data>
+  <data name="Result.Troublesome" xml:space="preserve">
+    <value>Worth another look</value>
+  </data>
+  <data name="Result.Perfect" xml:space="preserve">
+    <value>No mistakes — well done!</value>
+  </data>
+  <data name="Result.RetryMistakes" xml:space="preserve">
+    <value>Practice the mistakes</value>
+  </data>
+  <data name="Result.Again" xml:space="preserve">
+    <value>Play again</value>
+  </data>
+  <data name="Result.Settings" xml:space="preserve">
+    <value>Change settings</value>
+  </data>
 </root>
