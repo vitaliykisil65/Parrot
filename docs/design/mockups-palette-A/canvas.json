@@ -1,0 +1,25 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-09-19T19:30:00Z" },
+  "title": "Parrot — редизайн",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": { "x": 0, "y": 0, "w": 1200, "h": 760, "title": "Словник · вибрана картка праворуч", "is_interactive": true },
+    "Stats.dc.html": { "x": 1280, "y": 0, "w": 1200, "h": 760, "title": "Статистика", "is_interactive": true },
+    "Settings.dc.html": { "x": 2560, "y": 0, "w": 1200, "h": 760, "title": "Налаштування", "is_interactive": true },
+    "DictDark.dc.html": { "x": 0, "y": 1100, "w": 1200, "h": 760, "title": "Темна тема · редагування картки", "is_interactive": true },
+    "Tabs.dc.html": { "x": 1280, "y": 1100, "w": 1200, "h": 760, "title": "Альтернатива: вкладки зверху", "is_interactive": true },
+    "Popup.dc.html": { "x": 0, "y": 2200, "w": 1672, "h": 520, "title": "Спливаюча картка · стани" },
+    "Logo.dc.html": { "x": 1752, "y": 2200, "w": 1368, "h": 640, "title": "Логотип · напрям C" },
+    "Palette.dc.html": { "x": 0, "y": 3200, "w": 1368, "h": 660, "title": "Палітри · синій + жовтий" }
+  },
+  "order": ["Main.dc.html", "Stats.dc.html", "Settings.dc.html", "DictDark.dc.html", "Tabs.dc.html", "Popup.dc.html", "Logo.dc.html", "Palette.dc.html"],
+  "notes": {
+    "t1": { "x": 0, "y": -300, "text": "Одне вікно, своя рамка", "kind": "title1", "maxW": 3760 },
+    "t2": { "x": 0, "y": 800, "text": "Темна тема та інший макет", "kind": "title1", "maxW": 2480 },
+    "t3": { "x": 0, "y": 1900, "text": "Картка-підказка та логотип", "kind": "title1", "maxW": 3120 },
+    "t4": { "x": 0, "y": 2900, "text": "Палітри", "kind": "title1", "maxW": 1368 }
+  },
+  "designSystems": []
+}

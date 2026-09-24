@@ -1,0 +1,137 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "DictDark.dc.html": {
+      "h": 760,
+      "is_interactive": true,
+      "title": "Темна тема · редагування картки",
+      "w": 1200,
+      "x": 0,
+      "y": 1100
+    },
+    "Logo.dc.html": {
+      "h": 640,
+      "title": "Логотип · напрям C",
+      "w": 1368,
+      "x": 1752,
+      "y": 2200
+    },
+    "Main.dc.html": {
+      "h": 760,
+      "is_interactive": true,
+      "title": "Словник · палітра D",
+      "w": 1200,
+      "x": 0,
+      "y": 0
+    },
+    "Palette.dc.html": {
+      "h": 660,
+      "title": "Палітри · D (обрано) і A",
+      "w": 720,
+      "x": 0,
+      "y": 3200
+    },
+    "Popup.dc.html": {
+      "h": 520,
+      "title": "Спливаюча картка · стани",
+      "w": 1672,
+      "x": 0,
+      "y": 2200
+    },
+    "Settings.dc.html": {
+      "h": 760,
+      "is_interactive": true,
+      "title": "Налаштування",
+      "w": 1200,
+      "x": 2560,
+      "y": 0
+    },
+    "Stats.dc.html": {
+      "h": 760,
+      "is_interactive": true,
+      "title": "Статистика",
+      "w": 1200,
+      "x": 1280,
+      "y": 0
+    },
+    "Tabs.dc.html": {
+      "h": 760,
+      "is_interactive": true,
+      "title": "Альтернатива: вкладки зверху",
+      "w": 1200,
+      "x": 1280,
+      "y": 1100
+    },
+    "MainA.dc.html": {
+      "x": 800,
+      "y": 3200,
+      "w": 1200,
+      "h": 760,
+      "title": "Для порівняння: словник у палітрі A",
+      "is_interactive": true
+    },
+    "Update.dc.html": {
+      "h": 420,
+      "title": "Картка оновлення · стани",
+      "w": 1672,
+      "x": 0,
+      "y": 4160
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-09-19T19:30:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {
+    "t1": {
+      "kind": "title1",
+      "maxW": 3760,
+      "text": "Одне вікно, своя рамка",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    },
+    "t2": {
+      "kind": "title1",
+      "maxW": 2480,
+      "text": "Темна тема та інший макет",
+      "w": 240,
+      "x": 0,
+      "y": 800
+    },
+    "t3": {
+      "kind": "title1",
+      "maxW": 3120,
+      "text": "Картка-підказка та логотип",
+      "w": 240,
+      "x": 0,
+      "y": 1900
+    },
+    "t4": {
+      "kind": "title1",
+      "maxW": 2000,
+      "text": "Палітра D проти A",
+      "w": 240,
+      "x": 0,
+      "y": 2900
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Stats.dc.html",
+    "Settings.dc.html",
+    "DictDark.dc.html",
+    "Tabs.dc.html",
+    "Popup.dc.html",
+    "Logo.dc.html",
+    "Palette.dc.html",
+    "MainA.dc.html"
+  ],
+  "pages": [],
+  "title": "Parrot — редизайн"
+}

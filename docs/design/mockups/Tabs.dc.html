@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Parrot — варіант із вкладками</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Onest',system-ui,sans-serif;color:#14202E}
+button,input{font-family:inherit}
+button{cursor:pointer}
+svg.i{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+button.wc:hover{background:rgba(20,32,46,.07)}
+button.wcx:hover{background:#E5484D;color:#FFFFFF}
+a.tab:hover{color:#14202E}
+a{color:#1F5FE0}
+</style>
+</helmet>
+<div style="width: 1200px; height: 760px; box-sizing: border-box; display: flex; flex-direction: column; background: #F7F5EF; border: 1px solid #D9D6CC; border-radius: 10px; overflow: hidden;">
+
+<div style="height: 52px; flex-shrink: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center;">
+<div style="display: flex; align-items: center; gap: 10px; padding-left: 18px;">
+<svg width="28" height="28" viewBox="0 0 120 120" aria-hidden="true" style="border-radius: 23%; background: #E3EDFF;"><path d="M71 27c-1-11 5-19 15-21-3 7-3 13 0 19z" fill="#1747B8"></path><path d="M80 30c5-9 14-13 23-11-5 5-7 11-6 17z" fill="#6FA3FF"></path><circle cx="72" cy="118" r="38" fill="#FFC23A"></circle><circle cx="72" cy="62" r="35" fill="#2F6BF2"></circle><path d="M91 33a35 35 0 0 1 8 52c-6-12-9-28-8-52z" fill="#1F5FE0"></path><ellipse cx="60" cy="60" rx="17" ry="18" fill="#F7F4EC"></ellipse><circle cx="62" cy="57" r="6.5" fill="#14202E"></circle><circle cx="64.3" cy="54.8" r="2.1" fill="#FFFFFF"></circle><path d="M45 46C21 42 11 62 21 82c3-10 12-15 24-13z" fill="#14202E"></path><path d="M29 74c2 9 10 13 18 10l-2-14z" fill="#39485A"></path></svg>
+<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.01em;">Parrot</span>
+</div>
+<nav aria-label="Розділи" style="display: flex; padding: 4px; gap: 2px; background: #E9E7E0; border-radius: 12px;">
+<a href="Tabs.dc.html" aria-current="page" style="height: 32px; padding: 0 16px; border-radius: 9px; background: #FFFFFF; color: #14202E; text-decoration: none; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(20, 32, 46, 0.12);"><svg class="i" width="15" height="15" viewBox="0 0 24 24" style="color: #C98A10;"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>Словник</a>
+<a href="Stats.dc.html" class="tab" style="height: 32px; padding: 0 16px; border-radius: 9px; color: #5E6878; text-decoration: none; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px;"><svg class="i" width="15" height="15" viewBox="0 0 24 24"><path d="M3 3v18h18"></path><path d="M8 16v-4"></path><path d="M13 16V8"></path><path d="M18 16v-7"></path></svg>Статистика</a>
+<a href="Settings.dc.html" class="tab" style="height: 32px; padding: 0 16px; border-radius: 9px; color: #5E6878; text-decoration: none; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px;"><svg class="i" width="15" height="15" viewBox="0 0 24 24"><path d="M4 6h9"></path><path d="M19 6h1"></path><path d="M4 12h3"></path><path d="M13 12h7"></path><path d="M4 18h11"></path><circle cx="16" cy="6" r="2.5"></circle><circle cx="10" cy="12" r="2.5"></circle><circle cx="18" cy="18" r="2.5"></circle></svg>Налаштування</a>
+</nav>
+<div style="display: flex; align-items: center; justify-content: flex-end; height: 100%; gap: 10px;">
+<div style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 4px 0 12px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E7E4DA; font-size: 12px;">
+<span style="width: 6px; height: 6px; border-radius: 3px; background: #FFC23A;"></span><span style="color: #3A4555;">Наступна через <b style="font-weight: 600; color: #14202E;">12 хв</b></span>
+<button aria-label="Призупинити" style="width: 24px; height: 24px; padding: 0; border: 0; border-radius: 12px; background: #F7F5EF; color: #3A4555; display: flex; align-items: center; justify-content: center;"><svg class="i" width="12" height="12" viewBox="0 0 24 24" style="stroke-width: 2.4;"><path d="M9 5v14"></path><path d="M15 5v14"></path></svg></button>
+</div>
+<div style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 16px; background: #FFF1CC; color: #7A5200; font-size: 12px; font-weight: 600;"><svg class="i" width="14" height="14" viewBox="0 0 24 24" style="color: #C98A10;"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4.1 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>6</div>
+<div style="display: flex; height: 100%; margin-left: 6px;">
+<button aria-label="Згорнути" class="wc" style="width: 46px; border: 0; background: transparent; color: #3A4555; display: flex; align-items: center; justify-content: center;"><svg class="i" width="14" height="14" viewBox="0 0 24 24" style="stroke-width: 1.4;"><path d="M5 12h14"></path></svg></button>
+<button aria-label="Розгорнути" class="wc" style="width: 46px; border: 0; background: transparent; color: #3A4555; display: flex; align-items: center; justify-content: center;"><svg class="i" width="13" height="13" viewBox="0 0 24 24" style="stroke-width: 1.5;"><rect x="4" y="4" width="16" height="16" rx="3"></rect></svg></button>
+<button aria-label="Закрити" class="wc wcx" style="width: 46px; border: 0; background: transparent; color: #3A4555; display: flex; align-items: center; justify-content: center;"><svg class="i" width="14" height="14" viewBox="0 0 24 24" style="stroke-width: 1.4;"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg></button>
+</div>
+</div>
+</div>
+
+<main style="flex-grow: 1; min-height: 0; margin: 0 10px 10px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #E7E4DA; border-radius: 14px; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; overflow: hidden;">
+<div style="display: flex; align-items: center; gap: 10px;">
+<label style="display: flex; align-items: center; gap: 8px; flex-grow: 1; max-width: 420px; height: 40px; box-sizing: border-box; padding: 0 8px 0 12px; border: 1px solid #E1DED4; border-radius: 10px; background: #FAF9F6; color: #5E6878;">
+<svg class="i" width="16" height="16" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" aria-label="Пошук" placeholder="Пошук серед 419 карток" style="flex-grow: 1; min-width: 0; border: 0; outline: none; background: transparent; font-size: 14px; color: #14202E;">
+</label>
+<button style="height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid transparent; background: #FFF1CC; color: #14202E; font-size: 13px; font-weight: 600;">Усі</button>
+<button style="height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid #E1DED4; background: #FFFFFF; color: #3A4555; font-size: 13px; font-weight: 500;">На черзі · 18</button>
+<button style="height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid #E1DED4; background: #FFFFFF; color: #3A4555; font-size: 13px; font-weight: 500;">Складні · 38</button>
+<button style="height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid #E1DED4; background: #FFFFFF; color: #3A4555; font-size: 13px; font-weight: 500;">Нові · 262</button>
+<button style="margin-left: auto; height: 40px; padding: 0 16px 0 12px; border: 0; border-radius: 10px; background: #FFC23A; color: #14202E; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px;"><svg class="i" width="16" height="16" viewBox="0 0 24 24" style="stroke-width: 2.2;"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>Додати</button>
+</div>
+
+<div style="display: flex; flex-direction: column;">
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) 170px 110px 90px 140px 40px; align-items: center; height: 34px; padding: 0 12px; font-size: 12px; font-weight: 500; color: #5E6878; border-bottom: 1px solid #EFEDE6;">
+<span>Слово</span><span>Переклад</span><span>Колода</span><span>Складність</span><span>Точність</span><span>Наступний показ</span><span></span>
+</div>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="12">
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) 170px 110px 90px 140px 40px; align-items: center; height: 44px; padding: 0 12px; border-bottom: 1px solid #F2F0EA; border-radius: 8px; background: {{r.bg}}; font-size: 14px;">
+<span style="font-weight: 600;">{{r.word}}</span>
+<span style="color: #3A4555;">{{r.tr}}</span>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #3A4555;"><span style="width: 6px; height: 6px; border-radius: 3px; background: {{r.dot}};"></span>{{r.deck}}</span>
+<span style="display: block; width: 64px; height: 6px; border-radius: 3px; background: #EEF0F4;"><span style="display: block; height: 6px; border-radius: 3px; width: {{r.barW}}; background: {{r.barColor}};"></span></span>
+<span style="font-size: 13px; color: #3A4555;">{{r.acc}}</span>
+<span style="font-size: 13px; color: {{r.nextColor}};">{{r.next}}</span>
+<button aria-label="Дії з карткою" style="width: 30px; height: 30px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #5E6878; display: flex; align-items: center; justify-content: center;"><svg class="i" width="16" height="16" viewBox="0 0 24 24" style="stroke-width: 2.6;"><path d="M5 12h.01"></path><path d="M12 12h.01"></path><path d="M19 12h.01"></path></svg></button>
+</div>
+</sc-for>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1200,"height":760}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const list = [
+      ['throughout', 'протягом, упродовж', 0, 0.72, '52%', 'сьогодні, 15:40', 1], ['awkward', 'незграбний, ніяковий', 0, 0.81, '38%', 'сьогодні, 14:55', 1],
+      ['to figure out', 'з’ясувати, розібратися', 0, 0.35, '78%', 'завтра', 0], ['reliable', 'надійний', 1, 0.18, '100%', 'через 4 дні', 0],
+      ['eventually', 'зрештою, врешті-решт', 0, 0.55, '64%', 'сьогодні, 17:10', 1], ['to put off', 'відкладати', 1, 0.64, '60%', 'завтра', 0],
+      ['thorough', 'ретельний', 1, 0.76, '45%', 'сьогодні, 16:20', 1], ['whereas', 'тоді як', 0, 0.47, '75%', 'через 2 дні', 0],
+      ['to look forward to', 'чекати з нетерпінням', 0, 0.29, '83%', 'через 6 днів', 0], ['meanwhile', 'тим часом', 0, 0.12, '100%', 'через 9 днів', 0],
+      ['to come up with', 'придумати, вигадати', 0, 0.38, '75%', 'завтра', 0], ['to be supposed to', 'мати (щось зробити)', 0, 0.42, '67%', 'через 3 дні', 0]
+    ];
+    const decks = [['Старт · англійська', '#2F6BF2'], ['Робоча лексика', '#FFC23A']];
+    const rows = list.map((r, i) => ({
+      word: r[0], tr: r[1], deck: decks[r[2]][0], dot: decks[r[2]][1],
+      barW: Math.round(6 + r[3] * 58) + 'px', barColor: r[3] >= 0.6 ? '#15307A' : '#2F6BF2',
+      acc: r[4], next: r[5], nextColor: r[6] ? '#14202E' : '#5E6878',
+      bg: i === 0 ? '#FFF8E5' : 'transparent'
+    }));
+    return { rows };
+  }
+}
+</script>
+</body>
+</html>

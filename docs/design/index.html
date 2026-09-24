@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parrot — design mockups</title>
+<style>
+:root{--bg:#F7F5EF;--surface:#FFFFFF;--line:#E1DED4;--text:#14202E;--muted:#5E6878;--accent:#FFC23A}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#0E131A;--surface:#151B24;--line:#2A3442;--text:#EEF2F7;--muted:#8C98A8}
+}
+*{box-sizing:border-box}
+body{margin:0;padding:40px 24px 80px;background:var(--bg);color:var(--text);
+     font-family:'Onest','Segoe UI Variable Text','Segoe UI',system-ui,sans-serif}
+main{max-width:1240px;margin:0 auto}
+h1{font-size:28px;margin:0 0 6px}
+p.lead{margin:0 0 32px;color:var(--muted);max-width:60ch;line-height:1.6}
+section{margin:0 0 40px}
+h2{font-size:17px;margin:0 0 4px}
+p.note{margin:0 0 12px;color:var(--muted);font-size:14px}
+.frame{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+iframe{display:block;border:0;background:#E4E8EE;transform-origin:0 0}
+a{color:inherit}
+</style>
+</head>
+<body>
+<main>
+<h1>Parrot — design mockups</h1>
+<p class="lead">The mockups the current interface was designed from: one window with a custom
+frame, palette D (yellow leads, cobalt supports). Each board is a plain HTML file in
+<code>mockups/</code> and opens on its own. Boards render with system fonts unless the Onest
+web font loads.</p>
+
+<section>
+<h2>Dictionary — palette D</h2>
+<p class="note">mockups/Main.dc.html — the layout the app was built from.</p>
+<div class="frame"><iframe src="mockups/Main.dc.html" width="1200" height="760" scrolling="no" title="Dictionary"></iframe></div>
+</section>
+
+<section>
+<h2>Statistics</h2>
+<p class="note">mockups/Stats.dc.html</p>
+<div class="frame"><iframe src="mockups/Stats.dc.html" width="1200" height="760" scrolling="no" title="Statistics"></iframe></div>
+</section>
+
+<section>
+<h2>Settings</h2>
+<p class="note">mockups/Settings.dc.html</p>
+<div class="frame"><iframe src="mockups/Settings.dc.html" width="1200" height="760" scrolling="no" title="Settings"></iframe></div>
+</section>
+
+<section>
+<h2>Dark theme — editing a card</h2>
+<p class="note">mockups/DictDark.dc.html</p>
+<div class="frame"><iframe src="mockups/DictDark.dc.html" width="1200" height="760" scrolling="no" title="Dark theme"></iframe></div>
+</section>
+
+<section>
+<h2>Prompt window — states</h2>
+<p class="note">mockups/Popup.dc.html — question, answer, result.</p>
+<div class="frame"><iframe src="mockups/Popup.dc.html" width="1672" height="520" scrolling="no" title="Prompt window"></iframe></div>
+</section>
+
+<section>
+<h2>Update card — states</h2>
+<p class="note">mockups/Update.dc.html — available, downloading, installing, failed, in both themes.</p>
+<div class="frame"><iframe src="mockups/Update.dc.html" width="1672" height="420" scrolling="no" title="Update card"></iframe></div>
+</section>
+
+<section>
+<h2>Navigation study</h2>
+<p class="note">mockups/Tabs.dc.html — tabs instead of a sidebar; not used.</p>
+<div class="frame"><iframe src="mockups/Tabs.dc.html" width="1200" height="760" scrolling="no" title="Navigation study"></iframe></div>
+</section>
+
+<section>
+<h2>Logo — direction C</h2>
+<p class="note">mockups/Logo.dc.html — the chosen logo, its sizes and the tray variants.</p>
+<div class="frame"><iframe src="mockups/Logo.dc.html" width="1368" height="640" scrolling="no" title="Logo"></iframe></div>
+</section>
+
+<section>
+<h2>Palettes</h2>
+<p class="note">mockups/Palette.dc.html — D (chosen) and A. The runner-up A is applied to the
+main screen in <a href="mockups/MainA.dc.html">mockups/MainA.dc.html</a>, and the whole set in
+that palette is kept in <code>mockups-palette-A/</code>.</p>
+<div class="frame"><iframe src="mockups/Palette.dc.html" width="720" height="660" scrolling="no" title="Palettes"></iframe></div>
+</section>
+</main>
+<script>
+// Boards are drawn at fixed sizes (1200-1672 px); scale each one down to the page width.
+function fit(){
+  for (const frame of document.querySelectorAll('.frame')) {
+    const el = frame.querySelector('iframe');
+    const scale = Math.min(1, frame.clientWidth / el.width);
+    el.style.transform = `scale(${scale})`;
+    frame.style.height = `${el.height * scale}px`;
+  }
+}
+addEventListener('resize', fit);
+fit();
+</script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Parrot — логотип, напрям C</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Onest',system-ui,sans-serif;color:#14202E}
+svg.i{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+</style>
+</helmet>
+<div style="width: 1368px; height: 640px; box-sizing: border-box; padding: 48px; background: #F4F3EE; display: flex; flex-direction: column; gap: 24px;">
+
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px;">
+<sc-for list="{{big}}" as="v" hint-placeholder-count="4">
+<div style="background: #FFFFFF; border-radius: 20px; padding: 28px 24px 22px; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+<svg width="176" height="176" viewBox="0 0 120 120" role="img" aria-label="Логотип Parrot" style="border-radius: 23%; background: {{v.bg}};">
+<path d="M71 27c-1-11 5-19 15-21-3 7-3 13 0 19z" fill="#1747B8"></path>
+<path d="M80 30c5-9 14-13 23-11-5 5-7 11-6 17z" fill="#6FA3FF"></path>
+<circle cx="72" cy="118" r="38" fill="#FFC23A"></circle>
+<circle cx="72" cy="62" r="35" fill="#2F6BF2"></circle>
+<path d="M91 33a35 35 0 0 1 8 52c-6-12-9-28-8-52z" fill="#1F5FE0"></path>
+<ellipse cx="60" cy="60" rx="17" ry="18" fill="#F7F4EC"></ellipse>
+<circle cx="62" cy="57" r="6.5" fill="#14202E"></circle>
+<circle cx="64.3" cy="54.8" r="2.1" fill="#FFFFFF"></circle>
+<path d="M45 46C21 42 11 62 21 82c3-10 12-15 24-13z" fill="{{v.beak}}"></path>
+<path d="M29 74c2 9 10 13 18 10l-2-14z" fill="{{v.beakLow}}"></path>
+<path d="M41 49C28 47 20 57 21 69" style="fill: none; stroke: {{v.beakHi}}; stroke-width: 2.5; stroke-linecap: round;"></path>
+</svg>
+<span style="font-size: 14px; font-weight: 600;">{{v.name}}</span>
+</div>
+</sc-for>
+</div>
+
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1fr); gap: 24px; flex-grow: 1;">
+
+<div style="background: #FFFFFF; border-radius: 20px; padding: 22px 24px; display: flex; flex-direction: column; gap: 14px;">
+<span style="font-size: 13px; font-weight: 600; color: #5E6878;">Малі розміри · 48 / 32 / 24 / 16</span>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="2">
+<div style="display: flex; align-items: center; gap: 18px;">
+<sc-for list="{{r.sizes}}" as="s" hint-placeholder-count="4">
+<svg width="{{s}}" height="{{s}}" viewBox="0 0 120 120" role="img" aria-label="Логотип Parrot" style="border-radius: 23%; background: {{r.bg}};">
+<path d="M71 27c-1-11 5-19 15-21-3 7-3 13 0 19z" fill="#1747B8"></path>
+<path d="M80 30c5-9 14-13 23-11-5 5-7 11-6 17z" fill="#6FA3FF"></path>
+<circle cx="72" cy="118" r="38" fill="#FFC23A"></circle>
+<circle cx="72" cy="62" r="35" fill="#2F6BF2"></circle>
+<path d="M91 33a35 35 0 0 1 8 52c-6-12-9-28-8-52z" fill="#1F5FE0"></path>
+<ellipse cx="60" cy="60" rx="17" ry="18" fill="#F7F4EC"></ellipse>
+<circle cx="62" cy="57" r="6.5" fill="#14202E"></circle>
+<circle cx="64.3" cy="54.8" r="2.1" fill="#FFFFFF"></circle>
+<path d="M45 46C21 42 11 62 21 82c3-10 12-15 24-13z" fill="#14202E"></path>
+<path d="M29 74c2 9 10 13 18 10l-2-14z" fill="#39485A"></path>
+</svg>
+</sc-for>
+</div>
+</sc-for>
+</div>
+
+<div style="background: #FFFFFF; border-radius: 20px; padding: 22px 24px; display: flex; flex-direction: column; gap: 14px;">
+<span style="font-size: 13px; font-weight: 600; color: #5E6878;">У треї Windows</span>
+<div style="height: 48px; border-radius: 12px; background: #202020; color: #FFFFFF; display: flex; align-items: center; justify-content: flex-end; gap: 16px; padding: 0 16px; font-size: 12px;">
+<svg class="i" width="14" height="14" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"></path></svg>
+<svg width="18" height="18" viewBox="0 0 120 120" role="img" aria-label="Parrot у треї, контур"><g transform="translate(2 12)" style="fill: none; stroke: #FFFFFF; stroke-width: 10; stroke-linecap: round; stroke-linejoin: round;"><path d="M41.7 44.5A35 35 0 1 1 41.7 79.5"></path><path d="M43 46C21 42 11 62 21 82C24 72 32 68 43 69"></path><path d="M30 76C32 83 38 86 45 84"></path><path d="M70 27C69 18 75 11 84 8"></path><path d="M81 29C86 22 93 18 101 19"></path><circle cx="61" cy="58" r="5.5" style="fill: #FFFFFF; stroke: none;"></circle></g></svg>
+<svg class="i" width="16" height="16" viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0"></path><path d="M8.5 16a5 5 0 0 1 7 0"></path><path d="M12 19.5h.01"></path></svg>
+<svg class="i" width="16" height="16" viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4z"></path><path d="M15.5 8.5a5 5 0 0 1 0 7"></path></svg>
+<span style="display: flex; flex-direction: column; align-items: flex-end; line-height: 1.25;"><span>14:32</span><span>19.09.2026</span></span>
+</div>
+<div style="height: 48px; border-radius: 12px; background: #EEEEEE; color: #1A1A1A; display: flex; align-items: center; justify-content: flex-end; gap: 16px; padding: 0 16px; font-size: 12px;">
+<svg class="i" width="14" height="14" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"></path></svg>
+<svg width="18" height="18" viewBox="0 0 120 120" role="img" aria-label="Parrot у треї" style="border-radius: 23%; background: {{t.tile}};">
+<path d="M71 27c-1-11 5-19 15-21-3 7-3 13 0 19z" fill="#1747B8"></path>
+<path d="M80 30c5-9 14-13 23-11-5 5-7 11-6 17z" fill="#6FA3FF"></path>
+<circle cx="72" cy="118" r="38" fill="#FFC23A"></circle>
+<circle cx="72" cy="62" r="35" fill="#2F6BF2"></circle>
+<path d="M91 33a35 35 0 0 1 8 52c-6-12-9-28-8-52z" fill="#1F5FE0"></path>
+<ellipse cx="60" cy="60" rx="17" ry="18" fill="#F7F4EC"></ellipse>
+<circle cx="62" cy="57" r="6.5" fill="#14202E"></circle>
+<path d="M45 46C21 42 11 62 21 82c3-10 12-15 24-13z" fill="#14202E"></path>
+</svg>
+<svg class="i" width="16" height="16" viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0"></path><path d="M8.5 16a5 5 0 0 1 7 0"></path><path d="M12 19.5h.01"></path></svg>
+<svg class="i" width="16" height="16" viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4z"></path><path d="M15.5 8.5a5 5 0 0 1 0 7"></path></svg>
+<span style="display: flex; flex-direction: column; align-items: flex-end; line-height: 1.25;"><span>14:32</span><span>19.09.2026</span></span>
+</div>
+<div style="display: flex; align-items: center; gap: 18px; height: 56px; padding: 0 16px; border-radius: 12px; background: #202020;">
+<span style="font-size: 12px; color: #B8B8B8; flex-grow: 1;">Контур · темна тема</span>
+<svg width="40" height="40" viewBox="0 0 120 120" role="img" aria-label="Parrot у треї, контур"><g transform="translate(2 12)" style="fill: none; stroke: #FFFFFF; stroke-width: 10; stroke-linecap: round; stroke-linejoin: round;"><path d="M41.7 44.5A35 35 0 1 1 41.7 79.5"></path><path d="M43 46C21 42 11 62 21 82C24 72 32 68 43 69"></path><path d="M30 76C32 83 38 86 45 84"></path><path d="M70 27C69 18 75 11 84 8"></path><path d="M81 29C86 22 93 18 101 19"></path><circle cx="61" cy="58" r="5.5" style="fill: #FFFFFF; stroke: none;"></circle></g></svg>
+<svg width="32" height="32" viewBox="0 0 120 120" role="img" aria-label="Parrot у треї, контур"><g transform="translate(2 12)" style="fill: none; stroke: #FFFFFF; stroke-width: 10; stroke-linecap: round; stroke-linejoin: round;"><path d="M41.7 44.5A35 35 0 1 1 41.7 79.5"></path><path d="M43 46C21 42 11 62 21 82C24 72 32 68 43 69"></path><path d="M30 76C32 83 38 86 45 84"></path><path d="M70 27C69 18 75 11 84 8"></path><path d="M81 29C86 22 93 18 101 19"></path><circle cx="61" cy="58" r="5.5" style="fill: #FFFFFF; stroke: none;"></circle></g></svg>
+<svg width="24" height="24" viewBox="0 0 120 120" role="img" aria-label="Parrot у треї, контур"><g transform="translate(2 12)" style="fill: none; stroke: #FFFFFF; stroke-width: 10; stroke-linecap: round; stroke-linejoin: round;"><path d="M41.7 44.5A35 35 0 1 1 41.7 79.5"></path><path d="M43 46C21 42 11 62 21 82C24 72 32 68 43 69"></path><path d="M30 76C32 83 38 86 45 84"></path><path d="M70 27C69 18 75 11 84 8"></path><path d="M81 29C86 22 93 18 101 19"></path><circle cx="61" cy="58" r="5.5" style="fill: #FFFFFF; stroke: none;"></circle></g></svg>
+<svg width="16" height="16" viewBox="0 0 120 120" role="img" aria-label="Parrot у треї, контур"><g transform="translate(2 12)" style="fill: none; stroke: #FFFFFF; stroke-width: 10; stroke-linecap: round; stroke-linejoin: round;"><path d="M41.7 44.5A35 35 0 1 1 41.7 79.5"></path><path d="M43 46C21 42 11 62 21 82C24 72 32 68 43 69"></path><path d="M30 76C32 83 38 86 45 84"></path><path d="M70 27C69 18 75 11 84 8"></path><path d="M81 29C86 22 93 18 101 19"></path><circle cx="61" cy="58" r="5.5" style="fill: #FFFFFF; stroke: none;"></circle></g></svg>
+</div>
+</div>
+
+<div style="background: #FFFFFF; border-radius: 20px; padding: 22px 24px; display: flex; flex-direction: column; gap: 14px;">
+<span style="font-size: 13px; font-weight: 600; color: #5E6878;">Із назвою</span>
+<div style="display: flex; align-items: center; gap: 12px; height: 48px;">
+<svg width="44" height="44" viewBox="0 0 120 120" role="img" aria-label="Логотип Parrot" style="border-radius: 23%; background: #E3EDFF;">
+<path d="M71 27c-1-11 5-19 15-21-3 7-3 13 0 19z" fill="#1747B8"></path>
+<path d="M80 30c5-9 14-13 23-11-5 5-7 11-6 17z" fill="#6FA3FF"></path>
+<circle cx="72" cy="118" r="38" fill="#FFC23A"></circle>
+<circle cx="72" cy="62" r="35" fill="#2F6BF2"></circle>
+<path d="M91 33a35 35 0 0 1 8 52c-6-12-9-28-8-52z" fill="#1F5FE0"></path>
+<ellipse cx="60" cy="60" rx="17" ry="18" fill="#F7F4EC"></ellipse>
+<circle cx="62" cy="57" r="6.5" fill="#14202E"></circle>
+<circle cx="64.3" cy="54.8" r="2.1" fill="#FFFFFF"></circle>
+<path d="M45 46C21 42 11 62 21 82c3-10 12-15 24-13z" fill="#14202E"></path>
+<path d="M29 74c2 9 10 13 18 10l-2-14z" fill="#39485A"></path>
+</svg>
+<span style="font-size: 30px; font-weight: 700; letter-spacing: -0.03em;">Parrot</span>
+</div>
+<div style="display: flex; align-items: center; gap: 12px; height: 64px; padding: 0 16px; border-radius: 14px; background: #1F5FE0;">
+<svg width="40" height="40" viewBox="0 0 120 120" role="img" aria-label="Логотип Parrot" style="border-radius: 23%; background: #FFF3D1;">
+<path d="M71 27c-1-11 5-19 15-21-3 7-3 13 0 19z" fill="#1747B8"></path>
+<path d="M80 30c5-9 14-13 23-11-5 5-7 11-6 17z" fill="#6FA3FF"></path>
+<circle cx="72" cy="118" r="38" fill="#FFC23A"></circle>
+<circle cx="72" cy="62" r="35" fill="#2F6BF2"></circle>
+<path d="M91 33a35 35 0 0 1 8 52c-6-12-9-28-8-52z" fill="#1F5FE0"></path>
+<ellipse cx="60" cy="60" rx="17" ry="18" fill="#F7F4EC"></ellipse>
+<circle cx="62" cy="57" r="6.5" fill="#14202E"></circle>
+<circle cx="64.3" cy="54.8" r="2.1" fill="#FFFFFF"></circle>
+<path d="M45 46C21 42 11 62 21 82c3-10 12-15 24-13z" fill="#14202E"></path>
+<path d="M29 74c2 9 10 13 18 10l-2-14z" fill="#39485A"></path>
+</svg>
+<span style="font-size: 26px; font-weight: 700; letter-spacing: -0.03em; color: #FFFFFF;">Parrot</span>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1368,"height":640}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const big = [
+      { name: 'C1 · Небесна плашка', bg: '#E3EDFF', beak: '#14202E', beakLow: '#39485A', beakHi: 'none' },
+      { name: 'C2 · Сонячна плашка', bg: '#FFF3D1', beak: '#14202E', beakLow: '#39485A', beakHi: 'none' },
+      { name: 'C3 · Нічна плашка', bg: '#111A2B', beak: '#34425A', beakLow: '#56657D', beakHi: '#7A8BA5' },
+      { name: 'C4 · Без плашки', bg: 'transparent', beak: '#14202E', beakLow: '#39485A', beakHi: 'none' }
+    ];
+    const rows = [
+      { bg: '#E3EDFF', sizes: [48, 32, 24, 16] },
+      { bg: '#FFF3D1', sizes: [48, 32, 24, 16] }
+    ];
+    return { big, rows };
+  }
+}
+</script>
+</body>
+</html>
