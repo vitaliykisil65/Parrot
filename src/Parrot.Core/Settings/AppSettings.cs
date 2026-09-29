@@ -68,6 +68,9 @@ public sealed class AppSettings
     public TranslationDirection Direction { get; set; } = TranslationDirection.FrontToBack;
     public AnswerStrictness Strictness { get; set; } = AnswerStrictness.Lenient;
 
+    /// <summary>Ask cards answered right several times running translation → word.</summary>
+    public bool ReverseWellKnown { get; set; } = true;
+
     // ── Practice ─────────────────────────────────────────────────────────────
     // The last session's choices, so "one more round" is a single click.
 

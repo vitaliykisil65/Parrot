@@ -111,7 +111,7 @@ public sealed class PromptService
             return null;
         }
 
-        var direction = _picker.ResolveDirection(settings.Direction);
+        var direction = _picker.ResolveDirection(settings.Direction, card, settings.ReverseWellKnown);
 
         return new PromptRequest
         {

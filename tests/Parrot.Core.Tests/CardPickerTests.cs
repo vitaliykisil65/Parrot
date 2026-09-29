@@ -94,4 +94,36 @@ public class CardPickerTests
     {
         Assert.Equal(TranslationDirection.BackToFront, _picker.ResolveDirection(TranslationDirection.BackToFront));
     }
+
+    [Theory]
+    [InlineData(TranslationDirection.FrontToBack)]
+    [InlineData(TranslationDirection.Random)]
+    public void A_well_known_card_is_asked_the_other_way_round(TranslationDirection configured)
+    {
+        var card = Card(1, Now);
+        card.Schedule.Streak = CardSchedule.WellKnownStreak;
+
+        for (var i = 0; i < 20; i++)
+            Assert.Equal(TranslationDirection.BackToFront, _picker.ResolveDirection(configured, card, reverseWellKnown: true));
+    }
+
+    [Fact]
+    public void A_card_short_of_the_streak_keeps_the_configured_direction()
+    {
+        var card = Card(1, Now);
+        card.Schedule.Streak = CardSchedule.WellKnownStreak - 1;
+
+        Assert.Equal(TranslationDirection.FrontToBack,
+            _picker.ResolveDirection(TranslationDirection.FrontToBack, card, reverseWellKnown: true));
+    }
+
+    [Fact]
+    public void Reversing_well_known_cards_can_be_turned_off()
+    {
+        var card = Card(1, Now);
+        card.Schedule.Streak = 10;
+
+        Assert.Equal(TranslationDirection.FrontToBack,
+            _picker.ResolveDirection(TranslationDirection.FrontToBack, card, reverseWellKnown: false));
+    }
 }

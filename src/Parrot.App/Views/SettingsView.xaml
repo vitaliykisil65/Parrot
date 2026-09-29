@@ -290,6 +290,16 @@
 
                             <Border Style="{StaticResource RowRule}" />
                             <DockPanel Style="{StaticResource Row}">
+                                <CheckBox x:Name="ReverseKnownSwitch" DockPanel.Dock="Right" Style="{StaticResource Switch}"
+                                          Click="OnReverseKnownChanged" />
+                                <StackPanel Style="{StaticResource RowText}">
+                                    <TextBlock Text="{l:T Settings.ReverseKnown}" Style="{StaticResource RowTitle}" />
+                                    <TextBlock x:Name="ReverseKnownNote" Style="{StaticResource RowNote}" />
+                                </StackPanel>
+                            </DockPanel>
+
+                            <Border Style="{StaticResource RowRule}" />
+                            <DockPanel Style="{StaticResource Row}">
                                 <Border DockPanel.Dock="Right" Style="{StaticResource Segmented}">
                                     <StackPanel x:Name="StrictnessPanel" Orientation="Horizontal" />
                                 </Border>

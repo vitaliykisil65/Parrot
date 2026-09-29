@@ -12,6 +12,9 @@ public sealed class CardSchedule
     public const double MaxEase = 2.8;
     public const int FirstIntervalMinutes = 10;
 
+    /// <summary>Correct answers in a row after which a card counts as well known.</summary>
+    public const int WellKnownStreak = 3;
+
     public long CardId { get; set; }
 
     /// <summary>SM-2 ease factor: how fast the interval grows. Low ease = hard card.</summary>
@@ -47,6 +50,12 @@ public sealed class CardSchedule
 
     /// <summary>A card is considered learned once its interval passes a week.</summary>
     public bool IsLearned => IntervalMinutes >= TimeSpan.FromDays(7).TotalMinutes;
+
+    /// <summary>
+    /// Answered right several times running: recognising the word is no longer a challenge, so
+    /// it is worth asking the harder way round. One miss drops the card back to recognition.
+    /// </summary>
+    public bool IsWellKnown => Streak >= WellKnownStreak;
 
     /// <summary>Ease mapped onto 0 (as easy as it gets) … 100 (as hard as it gets).</summary>
     public int DifficultyPercent =>

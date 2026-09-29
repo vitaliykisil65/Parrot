@@ -57,6 +57,7 @@ public sealed partial class SettingsView : UserControl
 
         DataPathText.Text = L.F("Settings.DataPath", AppPaths.DataDirectory);
         VersionText.Text = L.F("Settings.Version", UpdateService.CurrentVersionText);
+        ReverseKnownNote.Text = L.F("Settings.ReverseKnownNote", CardSchedule.WellKnownStreak);
         ShowUpdateStatus(null);
 
         // A background check can find a release while this page is open.
@@ -184,6 +185,7 @@ public sealed partial class SettingsView : UserControl
         FocusSwitch.IsChecked = s.FocusInputOnShow;
 
         Check(_directionButtons, s.Direction);
+        ReverseKnownSwitch.IsChecked = s.ReverseWellKnown;
         Check(_strictnessButtons, s.Strictness);
         Check(_themeButtons, s.Theme);
 
@@ -251,6 +253,9 @@ public sealed partial class SettingsView : UserControl
 
     private void OnAlwaysShowChanged(object sender, RoutedEventArgs e) =>
         Update(s => s.AlwaysShowSomething = AlwaysShowSwitch.IsChecked == true);
+
+    private void OnReverseKnownChanged(object sender, RoutedEventArgs e) =>
+        Update(s => s.ReverseWellKnown = ReverseKnownSwitch.IsChecked == true);
 
     private void OnFullscreenChanged(object sender, RoutedEventArgs e) =>
         Update(s => s.PauseOnFullscreen = FullscreenSwitch.IsChecked == true);

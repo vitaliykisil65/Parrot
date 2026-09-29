@@ -73,6 +73,21 @@ public class PromptServiceTests : IDisposable
     }
 
     [Fact]
+    public void A_well_known_card_asks_for_the_word()
+    {
+        var card = AddDueCard();
+        card.Schedule.Streak = CardSchedule.WellKnownStreak;
+        _db.Repository.SaveSchedule(card.Schedule);
+        Configure(s => s.QuietHoursEnabled = false);
+
+        var prompt = _service.TryCreatePrompt(DateTimeOffset.Now, out _)!;
+
+        Assert.Equal(TranslationDirection.BackToFront, prompt.Direction);
+        Assert.Equal("кінцевий термін", prompt.Question);
+        Assert.Equal("deadline", prompt.Answer);
+    }
+
+    [Fact]
     public void Quiet_hours_block_the_prompt()
     {
         AddDueCard();

@@ -74,4 +74,15 @@ public sealed class CardPicker(SrsEngine srs, Random? random = null)
         configured == TranslationDirection.Random
             ? (_random.Next(2) == 0 ? TranslationDirection.FrontToBack : TranslationDirection.BackToFront)
             : configured;
+
+    /// <summary>
+    /// Picks the direction for a prompt about <paramref name="card"/>. With
+    /// <paramref name="reverseWellKnown"/>, a card the user keeps getting right is asked
+    /// translation → word whatever the configured direction: producing the word is the next step
+    /// after recognising it.
+    /// </summary>
+    public TranslationDirection ResolveDirection(TranslationDirection configured, Card card, bool reverseWellKnown) =>
+        reverseWellKnown && card.Schedule.IsWellKnown
+            ? TranslationDirection.BackToFront
+            : ResolveDirection(configured);
 }

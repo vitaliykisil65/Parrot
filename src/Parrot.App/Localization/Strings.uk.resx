@@ -652,6 +652,12 @@
   <data name="Settings.Reset.Title" xml:space="preserve">
     <value>Повернути типові налаштування?</value>
   </data>
+  <data name="Settings.ReverseKnown" xml:space="preserve">
+    <value>Добре відомі слова — навпаки</value>
+  </data>
+  <data name="Settings.ReverseKnownNote" xml:space="preserve">
+    <value>Після {0} правильних відповідей поспіль показувати переклад і питати слово</value>
+  </data>
   <data name="Settings.Sound" xml:space="preserve">
     <value>Звук при появі картки</value>
   </data>

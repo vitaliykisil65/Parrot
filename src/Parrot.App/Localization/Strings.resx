@@ -655,6 +655,12 @@ Details: {1}</value>
   <data name="Settings.Reset.Title" xml:space="preserve">
     <value>Restore default settings?</value>
   </data>
+  <data name="Settings.ReverseKnown" xml:space="preserve">
+    <value>Ask well-known words the other way round</value>
+  </data>
+  <data name="Settings.ReverseKnownNote" xml:space="preserve">
+    <value>After {0} right answers in a row, show the translation and ask for the word</value>
+  </data>
   <data name="Settings.Sound" xml:space="preserve">
     <value>Sound when a card appears</value>
   </data>
