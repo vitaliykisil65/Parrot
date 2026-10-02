@@ -679,11 +679,17 @@
   <data name="Sidebar.AllDecks" xml:space="preserve">
     <value>Усі колоди</value>
   </data>
+  <data name="Sidebar.Collapse" xml:space="preserve">
+    <value>Згорнути панель</value>
+  </data>
   <data name="Sidebar.DeckNameHint" xml:space="preserve">
     <value>Назва колоди</value>
   </data>
   <data name="Sidebar.Decks" xml:space="preserve">
     <value>Колоди</value>
+  </data>
+  <data name="Sidebar.Expand" xml:space="preserve">
+    <value>Розгорнути панель</value>
   </data>
   <data name="Sidebar.NewDeck" xml:space="preserve">
     <value>Нова колода</value>

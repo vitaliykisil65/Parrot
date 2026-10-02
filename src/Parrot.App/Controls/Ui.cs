@@ -28,6 +28,10 @@ public static class Ui
     public static readonly DependencyProperty HintProperty = DependencyProperty.RegisterAttached(
         "Hint", typeof(string), typeof(Ui), new FrameworkPropertyMetadata(null));
 
+    /// <summary>A sidebar entry in the folded sidebar: only its icon or dot is left, centred.</summary>
+    public static readonly DependencyProperty RailProperty = DependencyProperty.RegisterAttached(
+        "Rail", typeof(bool), typeof(Ui), new FrameworkPropertyMetadata(false));
+
     public static Geometry? GetIcon(DependencyObject o) => (Geometry?)o.GetValue(IconProperty);
     public static void SetIcon(DependencyObject o, Geometry? value) => o.SetValue(IconProperty, value);
 
@@ -42,6 +46,9 @@ public static class Ui
 
     public static CornerRadius GetCornerRadius(DependencyObject o) => (CornerRadius)o.GetValue(CornerRadiusProperty);
     public static void SetCornerRadius(DependencyObject o, CornerRadius value) => o.SetValue(CornerRadiusProperty, value);
+
+    public static bool GetRail(DependencyObject o) => (bool)o.GetValue(RailProperty);
+    public static void SetRail(DependencyObject o, bool value) => o.SetValue(RailProperty, value);
 
     public static string? GetHint(DependencyObject o) => (string?)o.GetValue(HintProperty);
     public static void SetHint(DependencyObject o, string? value) => o.SetValue(HintProperty, value);

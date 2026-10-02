@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using Parrot.App.Branding;
+using Parrot.App.Controls;
 using Parrot.App.Interop;
 using Parrot.App.Localization;
 using Parrot.Core.Answers;
@@ -289,9 +290,13 @@ public sealed partial class PromptWindow : Window
         ActionPanel.Visibility = Visibility.Collapsed;
         ContinuePanel.Visibility = Visibility.Visible;
         ResultPanel.Visibility = Visibility.Visible;
+        Motion.Enter(ResultPanel, rise: 6);
+        Motion.Enter(ContinuePanel, rise: 6, delay: TimeSpan.FromMilliseconds(40));
 
         // Yellow means "got it", blue means "we'll come back to this" — never an alarming red.
         var success = outcome is ReviewOutcome.Correct or ReviewOutcome.Typo;
+        if (success)
+            Motion.Bump(ResultBadge, 1.2);
 
         ResultPanel.Background = Swatch(success ? "Brush.Selection" : "Brush.InfoSofter");
         ResultBadge.Background = Swatch(success ? "Brush.Primary" : "Brush.InfoStrong");

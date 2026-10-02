@@ -270,8 +270,14 @@ public sealed partial class DictionaryView : UserControl
 
     private List<CardRow> Selected() => CardsList.SelectedItems.OfType<CardRow>().ToList();
 
+    /// <summary>The card whose details came in last, so a reload showing it again does not replay that.</summary>
+    private long? _shownCardId;
+
     private void ShowPanel(FrameworkElement panel)
     {
+        if (panel.Visibility != Visibility.Visible)
+            Motion.Enter(panel, rise: 6);
+
         foreach (var p in new FrameworkElement[] { EmptyPanel, ViewPanel, EditPanel, MultiPanel })
             p.Visibility = p == panel ? Visibility.Visible : Visibility.Collapsed;
     }
@@ -307,6 +313,12 @@ public sealed partial class DictionaryView : UserControl
         ShowPanel(ViewPanel);
 
         var card = row.Card;
+        if (card.Id != _shownCardId)
+        {
+            _shownCardId = card.Id;
+            Motion.Enter(ViewPanel, rise: 6);
+        }
+
         var schedule = card.Schedule;
 
         DetailDeckDot.Fill = row.DeckBrush;
@@ -415,7 +427,9 @@ public sealed partial class DictionaryView : UserControl
         {
             EditError.Text = L.T("Edit.Required");
             EditError.Visibility = Visibility.Visible;
-            (string.IsNullOrWhiteSpace(FrontBox.Text) ? FrontBox : BackBox).Focus();
+            var empty = string.IsNullOrWhiteSpace(FrontBox.Text) ? FrontBox : BackBox;
+            empty.Focus();
+            Motion.Shake(empty);
             return;
         }
 
@@ -423,6 +437,7 @@ public sealed partial class DictionaryView : UserControl
         {
             EditError.Text = L.T("Edit.PickDeck");
             EditError.Visibility = Visibility.Visible;
+            Motion.Shake(DeckBox);
             return;
         }
 

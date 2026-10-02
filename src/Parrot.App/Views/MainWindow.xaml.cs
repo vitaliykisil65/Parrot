@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -48,6 +49,9 @@ public sealed partial class MainWindow : Window
 
     private long? _deckFilter;
 
+    /// <summary>The sidebar folded down to a strip of icons.</summary>
+    private bool _collapsed;
+
     public MainWindow(CardRepository repository, SettingsService settings, IPromptHost host, UpdateService updates)
     {
         _repository = repository;
@@ -83,6 +87,21 @@ public sealed partial class MainWindow : Window
             _dialog?.TrySetResult(false);
         };
 
+        foreach (var (nav, key, number) in new[]
+                 {
+                     (NavDictionary, "Nav.Dictionary", 1),
+                     (NavPractice, "Nav.Practice", 2),
+                     (NavStatistics, "Nav.Statistics", 3),
+                     (NavSettings, "Nav.Settings", 4),
+                 })
+            nav.ToolTip = $"{L.T(key)} · Ctrl+{number}";
+
+        FoldButton.ToolTip = $"{L.T("Sidebar.Collapse")} · Ctrl+B";
+        UnfoldButton.ToolTip = $"{L.T("Sidebar.Expand")} · Ctrl+B";
+        AutomationProperties.SetName(FoldButton, L.T("Sidebar.Collapse"));
+        AutomationProperties.SetName(UnfoldButton, L.T("Sidebar.Expand"));
+        ShowSidebar(_settings.Current.SidebarCollapsed, animate: false);
+
         NavDictionary.IsChecked = true;
     }
 
@@ -108,6 +127,8 @@ public sealed partial class MainWindow : Window
     {
         if (!IsInitialized)
             return;
+
+        var previous = PageHost.Content;
 
         if (sender == NavPractice)
         {
@@ -137,6 +158,10 @@ public sealed partial class MainWindow : Window
             PageHost.Content = _dictionary;
         }
 
+        // A page arrives rather than appears: it fades in and rises into place.
+        if (PageHost.Content != previous)
+            Motion.Enter(PageHost, rise: 10);
+
         UpdatePracticeState();
     }
 
@@ -162,6 +187,76 @@ public sealed partial class MainWindow : Window
 
         if (PageHost.Content == _statistics)
             _statistics?.Reload();
+    }
+
+    // ── Sidebar: folding ─────────────────────────────────────────────────────
+
+    private void OnToggleSidebar(object sender, RoutedEventArgs e) => SetSidebarCollapsed(!_collapsed);
+
+    private void SetSidebarCollapsed(bool collapsed)
+    {
+        if (collapsed == _collapsed)
+            return;
+
+        ShowSidebar(collapsed, animate: IsLoaded);
+
+        var updated = _settings.Current.Clone();
+        updated.SidebarCollapsed = collapsed;
+        _settings.Save(updated);
+    }
+
+    /// <summary>
+    /// Folds or unfolds the sidebar. The sidebar takes its new width and content at once, so
+    /// nothing in it reflows while it moves; the clipping host around it glides to the new
+    /// width, and the content fades in as it is uncovered.
+    /// </summary>
+    private void ShowSidebar(bool collapsed, bool animate)
+    {
+        // A deck name being typed is kept rather than lost with the box it is typed in.
+        if (collapsed)
+            CommitDeckName();
+
+        _collapsed = collapsed;
+
+        Sidebar.Width = collapsed ? 32 : 208;
+        Sidebar.Margin = collapsed ? new Thickness(4, 10, 4, 12) : new Thickness(12, 10, 12, 12);
+
+        Brand.Visibility = collapsed ? Visibility.Collapsed : Visibility.Visible;
+        BrandFolded.Visibility = collapsed ? Visibility.Visible : Visibility.Collapsed;
+
+        foreach (var nav in new[] { NavDictionary, NavPractice, NavStatistics, NavSettings })
+            Ui.SetRail(nav, collapsed);
+
+        DeckSection.Margin = new Thickness(0, collapsed ? 14 : 26, 0, 12);
+        DeckHeading.Visibility = collapsed ? Visibility.Collapsed : Visibility.Visible;
+        DeckRule.Visibility = collapsed ? Visibility.Visible : Visibility.Collapsed;
+        DeckScroll.Margin = new Thickness(0, 0, collapsed ? 0 : -8, 0);
+        DeckScroll.Padding = new Thickness(0, 0, collapsed ? 0 : 8, 0);
+        DeckScroll.VerticalScrollBarVisibility = collapsed ? ScrollBarVisibility.Hidden : ScrollBarVisibility.Auto;
+
+        NewDeckButton.Content = collapsed ? null : L.T("Sidebar.NewDeck");
+        NewDeckButton.ToolTip = collapsed ? L.T("Sidebar.NewDeck") : null;
+        NewDeckButton.Padding = new Thickness(collapsed ? 0 : 10, 0, collapsed ? 0 : 10, 0);
+        NewDeckButton.HorizontalContentAlignment = collapsed ? HorizontalAlignment.Center : HorizontalAlignment.Left;
+
+        StreakCard.Visibility = collapsed ? Visibility.Collapsed : Visibility.Visible;
+        FoldedTools.Visibility = collapsed ? Visibility.Visible : Visibility.Collapsed;
+        RenderUpdate();
+
+        if (IsLoaded)
+            RefreshDecks();
+
+        var width = collapsed ? 40.0 : 232.0;
+        if (animate)
+        {
+            Motion.To(SidebarHost, WidthProperty, width, Motion.Slow, inOut: true);
+            Motion.FadeIn(Sidebar);
+        }
+        else
+        {
+            SidebarHost.BeginAnimation(WidthProperty, null);
+            SidebarHost.Width = width;
+        }
     }
 
     // ── Sidebar: decks ───────────────────────────────────────────────────────
@@ -205,10 +300,11 @@ public sealed partial class MainWindow : Window
             Tag = deck,
             IsChecked = deck?.Id == _deckFilter,
             Margin = new Thickness(0, 0, 0, 2),
-            ToolTip = isActive ? null : L.T("Deck.InactiveTip"),
+            ToolTip = DeckTip(name, count, isActive),
             Opacity = isActive ? 1 : 0.6,
         };
 
+        button.SetValue(Ui.RailProperty, _collapsed);
         button.SetValue(Ui.DotProperty, dot);
         button.SetValue(Ui.BadgeProperty, count.ToString());
 
@@ -225,6 +321,17 @@ public sealed partial class MainWindow : Window
         };
 
         return button;
+    }
+
+    /// <summary>Folded, a deck is only its dot, so the name and the count move to the tool tip.</summary>
+    private string? DeckTip(string name, int count, bool isActive)
+    {
+        var inactive = isActive ? null : L.T("Deck.InactiveTip");
+        if (!_collapsed)
+            return inactive;
+
+        var tip = $"{name} · {count}";
+        return inactive is null ? tip : $"{tip}\n{inactive}";
     }
 
     private ContextMenu DeckMenu(Deck deck)
@@ -272,6 +379,9 @@ public sealed partial class MainWindow : Window
 
     private void BeginDeckName(Deck? deck)
     {
+        // The name is typed in the sidebar, so a folded one opens up for it.
+        SetSidebarCollapsed(false);
+
         _renamingDeck = deck;
         DeckNameBox.Text = deck?.Name ?? "";
         DeckNameBox.Visibility = Visibility.Visible;
@@ -347,6 +457,10 @@ public sealed partial class MainWindow : Window
             ? L.F("Streak.Record", report.BestStreak)
             : report.CurrentStreak > 0 ? L.T("Streak.IsRecord") : L.T("Streak.Hint");
 
+        FoldedStreak.ToolTip = $"{StreakText.Text} · {StreakNote.Text}";
+        FoldedStreakCount.Text = report.CurrentStreak.ToString(L.Culture);
+        FoldedStreakCount.Visibility = report.CurrentStreak > 0 ? Visibility.Visible : Visibility.Collapsed;
+
         StreakDays.Children.Clear();
         foreach (var day in report.Daily.TakeLast(7))
         {
@@ -364,6 +478,16 @@ public sealed partial class MainWindow : Window
     }
 
     private void UpdateSchedule()
+    {
+        ShowSchedule();
+
+        // Folded, the pause button carries the schedule in its tool tip.
+        FoldedPause.SetValue(Ui.IconProperty, PauseButton.GetValue(Ui.IconProperty));
+        FoldedPause.ToolTip = $"{NextLabel.Text}: {NextText.Text}\n{PauseButton.ToolTip}";
+        AutomationProperties.SetName(FoldedPause, PauseButton.ToolTip as string);
+    }
+
+    private void ShowSchedule()
     {
         var now = DateTimeOffset.Now;
 
@@ -409,10 +533,11 @@ public sealed partial class MainWindow : Window
             return;
         }
 
+        var folded = sender == FoldedPause;
         var menu = new ContextMenu
         {
-            PlacementTarget = PauseButton,
-            Placement = PlacementMode.Top,
+            PlacementTarget = folded ? FoldedPause : PauseButton,
+            Placement = folded ? PlacementMode.Right : PlacementMode.Top,
         };
 
         foreach (var (label, duration) in new[]
@@ -444,7 +569,8 @@ public sealed partial class MainWindow : Window
     private void RenderUpdate()
     {
         var stage = _updates.CardStage;
-        UpdateCard.Visibility = stage is null ? Visibility.Collapsed : Visibility.Visible;
+        UpdateCard.Visibility = stage is null || _collapsed ? Visibility.Collapsed : Visibility.Visible;
+        FoldedUpdate.Visibility = stage is not null && _collapsed ? Visibility.Visible : Visibility.Collapsed;
         if (stage is null || _updates.Release is not { } release)
         {
             StopIndeterminate();
@@ -482,6 +608,12 @@ public sealed partial class MainWindow : Window
             UpdateStage.Failed => L.T("Update.Failed"),
             _ => L.F("Update.Available", version),
         };
+
+        // Folded, the card is one button that opens the sidebar on it.
+        FoldedUpdate.SetValue(Ui.IconProperty, UpdateIcon.Data);
+        FoldedUpdate.Style = (Style)FindResource(stage == UpdateStage.Available ? "Button.Primary" : "Button.Soft");
+        FoldedUpdate.ToolTip = UpdateTitle.Text;
+        AutomationProperties.SetName(FoldedUpdate, UpdateTitle.Text);
 
         UpdateNote.Text = stage switch
         {
@@ -583,6 +715,9 @@ public sealed partial class MainWindow : Window
         ToastAction.Visibility = actionText is null ? Visibility.Collapsed : Visibility.Visible;
         _toastAction = action;
 
+        if (Toast.Visibility != Visibility.Visible)
+            Motion.Enter(Toast, rise: 14);
+
         Toast.Visibility = Visibility.Visible;
         _toastTimer.Stop();
         _toastTimer.Start();
@@ -615,6 +750,8 @@ public sealed partial class MainWindow : Window
         DialogConfirm.Content = confirmText;
         DialogConfirm.Style = (Style)FindResource(danger ? "Button.DangerSolid" : "Button.Primary");
         DialogLayer.Visibility = Visibility.Visible;
+        Motion.FadeIn(DialogLayer);
+        Motion.Pop(DialogCard);
         DialogCancel.Focus();
 
         return _dialog.Task;
@@ -651,6 +788,7 @@ public sealed partial class MainWindow : Window
                 case Key.D2: ShowPage(AppPage.Practice); e.Handled = true; return;
                 case Key.D3: ShowPage(AppPage.Statistics); e.Handled = true; return;
                 case Key.D4: ShowPage(AppPage.Settings); e.Handled = true; return;
+                case Key.B: SetSidebarCollapsed(!_collapsed); e.Handled = true; return;
                 case Key.K or Key.F:
                     ShowPage(AppPage.Dictionary);
                     _dictionary?.FocusSearch();
@@ -688,6 +826,10 @@ public sealed partial class MainWindow : Window
 
         MaximizeButton.SetValue(Ui.IconProperty, FindResource(maximized ? "Icon.Restore" : "Icon.Maximize"));
         MaximizeButton.ToolTip = L.T(maximized ? "Window.Restore" : "Window.Maximize");
+
+        // The window moves out from under the cursor without a mouse-leave, so the caption
+        // button that was clicked would keep its hover; ask WPF where the mouse really is.
+        Dispatcher.BeginInvoke(DispatcherPriority.Input, new Action(Mouse.Synchronize));
 
         if (!maximized)
         {

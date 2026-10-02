@@ -100,6 +100,9 @@ public sealed class AppSettings
     /// </summary>
     public string UiLanguage { get; set; } = "";
 
+    /// <summary>The main window's sidebar folded down to a strip of icons.</summary>
+    public bool SidebarCollapsed { get; set; }
+
     // ── Updates ──────────────────────────────────────────────────────────────
 
     /// <summary>Look for a new release in the background.</summary>

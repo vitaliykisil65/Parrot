@@ -26,137 +26,179 @@
             Background="{DynamicResource Brush.Window}">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="232" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <!-- ═══ Sidebar ═══════════════════════════════════════════════════ -->
-            <DockPanel Grid.Column="0" Margin="12,10,12,12">
+            <!-- 232 px with its margins. Folded, it is as wide as the strip above the panel is tall,
+                 so the panel sits 40 px in from the top and from the left alike. The sidebar takes
+                 its new width at once; the host around it glides there (from code). -->
+            <Border x:Name="SidebarHost" Grid.Column="0" Width="232" ClipToBounds="True">
+                <DockPanel x:Name="Sidebar" HorizontalAlignment="Left" Width="208" Margin="12,10,12,12">
 
-                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="40" Margin="8,0,0,0">
-                    <Image x:Name="LogoImage" Width="30" Height="30" VerticalAlignment="Center" />
-                    <TextBlock Text="Parrot" Margin="10,0,0,0" VerticalAlignment="Center"
-                               FontFamily="{StaticResource Font.Display}" FontSize="17" FontWeight="Bold" />
-                </StackPanel>
+                    <!-- Brand and the fold button; folded, only the button is left, on the same line. -->
+                    <Grid x:Name="Brand" DockPanel.Dock="Top" Height="40" Margin="8,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Image x:Name="LogoImage" Width="30" Height="30" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="1" Text="Parrot" Margin="10,0,0,0" VerticalAlignment="Center"
+                                   FontFamily="{StaticResource Font.Display}" FontSize="17" FontWeight="Bold" />
+                        <Button x:Name="FoldButton" Grid.Column="2" Style="{StaticResource Button.IconGhost}"
+                                c:Ui.Icon="{StaticResource Icon.Panel}" c:Ui.IconSize="17"
+                                WindowChrome.IsHitTestVisibleInChrome="True" Click="OnToggleSidebar" />
+                    </Grid>
+                    <Grid x:Name="BrandFolded" DockPanel.Dock="Top" Height="40" Visibility="Collapsed">
+                        <Button x:Name="UnfoldButton" Style="{StaticResource Button.IconGhost}"
+                                c:Ui.Icon="{StaticResource Icon.Panel}" c:Ui.IconSize="17"
+                                HorizontalAlignment="Center" VerticalAlignment="Center"
+                                WindowChrome.IsHitTestVisibleInChrome="True" Click="OnToggleSidebar" />
+                    </Grid>
 
-                <StackPanel DockPanel.Dock="Top" Margin="0,18,0,0">
-                    <RadioButton x:Name="NavDictionary" Style="{StaticResource NavItem}" GroupName="Nav"
-                                 Content="{l:T Nav.Dictionary}" c:Ui.Icon="{StaticResource Icon.Book}"
-                                 ToolTip="Ctrl+1" Checked="OnNavChecked" />
-                    <RadioButton x:Name="NavPractice" Style="{StaticResource NavItem}" GroupName="Nav" Margin="0,2,0,0"
-                                 Content="{l:T Nav.Practice}" c:Ui.Icon="{StaticResource Icon.Cards}"
-                                 ToolTip="Ctrl+2" Checked="OnNavChecked" />
-                    <RadioButton x:Name="NavStatistics" Style="{StaticResource NavItem}" GroupName="Nav" Margin="0,2,0,0"
-                                 Content="{l:T Nav.Statistics}" c:Ui.Icon="{StaticResource Icon.Chart}"
-                                 ToolTip="Ctrl+3" Checked="OnNavChecked" />
-                    <RadioButton x:Name="NavSettings" Style="{StaticResource NavItem}" GroupName="Nav" Margin="0,2,0,0"
-                                 Content="{l:T Nav.Settings}" c:Ui.Icon="{StaticResource Icon.Sliders}"
-                                 ToolTip="Ctrl+4" Checked="OnNavChecked" />
-                </StackPanel>
+                    <StackPanel DockPanel.Dock="Top" Margin="0,18,0,0">
+                        <RadioButton x:Name="NavDictionary" Style="{StaticResource NavItem}" GroupName="Nav"
+                                     Content="{l:T Nav.Dictionary}" c:Ui.Icon="{StaticResource Icon.Book}"
+                                     ToolTip="Ctrl+1" Checked="OnNavChecked" />
+                        <RadioButton x:Name="NavPractice" Style="{StaticResource NavItem}" GroupName="Nav" Margin="0,2,0,0"
+                                     Content="{l:T Nav.Practice}" c:Ui.Icon="{StaticResource Icon.Cards}"
+                                     ToolTip="Ctrl+2" Checked="OnNavChecked" />
+                        <RadioButton x:Name="NavStatistics" Style="{StaticResource NavItem}" GroupName="Nav" Margin="0,2,0,0"
+                                     Content="{l:T Nav.Statistics}" c:Ui.Icon="{StaticResource Icon.Chart}"
+                                     ToolTip="Ctrl+3" Checked="OnNavChecked" />
+                        <RadioButton x:Name="NavSettings" Style="{StaticResource NavItem}" GroupName="Nav" Margin="0,2,0,0"
+                                     Content="{l:T Nav.Settings}" c:Ui.Icon="{StaticResource Icon.Sliders}"
+                                     ToolTip="Ctrl+4" Checked="OnNavChecked" />
+                    </StackPanel>
 
-                <!-- New version: docked first, so it sits at the very bottom, under the streak -->
-                <Border x:Name="UpdateCard" DockPanel.Dock="Bottom" Style="{StaticResource Card}" CornerRadius="14"
-                        Padding="14" Margin="0,10,0,0" Visibility="Collapsed">
-                    <Grid>
+                    <!-- Folded: the streak, the schedule and a new version as a column of icons. -->
+                    <StackPanel x:Name="FoldedTools" DockPanel.Dock="Bottom" Visibility="Collapsed">
+                        <Border x:Name="FoldedStreak" Width="32" Height="32" CornerRadius="10" Background="{DynamicResource Brush.Active}"
+                                HorizontalAlignment="Center">
+                            <c:Icon Data="{StaticResource Icon.Flame}" Size="18" Foreground="{DynamicResource Brush.ActiveIcon}"
+                                    HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock x:Name="FoldedStreakCount" FontSize="12" FontWeight="SemiBold" Margin="0,4,0,0"
+                                   HorizontalAlignment="Center" />
+                        <Button x:Name="FoldedPause" Style="{StaticResource Button.Icon}" Width="32" Height="32" MinHeight="0"
+                                Margin="0,12,0,0" c:Ui.CornerRadius="8" c:Ui.Icon="{StaticResource Icon.Pause}" Click="OnPauseClick" />
+                        <Button Style="{StaticResource Button.Soft}" Width="32" Height="32" MinHeight="0" Padding="0"
+                                Margin="0,8,0,0" c:Ui.CornerRadius="8" c:Ui.Icon="{StaticResource Icon.Zap}" c:Ui.IconSize="15"
+                                ToolTip="{l:T Sidebar.ShowNow}" AutomationProperties.Name="{l:T Sidebar.ShowNow}"
+                                Click="OnPromptNow" />
+                        <Button x:Name="FoldedUpdate" Style="{StaticResource Button.Primary}" Width="32" Height="32" MinHeight="0"
+                                Padding="0" Margin="0,12,0,0" c:Ui.CornerRadius="8" c:Ui.Icon="{StaticResource Icon.Download}"
+                                Visibility="Collapsed" Click="OnToggleSidebar" />
+                    </StackPanel>
+
+                    <!-- New version: docked first, so it sits at the very bottom, under the streak -->
+                    <Border x:Name="UpdateCard" DockPanel.Dock="Bottom" Style="{StaticResource Card}" CornerRadius="14"
+                            Padding="14" Margin="0,10,0,0" Visibility="Collapsed">
+                        <Grid>
+                            <StackPanel>
+                                <DockPanel>
+                                    <Border x:Name="UpdateIconBox" Width="34" Height="34" CornerRadius="10"
+                                            Background="{DynamicResource Brush.Primary}">
+                                        <c:Icon x:Name="UpdateIcon" Data="{StaticResource Icon.Download}" Size="18"
+                                                Foreground="{DynamicResource Brush.PrimaryText}"
+                                                HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <StackPanel x:Name="UpdateText" Margin="10,0,24,0" VerticalAlignment="Center">
+                                        <TextBlock x:Name="UpdateTitle" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                        <TextBlock x:Name="UpdateNote" Style="{StaticResource Text.Caption}" FontWeight="Normal"
+                                                   TextWrapping="Wrap" />
+                                        <TextBlock x:Name="UpdateLinkText" FontSize="12" Cursor="Hand"
+                                                   Foreground="{DynamicResource Brush.Info}"
+                                                   Text="{l:T Update.WhatsNew}" MouseLeftButtonUp="OnUpdateNotes" />
+                                    </StackPanel>
+                                </DockPanel>
+
+                                <Grid x:Name="UpdateTrack" Height="6" Margin="0,12,0,0" ClipToBounds="True"
+                                      Visibility="Collapsed" SizeChanged="OnUpdateTrackSizeChanged">
+                                    <Border CornerRadius="3" Background="{DynamicResource Brush.Track}" />
+                                    <Border x:Name="UpdateFill" CornerRadius="3" HorizontalAlignment="Left" Width="0"
+                                            Background="{DynamicResource Brush.Info}">
+                                        <Border.RenderTransform>
+                                            <TranslateTransform x:Name="UpdateFillShift" />
+                                        </Border.RenderTransform>
+                                    </Border>
+                                </Grid>
+
+                                <Button x:Name="UpdateButton" Style="{StaticResource Button.Primary}" Margin="0,12,0,0"
+                                        MinHeight="36" FontSize="13" HorizontalAlignment="Stretch" Click="OnUpdateAction" />
+                            </StackPanel>
+
+                            <Button x:Name="UpdateClose" Style="{StaticResource Button.IconGhost}" Width="24" Height="24"
+                                    c:Ui.IconSize="12" c:Ui.Icon="{StaticResource Icon.Close}" ToolTip="{l:T Update.Later}"
+                                    AutomationProperties.Name="{l:T Update.Later}"
+                                    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-6,-6,0"
+                                    Click="OnUpdateDismiss" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Streak and schedule -->
+                    <Border x:Name="StreakCard" DockPanel.Dock="Bottom" Style="{StaticResource Card}" CornerRadius="14" Padding="14">
                         <StackPanel>
                             <DockPanel>
-                                <Border x:Name="UpdateIconBox" Width="34" Height="34" CornerRadius="10"
-                                        Background="{DynamicResource Brush.Primary}">
-                                    <c:Icon x:Name="UpdateIcon" Data="{StaticResource Icon.Download}" Size="18"
-                                            Foreground="{DynamicResource Brush.PrimaryText}"
+                                <Border Width="34" Height="34" CornerRadius="10" Background="{DynamicResource Brush.Active}">
+                                    <c:Icon Data="{StaticResource Icon.Flame}" Size="18"
+                                            Foreground="{DynamicResource Brush.ActiveIcon}"
                                             HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
-                                <StackPanel x:Name="UpdateText" Margin="10,0,24,0" VerticalAlignment="Center">
-                                    <TextBlock x:Name="UpdateTitle" FontWeight="SemiBold" TextWrapping="Wrap" />
-                                    <TextBlock x:Name="UpdateNote" Style="{StaticResource Text.Caption}" FontWeight="Normal"
-                                               TextWrapping="Wrap" />
-                                    <TextBlock x:Name="UpdateLinkText" FontSize="12" Cursor="Hand"
-                                               Foreground="{DynamicResource Brush.Info}"
-                                               Text="{l:T Update.WhatsNew}" MouseLeftButtonUp="OnUpdateNotes" />
+                                <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock x:Name="StreakText" FontWeight="SemiBold" />
+                                    <TextBlock x:Name="StreakNote" Style="{StaticResource Text.Caption}" FontWeight="Normal" />
                                 </StackPanel>
                             </DockPanel>
 
-                            <Grid x:Name="UpdateTrack" Height="6" Margin="0,12,0,0" ClipToBounds="True"
-                                  Visibility="Collapsed" SizeChanged="OnUpdateTrackSizeChanged">
-                                <Border CornerRadius="3" Background="{DynamicResource Brush.Track}" />
-                                <Border x:Name="UpdateFill" CornerRadius="3" HorizontalAlignment="Left" Width="0"
-                                        Background="{DynamicResource Brush.Info}">
-                                    <Border.RenderTransform>
-                                        <TranslateTransform x:Name="UpdateFillShift" />
-                                    </Border.RenderTransform>
-                                </Border>
-                            </Grid>
+                            <UniformGrid x:Name="StreakDays" Rows="1" Margin="0,12,0,0" />
 
-                            <Button x:Name="UpdateButton" Style="{StaticResource Button.Primary}" Margin="0,12,0,0"
-                                    MinHeight="36" FontSize="13" HorizontalAlignment="Stretch" Click="OnUpdateAction" />
+                            <Border Height="1" Margin="0,12" Background="{DynamicResource Brush.Line}" />
+
+                            <DockPanel>
+                                <Button x:Name="PauseButton" DockPanel.Dock="Right" Style="{StaticResource Button.Icon}"
+                                        Width="34" Height="34" MinHeight="0"
+                                        c:Ui.Icon="{StaticResource Icon.Pause}" Click="OnPauseClick" />
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock x:Name="NextLabel" Style="{StaticResource Text.Caption}" FontWeight="Normal"
+                                               Text="{l:T Sidebar.NextCard}" />
+                                    <TextBlock x:Name="NextText" FontSize="15" FontWeight="SemiBold" />
+                                </StackPanel>
+                            </DockPanel>
+
+                            <Button Style="{StaticResource Button.Soft}" Margin="0,12,0,0" MinHeight="36" FontSize="13"
+                                    HorizontalAlignment="Stretch" Content="{l:T Sidebar.ShowNow}"
+                                    c:Ui.Icon="{StaticResource Icon.Play}" c:Ui.IconSize="12"
+                                    Click="OnPromptNow" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Decks; folded, a short rule stands in for the heading and each deck is its dot -->
+                    <DockPanel x:Name="DeckSection" Margin="0,26,0,12">
+                        <TextBlock x:Name="DeckHeading" DockPanel.Dock="Top" Text="{l:T Sidebar.Decks}" Style="{StaticResource Text.Caption}"
+                                   FontWeight="SemiBold" Margin="12,0,0,6" />
+                        <Border x:Name="DeckRule" DockPanel.Dock="Top" Width="20" Height="1" Margin="0,0,0,14"
+                                Background="{DynamicResource Brush.Border}" Visibility="Collapsed" />
+
+                        <StackPanel DockPanel.Dock="Bottom">
+                            <TextBox x:Name="DeckNameBox" Visibility="Collapsed" Margin="0,4,0,0" MinHeight="34"
+                                     c:Ui.Hint="{l:T Sidebar.DeckNameHint}"
+                                     KeyDown="OnDeckNameKeyDown" LostKeyboardFocus="OnDeckNameLostFocus" />
+                            <Button x:Name="NewDeckButton" Style="{StaticResource Button.Ghost}"
+                                    HorizontalContentAlignment="Left" MinHeight="36" Padding="10,0" FontWeight="Normal"
+                                    Foreground="{DynamicResource Brush.TextMuted}"
+                                    Content="{l:T Sidebar.NewDeck}" c:Ui.Icon="{StaticResource Icon.Plus}"
+                                    Click="OnNewDeck" />
                         </StackPanel>
 
-                        <Button x:Name="UpdateClose" Style="{StaticResource Button.IconGhost}" Width="24" Height="24"
-                                c:Ui.IconSize="12" c:Ui.Icon="{StaticResource Icon.Close}" ToolTip="{l:T Update.Later}"
-                                AutomationProperties.Name="{l:T Update.Later}"
-                                HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-6,-6,0"
-                                Click="OnUpdateDismiss" />
-                    </Grid>
-                </Border>
-
-                <!-- Streak and schedule -->
-                <Border DockPanel.Dock="Bottom" Style="{StaticResource Card}" CornerRadius="14" Padding="14">
-                    <StackPanel>
-                        <DockPanel>
-                            <Border Width="34" Height="34" CornerRadius="10" Background="{DynamicResource Brush.Active}">
-                                <c:Icon Data="{StaticResource Icon.Flame}" Size="18"
-                                        Foreground="{DynamicResource Brush.ActiveIcon}"
-                                        HorizontalAlignment="Center" VerticalAlignment="Center" />
-                            </Border>
-                            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
-                                <TextBlock x:Name="StreakText" FontWeight="SemiBold" />
-                                <TextBlock x:Name="StreakNote" Style="{StaticResource Text.Caption}" FontWeight="Normal" />
-                            </StackPanel>
-                        </DockPanel>
-
-                        <UniformGrid x:Name="StreakDays" Rows="1" Margin="0,12,0,0" />
-
-                        <Border Height="1" Margin="0,12" Background="{DynamicResource Brush.Line}" />
-
-                        <DockPanel>
-                            <Button x:Name="PauseButton" DockPanel.Dock="Right" Style="{StaticResource Button.Icon}"
-                                    Width="34" Height="34" MinHeight="0"
-                                    c:Ui.Icon="{StaticResource Icon.Pause}" Click="OnPauseClick" />
-                            <StackPanel VerticalAlignment="Center">
-                                <TextBlock x:Name="NextLabel" Style="{StaticResource Text.Caption}" FontWeight="Normal"
-                                           Text="{l:T Sidebar.NextCard}" />
-                                <TextBlock x:Name="NextText" FontSize="15" FontWeight="SemiBold" />
-                            </StackPanel>
-                        </DockPanel>
-
-                        <Button Style="{StaticResource Button.Soft}" Margin="0,12,0,0" MinHeight="36" FontSize="13"
-                                HorizontalAlignment="Stretch" Content="{l:T Sidebar.ShowNow}"
-                                c:Ui.Icon="{StaticResource Icon.Play}" c:Ui.IconSize="12"
-                                Click="OnPromptNow" />
-                    </StackPanel>
-                </Border>
-
-                <!-- Decks -->
-                <DockPanel Margin="0,26,0,12">
-                    <TextBlock DockPanel.Dock="Top" Text="{l:T Sidebar.Decks}" Style="{StaticResource Text.Caption}"
-                               FontWeight="SemiBold" Margin="12,0,0,6" />
-
-                    <StackPanel DockPanel.Dock="Bottom">
-                        <TextBox x:Name="DeckNameBox" Visibility="Collapsed" Margin="0,4,0,0" MinHeight="34"
-                                 c:Ui.Hint="{l:T Sidebar.DeckNameHint}"
-                                 KeyDown="OnDeckNameKeyDown" LostKeyboardFocus="OnDeckNameLostFocus" />
-                        <Button x:Name="NewDeckButton" Style="{StaticResource Button.Ghost}"
-                                HorizontalContentAlignment="Left" MinHeight="36" Padding="10,0" FontWeight="Normal"
-                                Foreground="{DynamicResource Brush.TextMuted}"
-                                Content="{l:T Sidebar.NewDeck}" c:Ui.Icon="{StaticResource Icon.Plus}"
-                                Click="OnNewDeck" />
-                    </StackPanel>
-
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,0,-8,0" Padding="0,0,8,0">
-                        <StackPanel x:Name="DeckList" />
-                    </ScrollViewer>
+                        <ScrollViewer x:Name="DeckScroll" VerticalScrollBarVisibility="Auto" Margin="0,0,-8,0" Padding="0,0,8,0">
+                            <StackPanel x:Name="DeckList" />
+                        </ScrollViewer>
+                    </DockPanel>
                 </DockPanel>
-            </DockPanel>
+            </Border>
 
             <!-- ═══ Content ═══════════════════════════════════════════════════ -->
             <Grid Grid.Column="1">
@@ -204,7 +246,7 @@
             <!-- ═══ Dialog layer ══════════════════════════════════════════════ -->
             <Grid x:Name="DialogLayer" Grid.ColumnSpan="2" Visibility="Collapsed"
                   Background="{DynamicResource Brush.Scrim}">
-                <Border Width="420" HorizontalAlignment="Center" VerticalAlignment="Center"
+                <Border x:Name="DialogCard" Width="420" HorizontalAlignment="Center" VerticalAlignment="Center"
                         Style="{StaticResource Card}" Padding="24,22">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="30" ShadowDepth="8" Direction="270" Opacity="0.25" Color="#14202E" />

@@ -133,6 +133,8 @@ Portable or dev builds can't update in place — there the button opens the rele
   `Enter`. Every game is playable from the keyboard — `Space` flips a card, `←`/`→` answer,
   `1`–`4` pick an option, `Esc` ends the session.
 - Don't want to wait for the first card? **Show now** in the sidebar or the tray menu.
+- Need more room? Fold the sidebar down to a strip of icons with the button next to the logo
+  or `Ctrl+B`; Parrot remembers it.
 
 ## Building from source
 

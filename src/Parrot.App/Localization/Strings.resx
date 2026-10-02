@@ -682,11 +682,17 @@ Details: {1}</value>
   <data name="Sidebar.AllDecks" xml:space="preserve">
     <value>All decks</value>
   </data>
+  <data name="Sidebar.Collapse" xml:space="preserve">
+    <value>Collapse the sidebar</value>
+  </data>
   <data name="Sidebar.DeckNameHint" xml:space="preserve">
     <value>Deck name</value>
   </data>
   <data name="Sidebar.Decks" xml:space="preserve">
     <value>Decks</value>
+  </data>
+  <data name="Sidebar.Expand" xml:space="preserve">
+    <value>Expand the sidebar</value>
   </data>
   <data name="Sidebar.NewDeck" xml:space="preserve">
     <value>New deck</value>

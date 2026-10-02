@@ -370,6 +370,9 @@ public sealed partial class PracticeView : UserControl
 
     private void ShowPanel(FrameworkElement panel)
     {
+        if (panel.Visibility != Visibility.Visible)
+            Motion.Enter(panel, rise: 8);
+
         foreach (var p in new FrameworkElement[] { SetupPanel, PlayPanel, ResultPanel })
             p.Visibility = p == panel ? Visibility.Visible : Visibility.Collapsed;
     }
@@ -462,7 +465,8 @@ public sealed partial class PracticeView : UserControl
             StepChipText.Text = L.T(_step == StudyStep.Choice ? "Mode.Choice" : "Mode.Write");
         }
 
-        FadeIn(_step == StudyStep.Recall ? FlashCard : QuestionSurface);
+        // The flash card turns with its own transform, so its surface is what arrives.
+        Motion.Enter(_step == StudyStep.Recall ? FlashSurface : QuestionSurface, rise: 8);
     }
 
     private static void FadeIn(UIElement element) =>
@@ -624,11 +628,14 @@ public sealed partial class PracticeView : UserControl
 
         if (option.IsCorrect)
         {
+            Motion.Bump(picked, 1.03);
             _advance.Interval = RightAnswerPause;
             _advance.Start();
         }
         else
         {
+            Motion.Shake(picked);
+            Motion.Bump(_options.First(o => o.Option.IsCorrect).Button, 1.03);
             ShowFeedback(ReviewOutcome.Wrong, userAnswer: null, matched: null);
         }
     }
@@ -714,6 +721,11 @@ public sealed partial class PracticeView : UserControl
         WriteBox.IsReadOnly = true;
         WriteActions.Visibility = Visibility.Collapsed;
         FeedbackPanel.Visibility = Visibility.Visible;
+        Motion.Enter(FeedbackPanel, rise: 6);
+        if (success)
+            Motion.Bump(FeedbackBadge, 1.2);
+        else if (outcome == ReviewOutcome.Wrong && _step == StudyStep.Write)
+            Motion.Shake(WriteBox);
         ContinuePanel.Visibility = Visibility.Visible;
         OverrideButton.Visibility = outcome == ReviewOutcome.Wrong && _step == StudyStep.Write ? Visibility.Visible : Visibility.Collapsed;
 
@@ -829,6 +841,7 @@ public sealed partial class PracticeView : UserControl
             case MatchPick.Matched:
                 foreach (var matched in new[] { _tiles[first!], button })
                 {
+                    Motion.Bump(matched, 1.04);
                     Paint(matched, "Brush.Selection", "Brush.Primary");
                     matched.IsHitTestVisible = false;
                     var fade = new DoubleAnimation(0, TimeSpan.FromMilliseconds(260)) { BeginTime = TimeSpan.FromMilliseconds(120) };
@@ -852,6 +865,8 @@ public sealed partial class PracticeView : UserControl
     {
         Paint(a, "Brush.InfoSofter", "Brush.InfoStrong");
         Paint(b, "Brush.InfoSofter", "Brush.InfoStrong");
+        Motion.Shake(a);
+        Motion.Shake(b);
 
         await Task.Delay(420);
 
@@ -966,6 +981,10 @@ public sealed partial class PracticeView : UserControl
 
         ScoreText.Text = L.F("Practice.ScoreValue", _score);
         PulseBorder(TfCard, right ? "Brush.Primary" : "Brush.InfoStrong");
+        if (right)
+            Motion.Bump(TfCard, 1.02);
+        else
+            Motion.Shake(TfCard);
         NextTrueFalse();
     }
 
@@ -1045,6 +1064,7 @@ public sealed partial class PracticeView : UserControl
         var elapsed = _stopwatch.Elapsed;
         SetPlaying(false);
         ShowPanel(ResultPanel);
+        Motion.Bump(ResultBadge, 1.12);
 
         List<TroubleRow> trouble;
         var showSrsNote = false;

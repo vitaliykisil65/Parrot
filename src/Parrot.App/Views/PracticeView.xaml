@@ -13,6 +13,7 @@
             <Setter Property="Margin" Value="0,0,12,12" />
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
             <Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Ring}" />
+            <Setter Property="c:Motion.PressScale" Value="0.97" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="RadioButton">
@@ -79,6 +80,7 @@
 
         <!-- A multiple-choice answer. -->
         <Style x:Key="OptionButton" TargetType="Button" BasedOn="{StaticResource Button.Base}">
+            <Setter Property="c:Motion.PressScale" Value="0.98" />
             <Setter Property="MinHeight" Value="58" />
             <Setter Property="Margin" Value="0,0,10,10" />
             <Setter Property="Padding" Value="14,8" />
@@ -411,7 +413,7 @@
         <!-- ═══ Results ═════════════════════════════════════════════════════════ -->
         <ScrollViewer x:Name="ResultPanel" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
             <StackPanel MaxWidth="640" Margin="0,24">
-                <Border Width="64" Height="64" CornerRadius="20" HorizontalAlignment="Center"
+                <Border x:Name="ResultBadge" Width="64" Height="64" CornerRadius="20" HorizontalAlignment="Center"
                         Background="{DynamicResource Brush.Active}">
                     <c:Icon x:Name="ResultIcon" Size="30" Foreground="{DynamicResource Brush.ActiveIcon}"
                             HorizontalAlignment="Center" VerticalAlignment="Center" />
