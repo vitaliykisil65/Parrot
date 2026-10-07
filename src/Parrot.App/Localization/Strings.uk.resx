@@ -445,6 +445,15 @@
   <data name="Prompt.Check" xml:space="preserve">
     <value>Перевірити</value>
   </data>
+  <data name="Prompt.AiChecking" xml:space="preserve">
+    <value>Питаю AI…</value>
+  </data>
+  <data name="Prompt.AiCorrect" xml:space="preserve">
+    <value>Правильно — підтвердив AI</value>
+  </data>
+  <data name="Prompt.AiAdded" xml:space="preserve">
+    <value>{0} — теж правильно, додано до картки з: {1}</value>
+  </data>
   <data name="Prompt.Correct" xml:space="preserve">
     <value>Правильно</value>
   </data>
@@ -666,6 +675,48 @@
   </data>
   <data name="Settings.StrictnessNote" xml:space="preserve">
     <value>Поблажлива зараховує дрібні одруківки</value>
+  </data>
+  <data name="Settings.Ai" xml:space="preserve">
+    <value>Перевірка з AI</value>
+  </data>
+  <data name="Settings.AiEnabled" xml:space="preserve">
+    <value>Питати AI про інші відповіді</value>
+  </data>
+  <data name="Settings.AiEnabledNote" xml:space="preserve">
+    <value>Коли відповіді немає в картці, мовна модель на сервері Ollama вирішує, чи вона означає те саме. Прийняті відповіді додаються до картки</value>
+  </data>
+  <data name="Settings.AiAddress" xml:space="preserve">
+    <value>Сервер Ollama</value>
+  </data>
+  <data name="Settings.AiAddressNote" xml:space="preserve">
+    <value>Адреса й порт, наприклад 192.168.0.10:11434. Порожньо — цей комп'ютер</value>
+  </data>
+  <data name="Settings.AiModel" xml:space="preserve">
+    <value>Модель</value>
+  </data>
+  <data name="Settings.AiModelNote" xml:space="preserve">
+    <value>Як її показує "ollama list", наприклад qwen3:4b</value>
+  </data>
+  <data name="Settings.AiConnection" xml:space="preserve">
+    <value>З'єднання</value>
+  </data>
+  <data name="Settings.AiTest" xml:space="preserve">
+    <value>Перевірити</value>
+  </data>
+  <data name="Settings.AiTesting" xml:space="preserve">
+    <value>З'єднуюся…</value>
+  </data>
+  <data name="Settings.AiOk" xml:space="preserve">
+    <value>З'єднано, модель {0} готова</value>
+  </data>
+  <data name="Settings.AiModelMissing" xml:space="preserve">
+    <value>На сервері немає моделі {0}. Завантажте її: "ollama pull {0}". Встановлені: {1}</value>
+  </data>
+  <data name="Settings.AiUnreachable" xml:space="preserve">
+    <value>Сервер недоступний: {0}</value>
+  </data>
+  <data name="Settings.AiBadAddress" xml:space="preserve">
+    <value>Це не схоже на адресу сервера</value>
   </data>
   <data name="Settings.Subtitle" xml:space="preserve">
     <value>Зміни застосовуються одразу</value>

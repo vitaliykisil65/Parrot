@@ -43,4 +43,22 @@ public sealed class Card
 
     public IEnumerable<string> AcceptedAnswers =>
         Back.Split([';', '|'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+    /// <summary>
+    /// Appends <paramref name="answer"/> to the accepted translations, unless it is already
+    /// among them. Returns true when the card changed and needs saving.
+    /// </summary>
+    public bool AddAcceptedAnswer(string answer)
+    {
+        var variant = answer.Trim();
+        var normalized = Answers.AnswerNormalizer.Normalize(variant);
+
+        // A separator inside the answer would split it into variants nobody typed.
+        if (normalized.Length == 0 || variant.IndexOfAny([';', '|']) >= 0
+            || AcceptedAnswers.Any(a => Answers.AnswerNormalizer.Normalize(a) == normalized))
+            return false;
+
+        Back = Back.Trim().Length == 0 ? variant : $"{Back.Trim()}; {variant}";
+        return true;
+    }
 }

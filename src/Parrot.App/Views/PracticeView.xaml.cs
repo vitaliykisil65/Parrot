@@ -9,6 +9,7 @@ using System.Windows.Threading;
 using Parrot.App.Controls;
 using Parrot.App.Localization;
 using Parrot.App.Services;
+using Parrot.Core.Ai;
 using Parrot.Core.Answers;
 using Parrot.Core.Data;
 using Parrot.Core.Models;
@@ -94,6 +95,7 @@ public sealed partial class PracticeView : UserControl
 
     /// <summary>An answer given but not yet counted: it is counted when the user moves on, so "I was right" can still change it.</summary>
     private (ReviewOutcome Outcome, string? Answer)? _pending;
+    private bool _askingAi;
 
     private MatchBoard? _board;
     private readonly Dictionary<MatchTile, Button> _tiles = [];
@@ -661,20 +663,54 @@ public sealed partial class PracticeView : UserControl
         Dispatcher.BeginInvoke(() => WriteBox.Focus(), DispatcherPriority.Input);
     }
 
-    private void Check()
+    private async Task CheckAsync()
     {
-        if (_card is null || _pending is not null || _step != StudyStep.Write || string.IsNullOrWhiteSpace(WriteBox.Text))
+        if (_card is null || _pending is not null || _askingAi || _step != StudyStep.Write || string.IsNullOrWhiteSpace(WriteBox.Text))
             return;
 
-        var also = _cardDirection == TranslationDirection.BackToFront
-            ? Synonyms.FrontsSharingMeaning(_card, _library)
+        var (card, direction, typed) = (_card, _cardDirection, WriteBox.Text);
+        var also = direction == TranslationDirection.BackToFront
+            ? Synonyms.FrontsSharingMeaning(card, _library)
             : [];
 
-        var result = new AnswerChecker(_settings.Current.Strictness).Check(_card, WriteBox.Text, _cardDirection, also);
-        _pending = (result.Outcome, WriteBox.Text);
-        ShowFeedback(result.Outcome, WriteBox.Text, result.MatchedAnswer, also);
+        var result = new AnswerChecker(_settings.Current.Strictness).Check(card, typed, direction, also);
+        var (byAi, added) = (false, false);
 
-        if (result.Outcome == ReviewOutcome.Correct)
+        // The card only knows the translations written on it; a miss gets a second opinion.
+        if (result.Outcome == ReviewOutcome.Wrong && _shell.Judge.IsEnabled)
+        {
+            SetAskingAi(true);
+            var judgement = await _shell.Judge.JudgeAsync(card, direction, typed);
+            SetAskingAi(false);
+
+            // The session moved on (or ended) while the model was thinking.
+            if (_card != card || _pending is not null || _step != StudyStep.Write)
+                return;
+
+            if (judgement.Verdict == AiVerdict.Unavailable)
+                Log.Info($"AI answer check unavailable: {judgement.Error}");
+
+            if (judgement.Verdict == AiVerdict.Accepted)
+            {
+                byAi = true;
+                result = new AnswerResult(ReviewOutcome.Correct, typed.Trim());
+
+                // Only the translation side grows: adding to the front would change the question.
+                added = direction == TranslationDirection.FrontToBack && _repository.AddAcceptedAnswer(card.Id, typed);
+                if (added)
+                    Log.Info($"AI accepted \"{typed.Trim()}\"; added it to card {card.Id}");
+            }
+        }
+
+        _pending = (result.Outcome, typed);
+        ShowFeedback(result.Outcome, typed, result.MatchedAnswer, also, byAi);
+
+        // After the feedback, which shows the card's translations as they were.
+        if (added)
+            card.AddAcceptedAnswer(typed);
+
+        // An answer the AI accepted stays on screen: the user should see it was added to the card.
+        if (result.Outcome == ReviewOutcome.Correct && !byAi)
         {
             _advance.Interval = RightAnswerPause;
             _advance.Start();
@@ -683,14 +719,22 @@ public sealed partial class PracticeView : UserControl
 
     private void DontKnow()
     {
-        if (_card is null || _pending is not null || _step != StudyStep.Write)
+        if (_card is null || _pending is not null || _askingAi || _step != StudyStep.Write)
             return;
 
         _pending = (ReviewOutcome.DontKnow, null);
         ShowFeedback(ReviewOutcome.DontKnow, userAnswer: null, matched: null);
     }
 
-    private void OnCheck(object sender, RoutedEventArgs e) => Check();
+    private void OnCheck(object sender, RoutedEventArgs e) => _ = CheckAsync();
+
+    private void SetAskingAi(bool asking)
+    {
+        _askingAi = asking;
+        WriteBox.IsReadOnly = asking;
+        WriteActions.IsEnabled = !asking;
+        WriteAiStatus.Visibility = asking ? Visibility.Visible : Visibility.Collapsed;
+    }
 
     private void OnDontKnow(object sender, RoutedEventArgs e) => DontKnow();
 
@@ -710,7 +754,8 @@ public sealed partial class PracticeView : UserControl
     private void OnContinue(object sender, RoutedEventArgs e) => Continue();
 
     /// <summary>Same look as the prompt window: yellow for "got it", blue for "we'll come back to it".</summary>
-    private void ShowFeedback(ReviewOutcome outcome, string? userAnswer, string? matched, IReadOnlyList<string>? synonyms = null)
+    private void ShowFeedback(ReviewOutcome outcome, string? userAnswer, string? matched, IReadOnlyList<string>? synonyms = null,
+        bool byAi = false)
     {
         if (_card is null)
             return;
@@ -737,6 +782,7 @@ public sealed partial class PracticeView : UserControl
 
         FeedbackStatus.Text = outcome switch
         {
+            ReviewOutcome.Correct when byAi => L.T("Prompt.AiCorrect"),
             ReviewOutcome.Correct => L.T("Prompt.Correct"),
             ReviewOutcome.Typo => L.T("Prompt.Typo"),
             ReviewOutcome.DontKnow => L.T("Prompt.Remember"),
@@ -759,10 +805,14 @@ public sealed partial class PracticeView : UserControl
             ? L.F("Prompt.Synonym", matched, answer)
             : outcome == ReviewOutcome.Correct && matched is not null ? matched : answer;
 
+        if (byAi && matched is not null)
+            FeedbackAnswer.Text = L.F(_cardDirection == TranslationDirection.FrontToBack ? "Prompt.AiAdded" : "Prompt.Synonym",
+                matched, answer);
+
         SetText(FeedbackTranscription, CardText.Transcription(_card));
         SetText(FeedbackExample, _card.Example);
 
-        if (!success || outcome == ReviewOutcome.Typo)
+        if (!success || outcome == ReviewOutcome.Typo || byAi)
             Focus();
     }
 
@@ -1311,7 +1361,7 @@ public sealed partial class PracticeView : UserControl
                 if (_pending is not null)
                     Continue();
                 else
-                    Check();
+                    _ = CheckAsync();
                 return true;
         }
     }

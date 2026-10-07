@@ -1,9 +1,11 @@
+using System.Net.Http;
 using System.Windows;
 using System.Windows.Threading;
 using Parrot.App.Localization;
 using Parrot.App.Services;
 using Parrot.App.Views;
 using Parrot.Core;
+using Parrot.Core.Ai;
 using Parrot.Core.Data;
 using Parrot.Core.Models;
 using Parrot.Core.Scheduling;
@@ -33,6 +35,8 @@ public partial class App : Application, IPromptHost
     private PromptScheduler? _scheduler;
     private TrayIconService? _tray;
     private UpdateService? _updates;
+    private HttpClient? _http;
+    private AnswerJudge? _judge;
 
     private PromptWindow? _activePrompt;
     private MainWindow? _main;
@@ -120,6 +124,9 @@ public partial class App : Application, IPromptHost
 
         _prompts = new PromptService(_repository, _settings);
 
+        _http = new HttpClient();
+        _judge = new AnswerJudge(_settings, _http);
+
         _scheduler = new PromptScheduler(_prompts, _settings);
         _scheduler.PromptReady += (_, request) => ShowPrompt(request);
         _scheduler.PromptSkipped += (_, skipped) => Log.Info($"Prompt skipped: {skipped.Reason}");
@@ -182,12 +189,12 @@ public partial class App : Application, IPromptHost
 
     private void ShowPrompt(PromptRequest request)
     {
-        if (_activePrompt is not null || _settings is null || _prompts is null || _repository is null)
+        if (_activePrompt is not null || _settings is null || _prompts is null || _repository is null || _judge is null)
             return;
 
         var deckName = _repository.GetDecks().FirstOrDefault(d => d.Id == request.Card.DeckId)?.Name ?? "Parrot";
 
-        var window = new PromptWindow(request, _prompts.CreateChecker(), _settings.Current, deckName);
+        var window = new PromptWindow(request, _prompts.CreateChecker(), _judge, _settings.Current, deckName);
         _activePrompt = window;
         _scheduler!.IsPromptOnScreen = true;
 
@@ -196,6 +203,9 @@ public partial class App : Application, IPromptHost
             try
             {
                 _prompts.Record(request, result.Outcome, result.Answer, DateTimeOffset.Now);
+
+                if (result.AddToCard && result.Answer is { } answer && _repository.AddAcceptedAnswer(request.Card.Id, answer))
+                    Log.Info($"AI accepted \"{answer.Trim()}\"; added it to card {request.Card.Id}");
             }
             catch (Exception ex)
             {
@@ -280,7 +290,7 @@ public partial class App : Application, IPromptHost
 
         if (_main is null)
         {
-            _main = new MainWindow(_repository, _settings, this, _updates!);
+            _main = new MainWindow(_repository, _settings, this, _updates!, _judge!);
             _main.Closed += (_, _) => _main = null;
             _main.Show();
         }
@@ -331,6 +341,7 @@ public partial class App : Application, IPromptHost
 
         _scheduler?.Dispose();
         _updates?.Dispose();
+        _http?.Dispose();
         _tray?.Dispose();
         _database?.Dispose();
 

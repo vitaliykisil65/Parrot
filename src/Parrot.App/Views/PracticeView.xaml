@@ -323,6 +323,8 @@
                                     </StackPanel>
                                 </Button>
                                 <Button Content="{l:T Prompt.DontKnow}" Margin="8,0,0,0" Click="OnDontKnow" />
+                                <TextBlock x:Name="WriteAiStatus" Text="{l:T Prompt.AiChecking}" Style="{StaticResource Text.Muted}"
+                                           FontSize="12" Margin="12,0,0,0" VerticalAlignment="Center" Visibility="Collapsed" />
                             </StackPanel>
                         </StackPanel>
 

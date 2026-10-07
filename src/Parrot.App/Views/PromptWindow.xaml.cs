@@ -8,6 +8,8 @@ using Parrot.App.Branding;
 using Parrot.App.Controls;
 using Parrot.App.Interop;
 using Parrot.App.Localization;
+using Parrot.App.Services;
+using Parrot.Core.Ai;
 using Parrot.Core.Answers;
 using Parrot.Core.Models;
 using Parrot.Core.Scheduling;
@@ -21,6 +23,7 @@ public sealed partial class PromptWindow : Window
 
     private readonly PromptRequest _request;
     private readonly AnswerChecker _checker;
+    private readonly AnswerJudge _judge;
     private readonly AppSettings _settings;
 
     private readonly DispatcherTimer _countdownTimer = new();
@@ -30,11 +33,15 @@ public sealed partial class PromptWindow : Window
     private ReviewOutcome? _outcome;
     private string? _userAnswer;
     private bool _countdownPaused;
+    private bool _askingAi;
+    private bool _acceptedByAi;
+    private bool _closed;
 
-    public PromptWindow(PromptRequest request, AnswerChecker checker, AppSettings settings, string deckName)
+    public PromptWindow(PromptRequest request, AnswerChecker checker, AnswerJudge judge, AppSettings settings, string deckName)
     {
         _request = request;
         _checker = checker;
+        _judge = judge;
         _settings = settings;
 
         InitializeComponent();
@@ -64,9 +71,10 @@ public sealed partial class PromptWindow : Window
     /// <summary>
     /// Raised exactly once, when the prompt is finished. An untouched window reports
     /// <see cref="ReviewOutcome.Timeout"/>, and a dismissed one <see cref="ReviewOutcome.Ignored"/>;
-    /// neither costs the card any rating.
+    /// neither costs the card any rating. <c>AddToCard</c> asks for the answer the AI accepted to
+    /// be added to the card's translations.
     /// </summary>
-    public event EventHandler<(ReviewOutcome Outcome, string? Answer)>? Completed;
+    public event EventHandler<(ReviewOutcome Outcome, string? Answer, bool AddToCard)>? Completed;
 
     protected override void OnSourceInitialized(EventArgs e)
     {
@@ -88,6 +96,10 @@ public sealed partial class PromptWindow : Window
         ScreenPositioner.Position(this, _settings);
         PlayEntrance();
         StartCountdown();
+
+        // Load the model while the user reads the card, so a check does not wait for the disk.
+        if (_judge.IsEnabled)
+            _ = _judge.WarmUpAsync();
 
         // The result panel makes the card taller; keep it pinned to its anchor instead of
         // letting it grow off the bottom of the screen.
@@ -144,11 +156,12 @@ public sealed partial class PromptWindow : Window
 
     protected override void OnClosed(EventArgs e)
     {
+        _closed = true;
         StopCountdown();
         _lingerTimer.Stop();
 
         // Closing without an answer is not a failure — the user was simply busy.
-        Completed?.Invoke(this, (_outcome ?? ReviewOutcome.Ignored, _userAnswer));
+        Completed?.Invoke(this, (_outcome ?? ReviewOutcome.Ignored, _userAnswer, _acceptedByAi && AddsToCard));
 
         base.OnClosed(e);
     }
@@ -234,7 +247,7 @@ public sealed partial class PromptWindow : Window
         switch (e.Key)
         {
             case Key.Enter when _outcome is null:
-                Check();
+                _ = CheckAsync();
                 e.Handled = true;
                 break;
 
@@ -250,10 +263,13 @@ public sealed partial class PromptWindow : Window
         }
     }
 
-    private void OnCheck(object sender, RoutedEventArgs e) => Check();
+    private void OnCheck(object sender, RoutedEventArgs e) => _ = CheckAsync();
 
     private void OnDontKnow(object sender, RoutedEventArgs e)
     {
+        if (_askingAi)
+            return;
+
         _userAnswer = null;
         ShowResult(ReviewOutcome.DontKnow);
     }
@@ -268,11 +284,49 @@ public sealed partial class PromptWindow : Window
         Close();
     }
 
-    private void Check()
+    private async Task CheckAsync()
     {
+        if (_askingAi || _outcome is not null)
+            return;
+
         _userAnswer = AnswerBox.Text;
         var result = _checker.Check(_request.Card, _userAnswer, _request.Direction, _request.AlsoAccepted);
+
+        // The card only knows the translations written on it; a miss gets a second opinion.
+        if (result.Outcome == ReviewOutcome.Wrong && _judge.IsEnabled && !string.IsNullOrWhiteSpace(_userAnswer))
+        {
+            SetAskingAi(true);
+            var judgement = await _judge.JudgeAsync(_request.Card, _request.Direction, _userAnswer);
+            SetAskingAi(false);
+
+            // Dismissed while the model was thinking: the answer no longer has anywhere to go.
+            if (_closed || _outcome is not null)
+                return;
+
+            if (judgement.Verdict == AiVerdict.Unavailable)
+                Log.Info($"AI answer check unavailable: {judgement.Error}");
+
+            if (judgement.Verdict == AiVerdict.Accepted)
+            {
+                _acceptedByAi = true;
+                ShowResult(ReviewOutcome.Correct, _userAnswer.Trim());
+                return;
+            }
+        }
+
         ShowResult(result.Outcome, result.MatchedAnswer);
+    }
+
+    /// <summary>Only the translation side grows: adding to the front would change the question.</summary>
+    private bool AddsToCard => _request.Direction == TranslationDirection.FrontToBack;
+
+    private void SetAskingAi(bool asking)
+    {
+        _askingAi = asking;
+        AnswerBox.IsReadOnly = asking;
+        CheckButton.IsEnabled = !asking;
+        DontKnowButton.IsEnabled = !asking;
+        AiStatusText.Visibility = asking ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void ShowResult(ReviewOutcome outcome, string? matched = null)
@@ -306,6 +360,7 @@ public sealed partial class PromptWindow : Window
 
         ResultStatus.Text = outcome switch
         {
+            ReviewOutcome.Correct when _acceptedByAi => L.T("Prompt.AiCorrect"),
             ReviewOutcome.Correct => L.T("Prompt.Correct"),
             ReviewOutcome.Typo => L.T("Prompt.Typo"),
             ReviewOutcome.DontKnow => L.T("Prompt.Remember"),
@@ -334,6 +389,9 @@ public sealed partial class PromptWindow : Window
         // A synonym from another card is accepted, but this card still wants its own word learned.
         if (matched is not null && _request.AlsoAccepted.Contains(matched))
             ResultAnswer.Text = L.F("Prompt.Synonym", matched, _request.Answer);
+
+        if (_acceptedByAi && matched is not null)
+            ResultAnswer.Text = L.F(AddsToCard ? "Prompt.AiAdded" : "Prompt.Synonym", matched, _request.Answer);
 
         if (_request.Direction == TranslationDirection.BackToFront && CardText.Transcription(_request.Card) is { } transcription)
         {

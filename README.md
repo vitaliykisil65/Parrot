@@ -41,6 +41,10 @@ back to what you were doing, or simply ignore the card and it will fade away on 
   often you see it. New cards are introduced at a pace you choose.
 - ✍️ **Forgiving answer checking.** Small typos are accepted (and the correct spelling is shown),
   several correct translations can be listed per card, and synonyms from other cards count too.
+- 🤖 **Optional AI second opinion.** Point Parrot at an [Ollama](https://ollama.com) server and an
+  answer the card doesn't list — "машина для миття посуду" for a card that only says
+  "посудомийка" — is checked by a local language model. If it means the same, it counts and is
+  added to the card, so next time no AI is needed. Nothing leaves your network.
 - 🤷 **"I don't know"** reveals the answer with an example right away.
 - 🔕 **Knows when to stay quiet.** Quiet hours, active days, a daily limit, a pause from the tray,
   and no cards while a full-screen app or presentation is running or you're away from the keyboard.
@@ -120,6 +124,20 @@ SHA-256, installs it silently and restarts Parrot. The ✕ skips that version un
 comes out. **Settings → System** has **Check for updates** and a toggle for automatic checks.
 
 Portable or dev builds can't update in place — there the button opens the release page.
+
+### AI answer check
+
+Off by default. To use it, run [Ollama](https://ollama.com) on this or another computer in your
+network and pull a model — `ollama pull qwen3:4b` is a good start: it knows Ukrainian well enough
+and answers in about 5 seconds even on an old two-core CPU. Smaller models tend to reject
+everything. For a server on another machine, start Ollama with `OLLAMA_HOST=0.0.0.0:11434` and
+allow port 11434 in its firewall (private networks only).
+
+Then in **Settings → AI answer check** switch it on, enter the server (`192.168.0.10:11434`, or
+leave it empty for this computer) and the model, and press **Test**. From then on an answer that
+isn't on the card is shown to the model with the card's translations and example; if the model
+says it means the same, it counts as correct and is added to the card's translations. If the
+server doesn't answer within 20 seconds, the answer is judged as before.
 
 ## Getting started
 

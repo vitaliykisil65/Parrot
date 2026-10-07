@@ -71,6 +71,19 @@ public sealed class AppSettings
     /// <summary>Ask cards answered right several times running translation → word.</summary>
     public bool ReverseWellKnown { get; set; } = true;
 
+    // ── AI answer check ──────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Ask a language model on an Ollama server about answers the card doesn't list, and add
+    /// the ones it accepts to the card. Off by default: it needs a server to talk to.
+    /// </summary>
+    public bool AiCheckEnabled { get; set; }
+
+    /// <summary>The Ollama server, as "host:port" or a URL. Empty means this computer.</summary>
+    public string AiAddress { get; set; } = "";
+
+    public string AiModel { get; set; } = "qwen3:4b";
+
     // ── Practice ─────────────────────────────────────────────────────────────
     // The last session's choices, so "one more round" is a single click.
 

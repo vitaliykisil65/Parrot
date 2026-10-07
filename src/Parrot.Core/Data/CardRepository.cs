@@ -194,6 +194,19 @@ public sealed class CardRepository(Database database)
         transaction.Commit();
     }
 
+    /// <summary>
+    /// Adds a translation the AI check accepted to the card's list. The card is read fresh, so an
+    /// edit made in the dictionary while the prompt was open is not overwritten.
+    /// </summary>
+    public bool AddAcceptedAnswer(long cardId, string answer)
+    {
+        if (GetCard(cardId) is not { } card || !card.AddAcceptedAnswer(answer))
+            return false;
+
+        UpdateCard(card);
+        return true;
+    }
+
     public void UpdateCard(Card card)
     {
         card.UpdatedAt = DateTimeOffset.Now;

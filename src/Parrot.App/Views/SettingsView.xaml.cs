@@ -7,6 +7,7 @@ using System.Windows.Threading;
 using Parrot.App.Localization;
 using Parrot.App.Services;
 using Parrot.Core;
+using Parrot.Core.Ai;
 using Parrot.Core.Models;
 using Parrot.Core.Settings;
 
@@ -189,6 +190,10 @@ public sealed partial class SettingsView : UserControl
         Check(_strictnessButtons, s.Strictness);
         Check(_themeButtons, s.Theme);
 
+        AiSwitch.IsChecked = s.AiCheckEnabled;
+        AiAddressBox.Text = s.AiAddress;
+        AiModelBox.Text = s.AiModel;
+
         // Read the real registry state rather than the stored flag: the user may have
         // removed the entry from Task Manager behind our back.
         AutoStartSwitch.IsChecked = AutoStartService.IsEnabled();
@@ -359,6 +364,70 @@ public sealed partial class SettingsView : UserControl
         }
 
         Update(s => s.RunAtStartup = AutoStartService.IsEnabled());
+    }
+
+    // ── AI answer check ──────────────────────────────────────────────────────
+
+    private void OnAiChanged(object sender, RoutedEventArgs e) =>
+        Update(s => s.AiCheckEnabled = AiSwitch.IsChecked == true);
+
+    private void OnAiFieldKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter)
+        {
+            CommitAiFields();
+            e.Handled = true;
+        }
+    }
+
+    private void OnAiFieldCommitted(object sender, KeyboardFocusChangedEventArgs e) => CommitAiFields();
+
+    private void CommitAiFields()
+    {
+        var (address, model) = (AiAddressBox.Text.Trim(), AiModelBox.Text.Trim());
+
+        if (OllamaAddress.Parse(address) is null)
+        {
+            ShowError(L.T("Settings.AiBadAddress"));
+            AiAddressBox.Text = _settings.Current.AiAddress;
+            return;
+        }
+
+        if (address == _settings.Current.AiAddress && model == _settings.Current.AiModel)
+            return;
+
+        Update(s =>
+        {
+            s.AiAddress = address;
+            s.AiModel = model;
+        });
+        AiStatusText.Visibility = Visibility.Collapsed;
+    }
+
+    private async void OnAiTest(object sender, RoutedEventArgs e)
+    {
+        CommitAiFields();
+
+        AiTestButton.IsEnabled = false;
+        ShowAiStatus(L.T("Settings.AiTesting"));
+
+        var status = await _shell.Judge.TestAsync();
+
+        AiTestButton.IsEnabled = true;
+        ShowAiStatus(status.State switch
+        {
+            AiConnectionState.Ok => L.F("Settings.AiOk", status.Detail ?? ""),
+            AiConnectionState.ModelMissing => L.F("Settings.AiModelMissing", _settings.Current.AiModel.Trim(),
+                string.IsNullOrEmpty(status.Detail) ? "—" : status.Detail),
+            AiConnectionState.BadAddress => L.T("Settings.AiBadAddress"),
+            _ => L.F("Settings.AiUnreachable", status.Detail ?? ""),
+        });
+    }
+
+    private void ShowAiStatus(string text)
+    {
+        AiStatusText.Text = text;
+        AiStatusText.Visibility = Visibility.Visible;
     }
 
     // ── Updates ──────────────────────────────────────────────────────────────

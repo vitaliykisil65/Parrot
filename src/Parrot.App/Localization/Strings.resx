@@ -448,6 +448,15 @@ Details: {1}</value>
   <data name="Prompt.Check" xml:space="preserve">
     <value>Check</value>
   </data>
+  <data name="Prompt.AiChecking" xml:space="preserve">
+    <value>Asking AI…</value>
+  </data>
+  <data name="Prompt.AiCorrect" xml:space="preserve">
+    <value>Correct — confirmed by AI</value>
+  </data>
+  <data name="Prompt.AiAdded" xml:space="preserve">
+    <value>{0} works too — added to the card with: {1}</value>
+  </data>
   <data name="Prompt.Correct" xml:space="preserve">
     <value>Correct</value>
   </data>
@@ -669,6 +678,48 @@ Details: {1}</value>
   </data>
   <data name="Settings.StrictnessNote" xml:space="preserve">
     <value>Lenient accepts minor typos</value>
+  </data>
+  <data name="Settings.Ai" xml:space="preserve">
+    <value>AI answer check</value>
+  </data>
+  <data name="Settings.AiEnabled" xml:space="preserve">
+    <value>Ask AI about other answers</value>
+  </data>
+  <data name="Settings.AiEnabledNote" xml:space="preserve">
+    <value>When an answer isn't on the card, a language model on an Ollama server decides whether it means the same. Answers it accepts are added to the card</value>
+  </data>
+  <data name="Settings.AiAddress" xml:space="preserve">
+    <value>Ollama server</value>
+  </data>
+  <data name="Settings.AiAddressNote" xml:space="preserve">
+    <value>Host and port, e.g. 192.168.0.10:11434. Empty — this computer</value>
+  </data>
+  <data name="Settings.AiModel" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="Settings.AiModelNote" xml:space="preserve">
+    <value>As "ollama list" shows it, e.g. qwen3:4b</value>
+  </data>
+  <data name="Settings.AiConnection" xml:space="preserve">
+    <value>Connection</value>
+  </data>
+  <data name="Settings.AiTest" xml:space="preserve">
+    <value>Test</value>
+  </data>
+  <data name="Settings.AiTesting" xml:space="preserve">
+    <value>Connecting…</value>
+  </data>
+  <data name="Settings.AiOk" xml:space="preserve">
+    <value>Connected, {0} is ready</value>
+  </data>
+  <data name="Settings.AiModelMissing" xml:space="preserve">
+    <value>The server has no model {0}. Pull it with "ollama pull {0}". Installed: {1}</value>
+  </data>
+  <data name="Settings.AiUnreachable" xml:space="preserve">
+    <value>Can't reach the server: {0}</value>
+  </data>
+  <data name="Settings.AiBadAddress" xml:space="preserve">
+    <value>That doesn't look like a server address</value>
   </data>
   <data name="Settings.Subtitle" xml:space="preserve">
     <value>Changes apply immediately</value>

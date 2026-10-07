@@ -314,6 +314,59 @@
                     <Border Style="{StaticResource SectionCard}">
                         <StackPanel>
                             <StackPanel Style="{StaticResource SectionTitle}">
+                                <c:Icon Style="{StaticResource SectionIcon}" Data="{StaticResource Icon.Zap}" />
+                                <TextBlock Text="{l:T Settings.Ai}" Style="{StaticResource Text.Section}" />
+                            </StackPanel>
+
+                            <Border Style="{StaticResource RowRule}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <CheckBox x:Name="AiSwitch" DockPanel.Dock="Right" Style="{StaticResource Switch}"
+                                          Click="OnAiChanged" />
+                                <StackPanel Style="{StaticResource RowText}">
+                                    <TextBlock Text="{l:T Settings.AiEnabled}" Style="{StaticResource RowTitle}" />
+                                    <TextBlock Text="{l:T Settings.AiEnabledNote}" Style="{StaticResource RowNote}" />
+                                </StackPanel>
+                            </DockPanel>
+
+                            <Border Style="{StaticResource RowRule}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBox x:Name="AiAddressBox" DockPanel.Dock="Right" Width="180" MinHeight="32"
+                                         VerticalAlignment="Center" VerticalContentAlignment="Center" FontSize="13"
+                                         c:Ui.Hint="127.0.0.1:11434"
+                                         KeyDown="OnAiFieldKeyDown" LostKeyboardFocus="OnAiFieldCommitted" />
+                                <StackPanel Style="{StaticResource RowText}">
+                                    <TextBlock Text="{l:T Settings.AiAddress}" Style="{StaticResource RowTitle}" />
+                                    <TextBlock Text="{l:T Settings.AiAddressNote}" Style="{StaticResource RowNote}" />
+                                </StackPanel>
+                            </DockPanel>
+
+                            <Border Style="{StaticResource RowRule}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBox x:Name="AiModelBox" DockPanel.Dock="Right" Width="180" MinHeight="32"
+                                         VerticalAlignment="Center" VerticalContentAlignment="Center" FontSize="13"
+                                         KeyDown="OnAiFieldKeyDown" LostKeyboardFocus="OnAiFieldCommitted" />
+                                <StackPanel Style="{StaticResource RowText}">
+                                    <TextBlock Text="{l:T Settings.AiModel}" Style="{StaticResource RowTitle}" />
+                                    <TextBlock Text="{l:T Settings.AiModelNote}" Style="{StaticResource RowNote}" />
+                                </StackPanel>
+                            </DockPanel>
+
+                            <Border Style="{StaticResource RowRule}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <Button x:Name="AiTestButton" DockPanel.Dock="Right" VerticalAlignment="Center"
+                                        MinHeight="34" FontSize="13" Content="{l:T Settings.AiTest}"
+                                        Click="OnAiTest" />
+                                <StackPanel Style="{StaticResource RowText}">
+                                    <TextBlock Text="{l:T Settings.AiConnection}" Style="{StaticResource RowTitle}" />
+                                    <TextBlock x:Name="AiStatusText" Style="{StaticResource RowNote}" Visibility="Collapsed" />
+                                </StackPanel>
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource SectionCard}">
+                        <StackPanel>
+                            <StackPanel Style="{StaticResource SectionTitle}">
                                 <c:Icon Style="{StaticResource SectionIcon}" Data="{StaticResource Icon.Window}" />
                                 <TextBlock Text="{l:T Settings.System}" Style="{StaticResource Text.Section}" />
                             </StackPanel>

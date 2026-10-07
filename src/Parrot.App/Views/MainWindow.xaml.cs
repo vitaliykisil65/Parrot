@@ -13,6 +13,7 @@ using Parrot.App.Controls;
 using Parrot.App.Interop;
 using Parrot.App.Localization;
 using Parrot.App.Services;
+using Parrot.Core.Ai;
 using Parrot.Core.Data;
 using Parrot.Core.Models;
 using Parrot.Core.Settings;
@@ -32,6 +33,7 @@ public sealed partial class MainWindow : Window
     private readonly SettingsService _settings;
     private readonly IPromptHost _host;
     private readonly UpdateService _updates;
+    private readonly AnswerJudge _judge;
 
     private readonly DispatcherTimer _clock = new() { Interval = TimeSpan.FromSeconds(20) };
     private readonly DispatcherTimer _toastTimer = new() { Interval = TimeSpan.FromSeconds(6) };
@@ -52,12 +54,13 @@ public sealed partial class MainWindow : Window
     /// <summary>The sidebar folded down to a strip of icons.</summary>
     private bool _collapsed;
 
-    public MainWindow(CardRepository repository, SettingsService settings, IPromptHost host, UpdateService updates)
+    public MainWindow(CardRepository repository, SettingsService settings, IPromptHost host, UpdateService updates, AnswerJudge judge)
     {
         _repository = repository;
         _settings = settings;
         _host = host;
         _updates = updates;
+        _judge = judge;
 
         InitializeComponent();
 
@@ -179,6 +182,8 @@ public sealed partial class MainWindow : Window
 
     /// <summary>Keeps every view honest after a prompt changed a card's schedule.</summary>
     public UpdateService Updates => _updates;
+
+    public AnswerJudge Judge => _judge;
 
     public void RefreshData()
     {
