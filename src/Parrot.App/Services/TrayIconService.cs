@@ -64,7 +64,12 @@ public sealed class TrayIconService : IDisposable
         _icon.Icon = _trayImage;
         _icon.Visible = true;
 
-        _icon.DoubleClick += (_, _) => LibraryRequested?.Invoke(this, EventArgs.Empty);
+        // A single left click opens the app; the right button is left to the context menu.
+        _icon.MouseClick += (_, e) =>
+        {
+            if (e.Button == Forms.MouseButtons.Left)
+                LibraryRequested?.Invoke(this, EventArgs.Empty);
+        };
     }
 
     public event EventHandler? LibraryRequested;

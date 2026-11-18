@@ -21,10 +21,11 @@ public sealed class OllamaClient(HttpClient http, Uri baseUri)
     };
 
     /// <summary>
-    /// How long the server keeps the model in memory after a request. Without it Ollama unloads
-    /// the model after 5 minutes, and the next check pays a minute of loading on a small CPU.
+    /// How long the server keeps the model in memory after a request: long enough to answer the
+    /// card that is on screen, short enough not to hold the memory between cards. The scheduler
+    /// loads it again a minute before the next one.
     /// </summary>
-    private const string KeepAlive = "10m";
+    private const string KeepAlive = "1m";
 
     /// <summary>Names of the models the server has pulled, e.g. "qwen3:4b".</summary>
     public async Task<IReadOnlyList<string>> GetModelsAsync(CancellationToken ct = default)

@@ -67,6 +67,11 @@ public sealed class AnswerJudge(SettingsService settings, HttpClient http)
     /// </summary>
     private readonly Dictionary<(long CardId, TranslationDirection Direction, string Answer), AiVerdict> _verdicts = [];
 
+    /// <summary>The load in progress, so a card shown while the model is still loading waits for it instead of starting another.</summary>
+    private Task? _warmUp;
+
+    private readonly object _warmUpLock = new();
+
     public bool IsEnabled =>
         settings.Current.AiCheckEnabled
         && !string.IsNullOrWhiteSpace(settings.Current.AiModel)
@@ -88,6 +93,22 @@ public sealed class AnswerJudge(SettingsService settings, HttpClient http)
         var key = (card.Id, direction, AnswerNormalizer.Normalize(typed));
         if (_verdicts.TryGetValue(key, out var known))
             return new AiJudgement(known);
+
+        // A model still loading gets its time first; the 20 s are for the answer itself.
+        Task? loading;
+        lock (_warmUpLock)
+            loading = _warmUp;
+
+        if (loading is { IsCompleted: false })
+        {
+            try
+            {
+                await loading.WaitAsync(ct).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+            {
+            }
+        }
 
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
         timeout.CancelAfter(Timeout);
@@ -123,11 +144,22 @@ public sealed class AnswerJudge(SettingsService settings, HttpClient http)
     /// Loads the model into memory ahead of time, so the answer can be graded quickly once typed.
     /// Called when a card appears; failures are ignored — the real check will report them.
     /// </summary>
-    public async Task WarmUpAsync(CancellationToken ct = default)
+    public Task WarmUpAsync(CancellationToken ct = default)
     {
         if (!IsEnabled || OllamaAddress.Parse(settings.Current.AiAddress) is not { } address)
-            return;
+            return Task.CompletedTask;
 
+        lock (_warmUpLock)
+        {
+            if (_warmUp is { IsCompleted: false } running)
+                return running;
+
+            return _warmUp = LoadAsync(address, ct);
+        }
+    }
+
+    private async Task LoadAsync(Uri address, CancellationToken ct)
+    {
         try
         {
             await new OllamaClient(http, address)
