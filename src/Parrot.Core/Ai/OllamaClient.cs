@@ -20,6 +20,12 @@ public sealed class OllamaClient(HttpClient http, Uri baseUri)
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
     };
 
+    /// <summary>
+    /// How long the server keeps the model in memory after a request. Without it Ollama unloads
+    /// the model after 5 minutes, and the next check pays a minute of loading on a small CPU.
+    /// </summary>
+    private const string KeepAlive = "10m";
+
     /// <summary>Names of the models the server has pulled, e.g. "qwen3:4b".</summary>
     public async Task<IReadOnlyList<string>> GetModelsAsync(CancellationToken ct = default)
     {
@@ -45,6 +51,7 @@ public sealed class OllamaClient(HttpClient http, Uri baseUri)
             ["model"] = model,
             ["stream"] = false,
             ["think"] = false,
+            ["keep_alive"] = KeepAlive,
             ["messages"] = new JsonArray
             {
                 new JsonObject { ["role"] = "system", ["content"] = system },
@@ -67,7 +74,7 @@ public sealed class OllamaClient(HttpClient http, Uri baseUri)
     /// <summary>Loads a model into memory without generating anything: a chat with no messages.</summary>
     public async Task LoadAsync(string model, CancellationToken ct = default)
     {
-        var request = new JsonObject { ["model"] = model, ["messages"] = new JsonArray(), ["stream"] = false };
+        var request = new JsonObject { ["model"] = model, ["messages"] = new JsonArray(), ["stream"] = false, ["keep_alive"] = KeepAlive };
 
         using var content = JsonContent.Create(request, options: JsonOptions);
         using var response = await http.PostAsync(new Uri(baseUri, "api/chat"), content, ct).ConfigureAwait(false);

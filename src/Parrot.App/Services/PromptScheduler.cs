@@ -20,7 +20,14 @@ public sealed class PromptScheduler : IDisposable
     /// </summary>
     private static readonly TimeSpan RetryDelay = TimeSpan.FromMinutes(2);
 
+    /// <summary>
+    /// How long before a prompt something slow may want to start getting ready: loading the AI
+    /// model takes about a minute on a small CPU, and it must be in memory when the card shows.
+    /// </summary>
+    public static readonly TimeSpan PrepareLead = TimeSpan.FromSeconds(90);
+
     private readonly DispatcherTimer _timer = new();
+    private readonly DispatcherTimer _prepareTimer = new();
     private readonly PromptService _prompts;
     private readonly SettingsService _settings;
     private readonly Random _random = new();
@@ -34,6 +41,11 @@ public sealed class PromptScheduler : IDisposable
         _settings = settings;
 
         _timer.Tick += OnTick;
+        _prepareTimer.Tick += (_, _) =>
+        {
+            _prepareTimer.Stop();
+            PromptApproaching?.Invoke(this, EventArgs.Empty);
+        };
         // Settings now apply on every change; only a new interval or spread restarts the clock,
         // otherwise flipping the theme would postpone the next card.
         _settings.Changed += (_, updated) =>
@@ -45,6 +57,9 @@ public sealed class PromptScheduler : IDisposable
 
     public event EventHandler<PromptRequest>? PromptReady;
     public event EventHandler<SkippedPrompt>? PromptSkipped;
+
+    /// <summary>Raised <see cref="PrepareLead"/> before the next prompt, or at once when it is nearer than that.</summary>
+    public event EventHandler? PromptApproaching;
 
     public DateTimeOffset? NextPromptAt { get; private set; }
 
@@ -59,6 +74,7 @@ public sealed class PromptScheduler : IDisposable
     public void Stop()
     {
         _timer.Stop();
+        _prepareTimer.Stop();
         NextPromptAt = null;
     }
 
@@ -93,6 +109,21 @@ public sealed class PromptScheduler : IDisposable
 
         _timer.Interval = delay;
         _timer.Start();
+        ArmPrepare(delay);
+    }
+
+    private void ArmPrepare(TimeSpan delay)
+    {
+        _prepareTimer.Stop();
+
+        if (delay <= PrepareLead)
+        {
+            PromptApproaching?.Invoke(this, EventArgs.Empty);
+            return;
+        }
+
+        _prepareTimer.Interval = delay - PrepareLead;
+        _prepareTimer.Start();
     }
 
     private void OnTick(object? sender, EventArgs e)
@@ -104,6 +135,7 @@ public sealed class PromptScheduler : IDisposable
             NextPromptAt = DateTimeOffset.Now + retryIn;
             _timer.Interval = retryIn;
             _timer.Start();
+            ArmPrepare(retryIn);
             return;
         }
 
@@ -165,6 +197,7 @@ public sealed class PromptScheduler : IDisposable
     public void Dispose()
     {
         _timer.Stop();
+        _prepareTimer.Stop();
         _timer.Tick -= OnTick;
     }
 }

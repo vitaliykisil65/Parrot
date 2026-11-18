@@ -129,6 +129,12 @@ public partial class App : Application, IPromptHost
 
         _scheduler = new PromptScheduler(_prompts, _settings);
         _scheduler.PromptReady += (_, request) => ShowPrompt(request);
+        // Load the AI model a minute ahead, so it is ready when the card appears.
+        _scheduler.PromptApproaching += (_, _) =>
+        {
+            if (_judge is { IsEnabled: true } judge)
+                _ = judge.WarmUpAsync();
+        };
         _scheduler.PromptSkipped += (_, skipped) => Log.Info($"Prompt skipped: {skipped.Reason}");
 
         _tray = CreateTray();
